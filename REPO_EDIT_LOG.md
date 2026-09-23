@@ -1,5 +1,31 @@
 # Repository Edit Log
 
+## [2026-09-23] docs: Align all documentation across 3-repo architecture
+- Branch: `docs/architecture-and-exports` on `vera`
+- Scope: Synchronized all documentation across the multi-repo estate (`vera`, `clearCloud`, `veracities.social`):
+  1. Updated `docs/PRD.md`: Added repository location callouts to Section 4 (Feature 1.1 in `clearCloud`, Feature 1.2 in `vera`, Feature 1.3 in `clearCloud` with settlement in `veracities.social`).
+  2. Updated `docs/features.md`: Promoted Layer 1.1, 1.2, 1.3, and protocol modules from "Planned" to "Active" with exact codebase mappings.
+  3. Updated `docs/user_journeys.md`: Added Journey 9 (Private Messaging On-Device PII Scrubbing) and updated Journey 5 (Courtroom Deliberation) with cross-repo locations.
+  4. Updated `README.md`: Added Feature 1.2 to Key Features and verified multi-repo architecture links.
+  5. Verified `clearCloud` and `veracities.social` `README.md` and `docs/architecture.md` are 100% in sync.
+
+## [2026-09-23] feat: Architecture Blueprint, @vera/core export, and Layer 1.1-1.3 Multi-Repo Ecosystem
+- Branch: `docs/architecture-and-exports` on `vera` (with `clearCloud` and `veracities.social`)
+- Scope: Multi-repository architecture expansion across Vera ecosystem:
+  1. Exported `@vera/core` ES module (`frontend/src/index.js`, `package.json` `"main"`, `"module"`, `"exports"`).
+  2. Documented comprehensive Architecture Blueprint in `docs/architecture.md`, linked in `README.md` and `docs/PRD.md`.
+  3. Implemented Layer 1.1 in `mrtingalingling/clearCloud` (`feat/layer1.1-atproto-identity`): ATProto authentication (`BskyAgent`, DID:PLC), Web3/NFT SIWE placeholder, Validation Market, and Epistemic DAO registry (19 Vitest tests passing).
+  4. Implemented Layer 1.2 & 1.3 in `mrtingalingling/veracities.social` (`feat/layer1.2-1.3-courtroom-social`): Private Messaging PII Scrubber, Courtroom Deliberation docket (Falsifiability Gatekeeper, compound claim DAG decomposition, 14-day cold case 94%/6% refund, challenge bond retrials), and Social Truth Suite with Groundedness Index ranking (18 Vitest tests passing).
+  5. End-to-end integration test across all 3 repos passing (92 total tests passing across estate).
+- Files modified in `vera`:
+  - `package.json`: Added ES module exports.
+  - `README.md`: Linked Architecture Blueprint.
+  - `docs/PRD.md`: Linked Architecture Blueprint.
+  - `REPO_EDIT_LOG.md`: Logged multi-repo expansion.
+- Files created in `vera`:
+  - `frontend/src/index.js`: Re-exports Layer 0 services (`localAiService`, `p2pNode`, `scannerService`, `googleDriveService`, `db`).
+  - `docs/architecture.md`: Full multi-repository architecture specification with mermaid diagram.
+
 ## [2026-09-23] feat: UX simplifications — keyboard shortcut, quick backend presets, toast alerts & accordion panels
 - Branch: `feat/svelte5-byom-metrics`
 - Scope: Implemented recommended UX simplifications:

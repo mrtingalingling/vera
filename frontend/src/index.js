@@ -9,3 +9,4 @@ export * from './p2pNode.js';
 export * from './scannerService.js';
 export * from './googleDriveService.js';
 export * from './db.js';
+export * from './scrubber/piiScrubberService.js';

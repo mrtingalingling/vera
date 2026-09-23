@@ -67,18 +67,18 @@
 
 ---
 
-## Journey 5: Courtroom Deliberation & Truth Settlement (Layer 1 & 2 Preview)
+## Journey 5: Courtroom Deliberation & Truth Settlement (clearCloud & veracities.social)
 
 **Persona**: Market participant or researcher challenging a viral disputed claim.
 
-1. **Case Filing**: A user selects a disputed statement on ClearCloud or via the extension and clicks **"File Courtroom Case"**.
-2. **DAG Decomposition**: Complex multi-part assertions (e.g., economic claims with multiple premises) are decomposed into a Directed Acyclic Graph of sub-claims.
-3. **Validation Wagers**: Users stake collateral in a validation pool, calling or raising based on newly submitted primary documents.
+1. **Case Filing**: A user selects a disputed statement in **clearCloud** or via the Vera extension and clicks **"Docket Case to Courtroom"**.
+2. **Falsifiability Check & DAG Decomposition**: The Falsifiability Gatekeeper admits testable empirical propositions. Multi-part assertions are decomposed into a Directed Acyclic Graph (DAG) of sub-claims.
+3. **Validation Wagers**: Collateral is staked into **veracities.social**'s Validation Market prediction pool.
 4. **Resolution Pathways**:
-   - *Supermajority Proof*: Definitive evidence submitted resolves the case, distributing wager pools to grounded validators.
-   - *14-Day Stale Refund*: If no conclusive proof emerges after two weeks, 94% of wagers are refunded (6% platform fee).
-   - *Case Reopening*: If biased voter turnout or new post-settlement evidence emerges, an escalated challenge wager reopens the case with dynamic quorum scaling.
-5. **Reputation Feedback**: The user's hidden reputation score increases, conferring anonymous ZK-SNARK governance voting rights in the Epistemic DAO (Layer 3).
+   - *Supermajority Proof*: Definitive evidence submitted resolves the case (66.7% jury consensus threshold), distributing wager pools via `courtroomSettlement.js`.
+   - *14-Day Stale Refund*: If no conclusive proof emerges after two weeks, **94% of wagers are refunded** (6% protocol maintenance fee retained).
+   - *Challenge Bond Appeals*: If new verifiable evidence emerges, an escalated challenge bond reopens the case. Overturning awards the challenger their bond + 50% bounty.
+5. **Reputation Feedback**: The user's hidden reputation score updates in **clearCloud** (`+1.5` to `+2.0` on affirmation; `-18.0` on debunking; `-25.0` on slashing), impacting post distribution in the feed.
 
 ---
 
@@ -117,3 +117,20 @@
 2. **Logging a Claim**: The user enters a verified claim statement, selects a verdict (`Verified Fact`, `Disputed Claim`, `Misinformed / False`, or `Needs Additional Context`), and configures confidence sliders (e.g., 90% accuracy, 5% falsehood, 5% speculation).
 3. **Saving to Database**: Clicking **"Save Fact-Check to Catalog"** writes the record directly to Firestore.
 4. **Fetching Historical Truth Records**: The user clicks **"Fetch Database Catalog & Metrics Table"** to retrieve and review recent community fact-checks, verification hashes, and aggregate truth metrics.
+
+---
+
+## Journey 9: Private Messaging On-Device PII Scrubbing & Claim Ingestion (Feature 1.2)
+
+**Persona**: Privacy-conscious user receiving a sensationalist forwarded chain message in WhatsApp Web or Telegram Web.
+
+1. **Message Selection**: The user highlights a forwarded message:
+   > *"Listen everyone, my doctor friend at Mayo Clinic says atmospheric CO2 reached 420 ppm in 2024. Contact bob@lab.org or call 555-123-4567 before they delete this!"*
+2. **On-Device Ingestion**: Vera triggers `piiScrubberService.createVerificationPreview(text)` directly inside the local browser sandbox.
+3. **Automated Redaction & Extraction**:
+   - PII is redacted: `bob@lab.org` $\rightarrow$ `[REDACTED_EMAIL]`, `555-123-4567` $\rightarrow$ `[REDACTED_PHONE]`.
+   - Authority fluff and forward chatter are cleanly stripped.
+   - Core claim extracted: `"Atmospheric CO2 reached 420 ppm in 2024"`.
+4. **Zero-Leakage Preview Gate**: Vera presents an in-app verification preview displaying the sanitized text and extracted core claim with the notice:
+   > *"Zero private or personal information will leave your machine."*
+5. **Approved Execution**: Once confirmed by the user, the clean claim is validated locally via on-device Gemini Nano / local heuristics, or seamlessly posted to **clearCloud** for community deliberation.

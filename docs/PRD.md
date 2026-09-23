@@ -24,7 +24,7 @@ Rather than treating social networking, financial markets, and decentralized gov
 * **Layer 3 (The Epistemic DAO)**: The decentralized governance engine—**all about future engagement and ecosystem improvement**, allocating anonymous voting weight based on intellectual honesty, factual grounding, and empathy.
 
 > [!NOTE]
-> For the complete multi-repository technical blueprint across `vera`, `clearCloud`, and `veracities.social`, refer to [**Architecture Blueprint (`docs/architecture.md`)**](./architecture.md).
+> For the complete multi-repository technical blueprint across `vera` (Layer 0 & Ingestion Engine with Feature 1.2 PII Scrubber), `clearCloud` (Unified Social Application: Feature 1.1 Feed + Feature 1.3 Courtroom), and `veracities.social` (Protocol & Settlement Backend: Identity Broker, Validation Markets, DAO Registry, and Settlement Protocol), refer to [**Architecture Blueprint (`docs/architecture.md`)**](./architecture.md).
 
 ```
        ┌────────────────────────────────────────────────────────┐
@@ -120,11 +120,14 @@ Vera Core serves as the foundational client engine running inside the user's bro
 
 ---
 
-## 4. Layer 1: The Social Suite (Future Specification)
+## 4. Layer 1: The Social Suite (Active Multi-Repo Implementation)
 
 The Social Suite is the human interaction layer designed to cultivate authentic relationships, eliminate sensationalist rage-bait, and facilitate structured, adversarial truth discovery.
 
-### 4.1 Feature 1.1 — ClearCloud (Decentralized Social Media)
+### 4.1 Feature 1.1 — ClearCloud (Decentralized Epistemic Social Media)
+> **Hosted In**: [`mrtingalingling/clearCloud`](https://github.com/mrtingalingling/clearCloud) (`src/feed/`)  
+> **Consumes**: On-device AI from `@vera/core` and ATProto/Web3 Auth from `veracities.social`.
+
 ClearCloud combines the real-time discourse of Bluesky/Twitter with the multimedia lifestyle context of Instagram/Little Red Book, built upon a **relational-first, groundedness-ranked** foundation.
 
 #### A. Relational Proximity Circles (3-Tiered Navigation)
@@ -158,6 +161,9 @@ To protect the social network from bad-faith gaming, performative virtue-signali
 ---
 
 ### 4.2 Feature 1.2 — Private Messaging Add-on (WhatsApp, Telegram, WeChat)
+> **Hosted In**: [`mrtingalingling/vera`](https://github.com/mrtingalingling/vera) (`frontend/src/scrubber/piiScrubberService.js`)  
+> **Exported Via**: `@vera/core` for universal on-device consumption across the extension and social apps.
+
 Enables fact-checking directly inside private web messaging environments while guaranteeing strict zero-knowledge privacy.
 
 #### A. Privacy-First Local PII Scrubber (Zero Data Leakage)
@@ -177,6 +183,9 @@ Enables fact-checking directly inside private web messaging environments while g
 ---
 
 ### 4.3 Feature 1.3 — The Courtroom (Deliberation Forum)
+> **Hosted In**: [`mrtingalingling/clearCloud`](https://github.com/mrtingalingling/clearCloud) (`src/courtroom/`)  
+> **Settlement Protocol Enforced By**: [`mrtingalingling/veracities.social`](https://github.com/mrtingalingling/veracities.social) (`src/settlement/`)
+
 A structured, adversarial fact-deliberation forum where claims highlighted from ClearCloud, web pages, or messaging apps are tried as formal "cases".
 
 #### A. The Falsifiability Gatekeeper
@@ -318,16 +327,18 @@ To protect users from doxxing, state censorship, and social retaliation, the DAO
 | **Frontend Frame** | Svelte 5 (Runes) + Vite | Universal cockpit for web frame and extension popup | **Active (Layer 0)** |
 | **AI Client Engine** | WebGPU (WebLLM) + Cloud API | In-browser zero-leakage inference + BYOM cloud fallback | **Active (Layer 0)** |
 | **P2P Transport** | libp2p + GossipSub + WebRTC | Serverless claim sync, peer routing, and resilience | **Active (Layer 0)** |
-| **Messaging Scrubber** | OnnxRuntime-Web / WebGPU | Local client-side PII stripping for chat add-ons | **Future (Layer 1)** |
-| **Social Feed Engine** | Yjs / Automerge CRDTs | Decentralized relational graph and ClearCloud feed | **Future (Layer 1)** |
-| **Validation Contracts** | Solidity / EVM + Solana SVM | Poker-style escrow, wager pooling, and settlement oracles | **Future (Layer 2)** |
+| **Messaging Scrubber** | OnnxRuntime-Web / WebGPU | Local client-side PII stripping for chat add-ons | **Implemented (Layer 1.2)** |
+| **Social Feed Engine** | Svelte 5 / ATProto / Relational Circles | Groundedness feed with 3-tier circles and rage suppression | **Implemented (Layer 1.1)** |
+| **Courtroom Deliberation** | Svelte 5 / Blind Trials / Sortition | DAG claim decomposition, blind trials & civic jury duty | **Implemented (Layer 1.3)** |
+| **Validation Markets** | Svelte 5 / Dynamic Odds / Slashing | 4-outcome prediction markets, 15% whistleblower bounties | **Implemented (Layer 2)** |
+| **Settlement & Escrow** | EIP-712 / HMAC Oracle Bridge | 14-day cold case refunds, 2x retrial bonds, oracle bridge | **Implemented (Layer 2)** |
 | **DAO Identity Bridge**| Semaphore / Circom / SnarkJS | Anonymous zero-knowledge reputation attestation | **Future (Layer 3)** |
 
 ---
 
-## 8. Concurrent Evolution Roadmap
+## 8. Concurrent Evolution Roadmap & Caveats Ledger
 
-Because Layer 1 directly feeds Layer 2 and Layer 3, their development is designed to progress **concurrently** rather than sequentially:
+Because Layer 1 directly feeds Layer 2 and Layer 3, development progresses concurrently. For a full breakdown of production caveats and future engineering work, refer to [**`docs/ARCHITECTURE_CAVEATS_AND_ROADMAP.md`**](./ARCHITECTURE_CAVEATS_AND_ROADMAP.md).
 
 ```
 [Layer 0: Active Baseline] ─────────────────────────────────────────────► (Continuous Polish)
@@ -335,20 +346,21 @@ Because Layer 1 directly feeds Layer 2 and Layer 3, their development is designe
   • BYOM 1-Click Guest preset & provider portal
   • Real-time 4-verdict DOM highlighting & mini-charts
 
-[Layer 1: Social Suite] ────────────────────────────────────────────────► (Concurrent Track A)
-  • Local WebGPU PII Scrubber (Chat Add-on)
-  • ClearCloud 3-Tier Navigation & Hidden Reputation Engine
-  • Courtroom Falsifiability Gatekeeper & DAG Lifecycles
+[Layer 1: Social Suite] ────────────────────────────────────────────────► (Implemented Prototypes)
+  • Local WebGPU PII Scrubber (`@vera/core/scrubber`)
+  • ClearCloud 3-Tier Navigation & Groundedness Ranking (`clearCloud`)
+  • Courtroom Blind Trials, DAGs & Algorithmic Civic Sortition (`clearCloud`)
 
-[Layer 2: Validation Market] ───────────────────────────────────────────► (Concurrent Track B)
-  • Poker-style Evidence Round Escrow Contracts
-  • Truth Parleys & Hedging Derivatives
-  • Dual Settlement Oracles (Courtroom Jury + On-Chain Hashes)
+[Layer 2: Validation Market] ───────────────────────────────────────────► (Implemented Prototypes)
+  • 4-Outcome Dynamic Odds Markets & User Wagers (`veracities.social`)
+  • Slashed Pool Evidence Bounties (15% Whistleblower, 5% Juror Fee)
+  • 14-Day Cold Case Escrow Refunds & 2x Retrial Bonds
+  • Cryptographic Oracle Verdict Attestation Bridge
 
-[Layer 3: Epistemic DAO] ───────────────────────────────────────────────► (Concurrent Track C)
-  • Epistemic Quotient (EQ) Cross-Faction Bridging Metrics
-  • Semaphore ZK-SNARK Client-Side Reputation Provers
-  • Decoupled Anonymous Governance Execution
+[Future Layer 2 & Layer 3 Hardening] ───────────────────────────────────► (Roadmap: Next Sprints)
+  • Phase 2: PostgreSQL/Redis Persistence + ATProto SIWE Identity Linkage
+  • Phase 3: L2 EVM Smart Contracts (Base/Arbitrum) + Threshold Multi-Sig Oracles
+  • Phase 4: Layer 3 Epistemic DAO with Semaphore ZK-SNARK Reputation Provers
 ```
 
 ---
