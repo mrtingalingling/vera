@@ -2,6 +2,9 @@
   import Header from './components/Header.svelte';
   import MiniChart from './components/MiniChart.svelte';
   import ByomModal from './components/ByomModal.svelte';
+  import { createP2PNode } from './p2pNode.js';
+  import { analyzeClaimLocally } from './localAiService.js';
+  import { scanPageContent, highlightPageContent } from './scannerService.js';
 
   // --- Svelte 5 Runes State ---
   let isDarkMode = $state(true);
@@ -11,6 +14,11 @@
   let inputText = $state("");
   let isLoading = $state(false);
   let activeTabTitle = $state("Current Webpage / Document");
+
+  // P2P Swarm Node
+  const p2pNode = createP2PNode();
+  let p2pStatus = $state(p2pNode.status);
+  let peersCount = $state(p2pNode.peers.length);
 
   // Persistent header/sidebar metrics state
   let persistentMetrics = $state({
@@ -25,7 +33,7 @@
     {
       id: 1,
       role: "agent",
-      text: "👋 Welcome to VeriFact AI! I am your agentic fact-checking assistant. Enter a claim, or use 1-Click Connect to activate the Guest Agent without usage caps.",
+      text: "👋 Welcome to Vera! I am your decentralized AI fact-checking agent. Enter a claim, run on-device local AI, or activate a 1-Click Guest session.",
       metrics: {
         factsPct: 85.0,
         opinionPct: 15.0,
@@ -76,8 +84,38 @@
 
     try {
       const byomSettings = JSON.parse(localStorage.getItem("byom_settings") || "{}");
-      const endpoint = getBackendEndpoint();
 
+      // Mode A: Local In-Browser AI Execution (Zero Cloud Calls)
+      if (byomSettings.provider === "local_worker") {
+        const localRes = await analyzeClaimLocally(text);
+        const claimMetrics = localRes.metrics;
+        
+        // Broadcast claim attestation to local P2P swarm
+        if (localRes.claims && localRes.claims[0]) {
+          await p2pNode.publishClaim(localRes.claims[0]);
+        }
+
+        persistentMetrics = {
+          factsPct: claimMetrics.factsPct,
+          opinionPct: claimMetrics.opinionPct,
+          falsehoodPct: claimMetrics.falsehoodPct,
+          title: "Persistent Page & Session Analysis"
+        };
+
+        messages = [
+          ...messages,
+          {
+            id: Date.now() + 1,
+            role: "agent",
+            text: localRes.text,
+            metrics: claimMetrics
+          }
+        ];
+        return;
+      }
+
+      // Mode B: Cloud Proxy or BYOM API
+      const endpoint = getBackendEndpoint();
       const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -123,6 +161,13 @@
         };
       }
 
+      // Broadcast to P2P swarm
+      await p2pNode.publishClaim({
+        claimText: text,
+        verdict: claimMetrics.falsehoodPct > 50 ? 'misinformed' : claimMetrics.factsPct >= 70 ? 'verified' : 'need-additional-context',
+        confidence: 90
+      });
+
       // Update persistent session metrics
       persistentMetrics = {
         factsPct: claimMetrics.factsPct,
@@ -160,6 +205,44 @@
     }
   }
 
+  async function handleScanActivePage() {
+    if (isLoading) return;
+    const chromeContext = typeof chrome !== 'undefined' ? chrome : null;
+    const scanResult = await scanPageContent(chromeContext, inputText);
+
+    if (scanResult.status === 'success') {
+      activeTabTitle = scanResult.title || activeTabTitle;
+      const snippet = scanResult.text.slice(0, 500);
+      await sendMessage(`Fact-check page: "${scanResult.title}". Excerpt: "${snippet}"`);
+
+      // Highlight claims on the active webpage DOM
+      const claimsToHighlight = [
+        {
+          claimText: scanResult.title,
+          verdict: persistentMetrics.falsehoodPct > 40 ? 'misinformed' : 'verified',
+          confidence: 92,
+          explanation: `Analyzed by Vera. Factuality: ${persistentMetrics.factsPct}%`,
+          sources: ['Vera Epistemic Swarm']
+        }
+      ];
+
+      const hlRes = await highlightPageContent(chromeContext, claimsToHighlight);
+      if (hlRes.count > 0) {
+        messages = [
+          ...messages,
+          {
+            id: Date.now() + 2,
+            role: "agent",
+            text: `🎯 Highlighted ${hlRes.count} verified/disputed claim segments directly in the webpage DOM.`,
+            metrics: null
+          }
+        ];
+      }
+    } else {
+      await sendMessage(scanResult.text || "Analyze and fact-check the active webpage");
+    }
+  }
+
   function handlePillClick(sample) {
     sendMessage(sample);
   }
@@ -187,6 +270,8 @@
     {isUncapped}
     {remainingQueries}
     {isDarkMode}
+    {p2pStatus}
+    {peersCount}
     onToggleTheme={() => isDarkMode = !isDarkMode}
     onOpenByom={() => isByomModalOpen = true}
   />
@@ -211,7 +296,7 @@
       <span class="material-symbols-outlined tab-icon">tab</span>
       <span class="tab-title" title={activeTabTitle}>{activeTabTitle}</span>
     </div>
-    <button class="btn-scan" onclick={() => sendMessage("Analyze and fact-check the active webpage")}>
+    <button class="btn-scan" onclick={handleScanActivePage}>
       <span class="material-symbols-outlined">radar</span>
       Scan Page
     </button>

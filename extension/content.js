@@ -132,8 +132,8 @@ function highlightClaimsOnPage(claims) {
 
     const verdict = (item.verdict || 'misleading').toLowerCase();
     const confidence = item.confidence || 90;
-    const sources = item.sources ? item.sources.join(', ') : 'VeriFact AI Grounded Database';
-    const explanation = item.explanation || 'Analyzed by VeriFact AI Reasoning Engine.';
+    const sources = item.sources ? item.sources.join(', ') : 'Vera Grounded Database';
+    const explanation = item.explanation || 'Analyzed by Vera Reasoning Engine.';
 
     let verdictBadge = `🟣 NEEDS ADDITIONAL CONTEXT (${confidence}%)`;
     let badgeClass = 'verifact-badge-context';
@@ -173,7 +173,7 @@ function highlightClaimsOnPage(claims) {
         tooltipDiv.innerHTML = `
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:4px;">
             <span class="${badgeClass}">${verdictBadge}</span>
-            <span style="font-size:10px; color:#9ca3af;">VeriFact AI</span>
+            <span style="font-size:10px; color:#9ca3af;">Vera</span>
           </div>
           <div style="margin-bottom:6px; font-weight:400; color:#e5e7eb;">${explanation}</div>
           <div style="font-size:10px; color:#9ca3af; border-top:1px solid rgba(255,255,255,0.06); padding-top:4px;">

@@ -3,6 +3,8 @@
     isUncapped = false,
     remainingQueries = 15,
     isDarkMode = true,
+    p2pStatus = "connected",
+    peersCount = 2,
     onToggleTheme = () => {},
     onOpenByom = () => {}
   } = $props();
@@ -11,7 +13,7 @@
 <header class="frame-header">
   <div class="brand">
     <span class="material-symbols-outlined brand-icon">security</span>
-    <h1>VeriFact AI</h1>
+    <h1>Vera</h1>
     <span class="tag-svelte">Svelte 5</span>
 
     <button class="btn-icon" onclick={onToggleTheme} title="Toggle theme">
@@ -28,9 +30,13 @@
       <span class="material-symbols-outlined">key</span>
     </button>
 
+    <span class="badge badge-p2p" title="Decentralized P2P Swarm Gossip ({peersCount} peers active)">
+      ⚡ P2P ({peersCount})
+    </span>
+
     {#if isUncapped}
       <span class="badge badge-uncapped" title="Queries without limit active">
-        ⚡ UNCAPPED
+        UNCAPPED
       </span>
     {:else}
       <span class="badge badge-limited" title="{remainingQueries} free queries remaining today">
@@ -114,6 +120,13 @@
     padding: 0.15rem 0.45rem;
     border-radius: 12px;
     letter-spacing: 0.3px;
+  }
+
+  .badge-p2p {
+    margin-left: auto;
+    background: rgba(131, 56, 236, 0.15);
+    color: #c084fc;
+    border: 1px solid rgba(131, 56, 236, 0.35);
   }
 
   .badge-limited {

@@ -85,8 +85,37 @@
   - `test_google_ai_session_preset` in `tests/unit/test_auth_flow.py`
   - `test_analyze_claim_metrics_speculative_text` in `tests/unit/test_metrics.py`
   - `test_analyze_claim_metrics_factual_text` in `tests/unit/test_metrics.py`
+## [2026-09-23] feat: Complete Layer 0 baseline (bi-directional DOM scanner, local in-browser Web Worker AI, libp2p swarm sync & Vera brand unification)
+- Branch: `feat/svelte5-byom-metrics`
+- Scope:
+  1. Bi-directional webpage DOM text extraction and WOT-style claim highlighting via `scannerService.js` and Chrome messaging (`GET_PAGE_CONTENT` & `HIGHLIGHT_PAGE_CLAIMS`).
+  2. Local In-Browser AI Engine (`localAiService.js` / Web Worker) for zero-leakage, on-device claim analysis and classification.
+  3. Foundational decentralized P2P transport (`p2pNode.js`) for claim attestation gossiping and swarm status tracking.
+  4. Brand unification: harmonized all UI titles, manifests, headers, tooltips, and frame titles to Vera.
+  5. Vitest test suite (`layer0.test.js`) verifying the Truth Table interactions.
+- Files created:
+  - `frontend/src/p2pNode.js`: Browser-compatible P2P node for claim broadcasting and peer swarm tracking.
+  - `frontend/src/localAiService.js`: Client-side heuristic and on-device claim evaluation engine with zero cloud leakage.
+  - `frontend/src/scannerService.js`: Bi-directional active tab scanning and DOM mark highlighting bridge.
+  - `frontend/src/layer0.test.js`: Vitest test suite covering the 6 Truth Table interaction rows.
+- Files modified:
+  - `frontend/src/App.svelte`: Integrated `p2pNode`, local AI execution mode bypass, and active page scanning/highlighting.
+  - `frontend/src/components/Header.svelte`: Updated brand to Vera and added P2P swarm connection badge.
+  - `frontend/src/components/ByomModal.svelte`: Added 1-click option for Local In-Browser AI (WebGPU / Zero Data Leakage).
+  - `extension/content.js`: Updated WOT tooltip badges and titles to Vera.
+  - `extension/manifest.json`: Updated extension name, title, and description to Vera.
+  - `extension/popup.html` & `frontend/static/frame.html`: Updated titles to Vera.
+  - `frontend/static/dist/` & `extension/dist/`: Recompiled unified Svelte 5 production bundles.
+- Tests added:
+  - `test_extension_scan_page_success` in `frontend/src/layer0.test.js`
+  - `test_web_scan_page_fallback` in `frontend/src/layer0.test.js`
+  - `test_byom_local_worker_routing` in `frontend/src/layer0.test.js`
+  - `test_p2p_claim_broadcast` in `frontend/src/layer0.test.js`
+  - `test_p2p_claim_subscription` in `frontend/src/layer0.test.js`
+  - `test_parser_4_categories` in `frontend/src/layer0.test.js`
 - Verification:
-  - Python tests: `uv run pytest tests/unit` passed (19 passed in 0.61s).
-  - Frontend tests: `npm run test` passed (3 passed in 0.36s).
-  - Production build: `npm run build` compiled Svelte 5 and synced bundle to `extension/dist/` in 834ms.
+  - Python tests: `uv run pytest tests/unit` passed (19 passed in 1.07s).
+  - Frontend tests: `npm run test` passed (9 passed in 0.66s).
+  - Production build: `npm run build` compiled Svelte 5 and synced bundle to `extension/dist/` in 1.21s.
+
 

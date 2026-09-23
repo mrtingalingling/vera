@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "VeriFact AI - Real-time Fact Checker",
+  "name": "Vera - Decentralized AI Fact Checker",
   "version": "1.0.0",
-  "description": "AI Fact-Checker assistant powered by Gemini & Vertex AI to verify claims on web pages in real-time.",
+  "description": "Decentralized AI-Agentic Fact Verification and Epistemic Grounding assistant.",
   "permissions": [
     "activeTab",
     "scripting",
@@ -21,7 +21,7 @@
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "VeriFact AI",
+    "default_title": "Vera",
     "default_icon": {
       "16": "icons/icon16.png",
       "48": "icons/icon48.png",

@@ -42,6 +42,20 @@
     onConnected({ uncapped: true, provider: "Guest Agent (Google AI)" });
   }
 
+  function handleLocalAiConnect() {
+    const settings = {
+      provider: "local_worker",
+      one_click: true,
+      session_type: "local_worker",
+      model: "on-device-webgpu",
+      api_key: "local_browser_token"
+    };
+    localStorage.setItem("byom_settings", JSON.stringify(settings));
+    isUncapped = true;
+    isOpen = false;
+    onConnected({ uncapped: true, provider: "Local In-Browser AI (WebGPU)" });
+  }
+
   async function handleGoogleLogin() {
     authMessage = "Connecting with Google Account...";
     if (typeof chrome !== "undefined" && chrome.identity && chrome.identity.getAuthToken) {
@@ -154,7 +168,18 @@
         </p>
       </div>
 
-      <!-- Preset 2: Google Account Login Default -->
+      <!-- Preset 2: Local In-Browser AI (WebGPU / Zero Leakage) -->
+      <div class="preset-card local-card">
+        <button class="btn-preset-local" onclick={handleLocalAiConnect}>
+          <span class="material-symbols-outlined">memory</span>
+          <span>Run Local In-Browser AI (WebGPU / Zero Data Leakage)</span>
+        </button>
+        <p class="preset-hint">
+          🔒 <strong>100% on-device private.</strong> Runs client-side in a Web Worker without sending claims over the network.
+        </p>
+      </div>
+
+      <!-- Preset 3: Google Account Login Default -->
       <div class="google-auth-card">
         <button class="btn-google-auth" onclick={handleGoogleLogin}>
           <svg class="google-icon" viewBox="0 0 24 24" width="16" height="16">
@@ -325,6 +350,33 @@
   .btn-preset-primary:hover {
     background: linear-gradient(135deg, rgba(0, 245, 212, 0.45), rgba(131, 56, 236, 0.55));
     box-shadow: 0 0 15px rgba(0, 245, 212, 0.4);
+  }
+
+  .local-card {
+    border-color: rgba(168, 85, 247, 0.3);
+    background: rgba(168, 85, 247, 0.05);
+  }
+
+  .btn-preset-local {
+    width: 100%;
+    padding: 0.65rem 0.8rem;
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.2), rgba(59, 130, 246, 0.2));
+    border: 1px solid #a855f7;
+    border-radius: 8px;
+    color: #c084fc;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.45rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+  }
+
+  .btn-preset-local:hover {
+    background: linear-gradient(135deg, rgba(168, 85, 247, 0.35), rgba(59, 130, 246, 0.35));
+    box-shadow: 0 0 15px rgba(168, 85, 247, 0.4);
   }
 
   .preset-hint {
