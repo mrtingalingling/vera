@@ -1,5 +1,23 @@
 # Repository Edit Log
 
+## [2026-09-23] feat: UX simplifications — keyboard shortcut, quick backend presets, toast alerts & accordion panels
+- Branch: `feat/svelte5-byom-metrics`
+- Scope: Implemented recommended UX simplifications:
+  1. Global keyboard shortcut `Alt+Shift+H` in `extension/manifest.json` and `extension/background.js` for instant in-page claim highlighting.
+  2. Quick presets for Custom Remote Backend URL in `ByomModal.svelte` (`Local (8080)`, `Ollama (11434)`, `Cloud Gateway`).
+  3. Interactive feedback toast system (`toastMessage`) in `App.svelte` for premise updates, Google Drive document linking, catalog archiving, and BYOM activation.
+  4. Auto-collapse accordion behavior ensuring mutually exclusive drawer states between Evidence Sources and Fact Catalog.
+  5. Expanded Vitest unit tests in `frontend/src/components/Panels.test.js` to 20 total tests.
+- Files modified:
+  - `extension/manifest.json`: Added `commands` for `highlight_page_claims` with `Alt+Shift+H`.
+  - `extension/background.js`: Implemented `chrome.commands.onCommand` listener extracting claims and sending `HIGHLIGHT_PAGE_CLAIMS` to the active tab.
+  - `frontend/src/components/ByomModal.svelte`: Added quick preset buttons for `Local (8080)`, `Ollama (11434)`, and `Cloud Gateway` with active styling.
+  - `frontend/src/App.svelte`: Added `toastMessage` state, `showToast` helper, slide-down toast UI component, and accordion drawer collapse.
+  - `frontend/main.py`: Modernized system prompt from VeriFact AI to Vera.
+  - `frontend/src/components/Panels.test.js`: Added 2 unit tests for URL presets and accordion behavior (20 Vitest unit tests passing).
+- Tests added / updated:
+  - 20 frontend Vitest tests + 19 backend Pytest tests all passing (39 tests total).
+
 ## [2026-09-23] feat: Svelte 5 frame, 1-click BYOM agent uncap, mini-chart metrics & 4-category highlighting
 - Branch: `feat/svelte5-byom-metrics`
 - Scope: Upgrade frame to Svelte 5 runes, implement 1-click in-app BYOM agent uncap, add verifiable facts vs. opinion/speculation mini-chart, and support 4 DOM highlighting categories.

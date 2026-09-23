@@ -196,7 +196,7 @@ def _extract_parts(parts: list) -> list[dict]:
 # --- External BYOM AI Provider Dispatcher ---
 async def _query_byom_provider(provider: str, api_key: str, model: str, message: str) -> list[dict]:
     """Queries third-party AI models (OpenAI, Anthropic Claude, Gemini, Grok, Ollama/Custom)."""
-    system_prompt = "You are VeriFact AI, a claim verification assistant. Fact-check claims accurately with sources, verdicts (True/False/Misleading), and confidence."
+    system_prompt = "You are Vera, a decentralized claim verification assistant. Fact-check claims accurately with sources, verdicts (True/False/Misleading), and confidence."
     
     async with httpx.AsyncClient(timeout=60) as client:
         if provider == "openai":

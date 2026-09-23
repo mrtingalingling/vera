@@ -305,6 +305,34 @@
           class="input-field"
         />
 
+        <!-- Quick Backend URL Presets -->
+        <div class="preset-pills">
+          <button 
+            type="button" 
+            class="btn-preset-pill {backendUrl === 'http://localhost:8080/chat' ? 'active' : ''}"
+            onclick={() => { backendUrl = "http://localhost:8080/chat"; }}
+            title="Set to Local FastAPI server on port 8080"
+          >
+            Local (8080)
+          </button>
+          <button 
+            type="button" 
+            class="btn-preset-pill {backendUrl === 'http://localhost:11434/api/chat' ? 'active' : ''}"
+            onclick={() => { backendUrl = "http://localhost:11434/api/chat"; }}
+            title="Set to Local Ollama instance on port 11434"
+          >
+            Ollama (11434)
+          </button>
+          <button 
+            type="button" 
+            class="btn-preset-pill {backendUrl === 'https://vera-gateway.run.app/chat' ? 'active' : ''}"
+            onclick={() => { backendUrl = "https://vera-gateway.run.app/chat"; }}
+            title="Set to Cloud Run Gateway"
+          >
+            Cloud Gateway
+          </button>
+        </div>
+
         <div class="btn-actions">
           <button class="btn-save" onclick={handleSaveKey}>
             Save Key & Connect
@@ -555,6 +583,37 @@
     display: flex;
     gap: 0.5rem;
     margin-top: 0.4rem;
+  }
+
+  .preset-pills {
+    display: flex;
+    gap: 0.35rem;
+    margin-top: 0.35rem;
+    flex-wrap: wrap;
+  }
+
+  .btn-preset-pill {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 6px;
+    padding: 0.18rem 0.45rem;
+    color: #9ca3af;
+    font-size: 0.68rem;
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+
+  .btn-preset-pill:hover {
+    background: rgba(0, 245, 212, 0.12);
+    border-color: #00f5d4;
+    color: #00f5d4;
+  }
+
+  .btn-preset-pill.active {
+    background: rgba(0, 245, 212, 0.2);
+    border-color: #00f5d4;
+    color: #00f5d4;
+    font-weight: 600;
   }
 
   .btn-save {

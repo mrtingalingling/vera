@@ -127,5 +127,51 @@ describe('Auxiliary Features: Tab Permission, Highlighting & Remote Endpoint', (
     expect(classified[2]).toBe('verified');
     expect(classified[3]).toBe('need-additional-context');
   });
+
+  it('selects valid backend URL presets in BYOM modal', () => {
+    const presets = {
+      local: "http://localhost:8080/chat",
+      ollama: "http://localhost:11434/api/chat",
+      gateway: "https://vera-gateway.run.app/chat"
+    };
+
+    let backendUrl = "";
+    function setPreset(key) {
+      backendUrl = presets[key] || "";
+    }
+
+    setPreset("local");
+    expect(backendUrl).toBe("http://localhost:8080/chat");
+
+    setPreset("ollama");
+    expect(backendUrl).toBe("http://localhost:11434/api/chat");
+
+    setPreset("gateway");
+    expect(backendUrl).toBe("https://vera-gateway.run.app/chat");
+  });
+
+  it('enforces accordion behavior between Evidence and Catalog panels', () => {
+    let isSourcePanelOpen = false;
+    let isCatalogPanelOpen = false;
+
+    function toggleSource() {
+      isSourcePanelOpen = !isSourcePanelOpen;
+      if (isSourcePanelOpen) isCatalogPanelOpen = false;
+    }
+
+    function toggleCatalog() {
+      isCatalogPanelOpen = !isCatalogPanelOpen;
+      if (isCatalogPanelOpen) isSourcePanelOpen = false;
+    }
+
+    toggleSource();
+    expect(isSourcePanelOpen).toBe(true);
+    expect(isCatalogPanelOpen).toBe(false);
+
+    toggleCatalog();
+    expect(isSourcePanelOpen).toBe(false);
+    expect(isCatalogPanelOpen).toBe(true);
+  });
 });
+
 

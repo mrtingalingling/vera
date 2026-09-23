@@ -36,6 +36,18 @@
     { id: 3, text: "Google Docs: Vertex_Platform_Guide.gdoc (Google Cloud Vertex AI is a fully managed agent development platform.)", active: true }
   ]);
 
+  // Toast Notification State
+  let toastMessage = $state("");
+  let toastTimer = null;
+
+  function showToast(msg) {
+    toastMessage = msg;
+    if (toastTimer) clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toastMessage = "";
+    }, 2800);
+  }
+
   // P2P Swarm Node
   const p2pNode = createP2PNode();
   let p2pStatus = $state(p2pNode.status);
@@ -465,11 +477,13 @@
   async function handleAddSource(text) {
     const newId = personalSources.length ? Math.max(...personalSources.map(s => s.id)) + 1 : 1;
     personalSources = [...personalSources, { id: newId, text, active: true }];
+    showToast("Added custom premise to grounding pool");
     await syncActivePremises();
   }
 
   async function handleToggleSource(id, active) {
     personalSources = personalSources.map(s => s.id === id ? { ...s, active } : s);
+    showToast(active ? "Enabled grounding premise" : "Disabled grounding premise");
     await syncActivePremises();
   }
 
@@ -482,6 +496,7 @@
     const preset = docPresets[personalSources.length % docPresets.length];
     const newId = personalSources.length ? Math.max(...personalSources.map(s => s.id)) + 1 : 1;
     personalSources = [...personalSources, { id: newId, text: preset, active: true }];
+    showToast("Linked Google Doc to grounding premises");
     await syncActivePremises();
   }
 
@@ -494,23 +509,28 @@
     const preset = sheetPresets[personalSources.length % sheetPresets.length];
     const newId = personalSources.length ? Math.max(...personalSources.map(s => s.id)) + 1 : 1;
     personalSources = [...personalSources, { id: newId, text: preset, active: true }];
+    showToast("Linked Google Sheet to grounding premises");
     await syncActivePremises();
   }
 
   async function handleShareFact(text) {
+    showToast("Sharing verified fact to community pool...");
     await sendMessage(`Please share this verified reference fact to the global community pool so other users can fact-check against it: "${text}"`);
   }
 
   async function handleFetchCatalog() {
+    showToast("Fetching catalog from Firestore...");
     await sendMessage("Please fetch the recent fact-checks from the Firestore catalog and present them in a clean summary table with metrics.");
   }
 
   async function handleSaveCatalog(data) {
+    showToast("Saved fact-check to catalog");
     await sendMessage(`Save this verified fact check to the catalog: Claim: "${data.claim}", Verdict: "${data.verdict}", Accuracy: ${data.accuracy}%, Falsehood: ${data.falsehood}%, Hallucination: ${data.hallucination}%.`);
   }
 
   function handleByomConnected(info) {
     isUncapped = info.uncapped;
+    showToast(`Activated ${info.provider} (Uncapped)`);
     messages = [
       ...messages,
       {
@@ -528,6 +548,13 @@
 </script>
 
 <main class="extension-frame {isDarkMode ? 'dark-theme' : 'light-theme'}">
+  {#if toastMessage}
+    <div class="toast-notification">
+      <span class="material-symbols-outlined toast-icon">check_circle</span>
+      <span>{toastMessage}</span>
+    </div>
+  {/if}
+
   <Header 
     {isUncapped}
     {remainingQueries}
@@ -535,7 +562,7 @@
     {p2pStatus}
     {peersCount}
     onToggleTheme={() => isDarkMode = !isDarkMode}
-    onOpenByom={() => isByomModalOpen = true}
+    onOpenByom={() => { isByomModalOpen = true; isSourcePanelOpen = false; isCatalogPanelOpen = false; }}
   />
 
   <!-- Persistent Header / Sidebar Mini-Chart Dashboard -->
@@ -1193,5 +1220,41 @@
 
   .btn-send span {
     font-size: 1rem;
+  }
+
+  .toast-notification {
+    position: fixed;
+    top: 54px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(15, 20, 35, 0.94);
+    backdrop-filter: blur(8px);
+    border: 1px solid #00f5d4;
+    box-shadow: 0 4px 16px rgba(0, 245, 212, 0.25);
+    border-radius: 20px;
+    padding: 0.35rem 0.85rem;
+    font-size: 0.72rem;
+    color: #f3f4f6;
+    display: flex;
+    align-items: center;
+    gap: 0.4rem;
+    z-index: 9999;
+    animation: toastSlideDown 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+  }
+
+  .toast-icon {
+    font-size: 0.95rem;
+    color: #00f5d4;
+  }
+
+  @keyframes toastSlideDown {
+    from {
+      opacity: 0;
+      transform: translate(-50%, -10px);
+    }
+    to {
+      opacity: 1;
+      transform: translate(-50%, 0);
+    }
   }
 </style>

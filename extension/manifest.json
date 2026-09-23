@@ -42,6 +42,15 @@
       "run_at": "document_idle"
     }
   ],
+  "commands": {
+    "highlight_page_claims": {
+      "suggested_key": {
+        "default": "Alt+Shift+H",
+        "mac": "Alt+Shift+H"
+      },
+      "description": "Highlight verified claims on the active webpage"
+    }
+  },
   "icons": {
     "16": "icons/icon16.png",
     "48": "icons/icon48.png",
