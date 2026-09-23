@@ -327,16 +327,18 @@ To protect users from doxxing, state censorship, and social retaliation, the DAO
 | **Frontend Frame** | Svelte 5 (Runes) + Vite | Universal cockpit for web frame and extension popup | **Active (Layer 0)** |
 | **AI Client Engine** | WebGPU (WebLLM) + Cloud API | In-browser zero-leakage inference + BYOM cloud fallback | **Active (Layer 0)** |
 | **P2P Transport** | libp2p + GossipSub + WebRTC | Serverless claim sync, peer routing, and resilience | **Active (Layer 0)** |
-| **Messaging Scrubber** | OnnxRuntime-Web / WebGPU | Local client-side PII stripping for chat add-ons | **Future (Layer 1)** |
-| **Social Feed Engine** | Yjs / Automerge CRDTs | Decentralized relational graph and ClearCloud feed | **Future (Layer 1)** |
-| **Validation Contracts** | Solidity / EVM + Solana SVM | Poker-style escrow, wager pooling, and settlement oracles | **Future (Layer 2)** |
+| **Messaging Scrubber** | OnnxRuntime-Web / WebGPU | Local client-side PII stripping for chat add-ons | **Implemented (Layer 1.2)** |
+| **Social Feed Engine** | Svelte 5 / ATProto / Relational Circles | Groundedness feed with 3-tier circles and rage suppression | **Implemented (Layer 1.1)** |
+| **Courtroom Deliberation** | Svelte 5 / Blind Trials / Sortition | DAG claim decomposition, blind trials & civic jury duty | **Implemented (Layer 1.3)** |
+| **Validation Markets** | Svelte 5 / Dynamic Odds / Slashing | 4-outcome prediction markets, 15% whistleblower bounties | **Implemented (Layer 2)** |
+| **Settlement & Escrow** | EIP-712 / HMAC Oracle Bridge | 14-day cold case refunds, 2x retrial bonds, oracle bridge | **Implemented (Layer 2)** |
 | **DAO Identity Bridge**| Semaphore / Circom / SnarkJS | Anonymous zero-knowledge reputation attestation | **Future (Layer 3)** |
 
 ---
 
-## 8. Concurrent Evolution Roadmap
+## 8. Concurrent Evolution Roadmap & Caveats Ledger
 
-Because Layer 1 directly feeds Layer 2 and Layer 3, their development is designed to progress **concurrently** rather than sequentially:
+Because Layer 1 directly feeds Layer 2 and Layer 3, development progresses concurrently. For a full breakdown of production caveats and future engineering work, refer to [**`docs/ARCHITECTURE_CAVEATS_AND_ROADMAP.md`**](./ARCHITECTURE_CAVEATS_AND_ROADMAP.md).
 
 ```
 [Layer 0: Active Baseline] ─────────────────────────────────────────────► (Continuous Polish)
@@ -344,20 +346,21 @@ Because Layer 1 directly feeds Layer 2 and Layer 3, their development is designe
   • BYOM 1-Click Guest preset & provider portal
   • Real-time 4-verdict DOM highlighting & mini-charts
 
-[Layer 1: Social Suite] ────────────────────────────────────────────────► (Concurrent Track A)
-  • Local WebGPU PII Scrubber (Chat Add-on)
-  • ClearCloud 3-Tier Navigation & Hidden Reputation Engine
-  • Courtroom Falsifiability Gatekeeper & DAG Lifecycles
+[Layer 1: Social Suite] ────────────────────────────────────────────────► (Implemented Prototypes)
+  • Local WebGPU PII Scrubber (`@vera/core/scrubber`)
+  • ClearCloud 3-Tier Navigation & Groundedness Ranking (`clearCloud`)
+  • Courtroom Blind Trials, DAGs & Algorithmic Civic Sortition (`clearCloud`)
 
-[Layer 2: Validation Market] ───────────────────────────────────────────► (Concurrent Track B)
-  • Poker-style Evidence Round Escrow Contracts
-  • Truth Parleys & Hedging Derivatives
-  • Dual Settlement Oracles (Courtroom Jury + On-Chain Hashes)
+[Layer 2: Validation Market] ───────────────────────────────────────────► (Implemented Prototypes)
+  • 4-Outcome Dynamic Odds Markets & User Wagers (`veracities.social`)
+  • Slashed Pool Evidence Bounties (15% Whistleblower, 5% Juror Fee)
+  • 14-Day Cold Case Escrow Refunds & 2x Retrial Bonds
+  • Cryptographic Oracle Verdict Attestation Bridge
 
-[Layer 3: Epistemic DAO] ───────────────────────────────────────────────► (Concurrent Track C)
-  • Epistemic Quotient (EQ) Cross-Faction Bridging Metrics
-  • Semaphore ZK-SNARK Client-Side Reputation Provers
-  • Decoupled Anonymous Governance Execution
+[Future Layer 2 & Layer 3 Hardening] ───────────────────────────────────► (Roadmap: Next Sprints)
+  • Phase 2: PostgreSQL/Redis Persistence + ATProto SIWE Identity Linkage
+  • Phase 3: L2 EVM Smart Contracts (Base/Arbitrum) + Threshold Multi-Sig Oracles
+  • Phase 4: Layer 3 Epistemic DAO with Semaphore ZK-SNARK Reputation Provers
 ```
 
 ---
