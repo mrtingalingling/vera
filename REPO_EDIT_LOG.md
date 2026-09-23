@@ -137,6 +137,25 @@
   - Frontend Vitest: 9/9 tests passed (`npm run test`).
   - Backend Pytest: 19/19 tests passed (`uv run pytest tests/unit/`).
   - Documentation links and symlink verified.
+## [2026-09-23] feat: Google Chrome Gemini Nano on-device LLM integration
+- Branch: `feat/svelte5-byom-metrics`
+- Scope:
+  1. Integrate Google Chrome's Built-in AI Prompt API (`window.ai.languageModel` / `window.ai.assistant`) directly into Vera's local AI service (`localAiService.js`).
+  2. Implement `getGeminiNanoAvailability()` detecting `'readily'` | `'after-download'` | `'no'` status.
+  3. Implement `promptGeminiNano(text)` with strict JSON epistemic schema (`verdict`, `confidence`, `factsPct`, `opinionPct`, `falsehoodPct`, `explanation`).
+  4. Implement smooth fallback hierarchy: Chrome Gemini Nano $\rightarrow$ client-side heuristic engine.
+  5. Surface live Chrome Gemini Nano detection state in `ByomModal.svelte` with custom status badge and zero-leakage local connect preset.
+  6. Add unit test `test_gemini_nano_integration_and_fallback` in `frontend/src/layer0.test.js` (10/10 Vitest tests passing).
+- Files modified:
+  - `frontend/src/localAiService.js`: Added Gemini Nano detection, prompting, and fallback.
+  - `frontend/src/components/ByomModal.svelte`: Added Gemini Nano capability detection and UI indicator.
+  - `frontend/src/layer0.test.js`: Added Row 7 Gemini Nano integration test.
+  - `frontend/static/dist/` & `extension/dist/`: Recompiled production bundles.
+- Verification:
+  - Vitest: 10/10 passed (`npm run test`).
+  - Pytest: 19/19 passed (`uv run pytest tests/unit/`).
+  - Production build: `npm run build` compiled in 1.44s.
+
 
 
 

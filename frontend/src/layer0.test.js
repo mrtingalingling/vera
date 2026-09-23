@@ -90,4 +90,47 @@ describe('Layer 0 Truth Table Tests', () => {
     expect(specAnalysis.metrics.opinionPct).toBeGreaterThan(50);
     expect(specAnalysis.claims[0].verdict).toBe('need-additional-context');
   });
+
+  // Row 7: Google Chrome Gemini Nano integration & fallback
+  it('test_gemini_nano_integration_and_fallback', async () => {
+    const { getGeminiNanoAvailability, promptGeminiNano } = await import('./localAiService.js');
+
+    // Case A: Default Node environment (window.ai is undefined) -> returns 'no'
+    const statusNo = await getGeminiNanoAvailability();
+    expect(statusNo).toBe('no');
+
+    // Case B: Mock window.ai.languageModel available
+    const mockSession = {
+      prompt: vi.fn().mockResolvedValue(JSON.stringify({
+        verdict: 'verified',
+        confidence: 97,
+        factsPct: 95,
+        opinionPct: 5,
+        falsehoodPct: 0,
+        explanation: 'Empirically proven by astronomical models.'
+      })),
+      destroy: vi.fn()
+    };
+
+    globalThis.window = {
+      ai: {
+        languageModel: {
+          capabilities: vi.fn().mockResolvedValue({ available: 'readily' }),
+          create: vi.fn().mockResolvedValue(mockSession)
+        }
+      }
+    };
+
+    const statusReady = await getGeminiNanoAvailability();
+    expect(statusReady).toBe('readily');
+
+    const result = await analyzeClaimLocally('Jupiter has 95 recognized moons.');
+    expect(result.text).toContain('[Vera On-Device Gemini Nano]');
+    expect(result.claims[0].verdict).toBe('verified');
+    expect(result.metrics.factsPct).toBe(95);
+    expect(mockSession.destroy).toHaveBeenCalled();
+
+    // Clean up mock
+    delete globalThis.window;
+  });
 });

@@ -1,4 +1,6 @@
 <script>
+  import { getGeminiNanoAvailability } from "../localAiService.js";
+
   let { isOpen = $bindable(false), onConnected = () => {} } = $props();
 
   let provider = $state("guest_agent");
@@ -6,6 +8,15 @@
   let modelName = $state("");
   let isUncapped = $state(false);
   let authMessage = $state("");
+  let nanoStatus = $state("checking");
+
+  $effect(() => {
+    if (isOpen) {
+      getGeminiNanoAvailability().then((status) => {
+        nanoStatus = status;
+      });
+    }
+  });
 
   const providerPortals = {
     gemini: "https://aistudio.google.com/app/apikey",
@@ -43,17 +54,21 @@
   }
 
   function handleLocalAiConnect() {
+    const isNano = nanoStatus === "readily";
     const settings = {
       provider: "local_worker",
       one_click: true,
       session_type: "local_worker",
-      model: "on-device-webgpu",
+      model: isNano ? "chrome-gemini-nano" : "on-device-worker",
       api_key: "local_browser_token"
     };
     localStorage.setItem("byom_settings", JSON.stringify(settings));
     isUncapped = true;
     isOpen = false;
-    onConnected({ uncapped: true, provider: "Local In-Browser AI (WebGPU)" });
+    onConnected({
+      uncapped: true,
+      provider: isNano ? "Chrome Gemini Nano (On-Device)" : "Local In-Browser AI (Zero Leakage)"
+    });
   }
 
   async function handleGoogleLogin() {
@@ -168,14 +183,20 @@
         </p>
       </div>
 
-      <!-- Preset 2: Local In-Browser AI (WebGPU / Zero Leakage) -->
+      <!-- Preset 2: Local In-Browser AI (Chrome Gemini Nano / Zero Leakage) -->
       <div class="preset-card local-card">
         <button class="btn-preset-local" onclick={handleLocalAiConnect}>
           <span class="material-symbols-outlined">memory</span>
-          <span>Run Local In-Browser AI (WebGPU / Zero Data Leakage)</span>
+          <span>Run Local In-Browser AI {#if nanoStatus === 'readily'}(Chrome Gemini Nano){:else}(Zero Data Leakage){/if}</span>
         </button>
         <p class="preset-hint">
-          🔒 <strong>100% on-device private.</strong> Runs client-side in a Web Worker without sending claims over the network.
+          {#if nanoStatus === 'readily'}
+            <span style="color: #00f5d4; font-weight: 600;">✨ Google Chrome Built-in Gemini Nano detected & ready.</span> Runs locally on your device NPU/GPU with zero latency and zero data leakage.
+          {:else if nanoStatus === 'after-download'}
+            <span style="color: #fbbf24; font-weight: 600;">⏳ Gemini Nano downloading.</span> Chrome is downloading on-device model components. Local heuristic fallback active.
+          {:else}
+            🔒 <strong>100% on-device private.</strong> Runs client-side in browser without sending claims to cloud. <em>(Supports Chrome Gemini Nano via <code>chrome://flags/#prompt-api-for-gemini-nano</code>)</em>
+          {/if}
         </p>
       </div>
 
