@@ -29,17 +29,15 @@
 | **Layer 0** | **libp2p Decentralized P2P Swarm** | **Active** | `frontend/src/p2pNode.js` | Browser-to-browser claim hash gossip; header swarm status indicator. |
 | **Layer 0** | **Tactile Feedback Toast System** | **Active** | `App.svelte` (`toastMessage`, `showToast`) | Floating glassmorphism alerts for premise changes, doc links, and saves. |
 | **Layer 0** | **Drawer Accordion Auto-Collapse** | **Active** | `App.svelte` | Mutually exclusive drawers; auto-collapse when modals open to save screen space. |
-| **Layer 0** | **Root DX Runner & Test Suite** | **Active** | `package.json`, Vitest, Pytest | `npm test` runs 20 Vitest + 19 Pytest tests concurrently in under 4s. |
-| **Layer 1** | **ClearCloud Relational Social Feed** | Planned | *Spec: [PRD § 4.1](./PRD.md#41-clearcloud-the-epistemic-social-network)* | Groundedness-ranked feed across 3 concentric relational tabs. |
-| **Layer 1** | **Hidden Asymmetric Reputation Engine** | Planned | *Spec: [PRD § 4.1.3](./PRD.md#413-the-hidden-reputation-engine-mechanics)* | Rapid decay for ragebait; slow accrual for grounded citations. Dictates post reach. |
-| **Layer 1** | **WebGPU Local PII Scrubber** | Planned | *Spec: [PRD § 4.2](./PRD.md#42-private-messaging-add-on-whatsapp-wechat-telegram)* | Sanitizes names, emails, and phone numbers locally on-device before processing. |
-| **Layer 1** | **The Courtroom Deliberation Forum** | Planned | *Spec: [PRD § 4.3](./PRD.md#43-the-courtroom-falsifiable-deliberation-forum)* | Structured debate, DAG claim decomposition, and 14-day settlement windows. |
-| **Layer 2** | **Poker-Style Claim Wagering** | Planned | *Spec: [PRD § 5.1](./PRD.md#51-poker-style-claim-wagering-mechanics)* | Call, raise, and fold positions as evidence is submitted during deliberation. |
-| **Layer 2** | **Parleys & Derivative Hedges** | Planned | *Spec: [PRD § 5.2](./PRD.md#52-parleys-and-derivative-hedges)* | Multi-claim verification bundles and cross-claim hedge contracts. |
-| **Layer 2** | **Dual Settlement Oracles** | Planned | *Spec: [PRD § 5.3](./PRD.md#53-dual-settlement-oracles)* | Automated deterministic resolvers + Courtroom Jury Oracles. |
-| **Layer 3** | **Anonymous ZK-SNARK Reputation Bridge** | Planned | *Spec: [PRD § 6.1](./PRD.md#61-zk-snark-reputation-bridge)* | Proves high epistemic standing anonymously without doxxing identity. |
-| **Layer 3** | **Empathy & Bridging Voting Weights** | Planned | *Spec: [PRD § 6.2](./PRD.md#62-empathy--bridging-voting-weights)* | Grants bonus DAO voting weight to users who steel-man opponents or bridge divides. |
-| **Layer 3** | **Decentralized Protocol Governance** | Planned | *Spec: [PRD § 6.3](./PRD.md#63-ecosystem-stewardship--dao-treasury)* | Community control over fee distributions, oracle thresholds, and upgrades. |
+| **Layer 0** | **Root DX Runner & Test Suite** | **Active** | `package.json`, Vitest, Pytest | `npm test` runs 40 Vitest + 19 Pytest tests concurrently in under 2s. |
+| **Layer 1.2** | **On-Device PII Scrubber & Claim Extractor** | **Active** | `frontend/src/scrubber/piiScrubberService.js` | Zero cloud leakage. Redacts PII, strips preambles, extracts falsifiable core claims. Exported via `@vera/core`. |
+| **Layer 1.1** | **ClearCloud Relational Social Feed** | **Active** | `clearCloud/src/feed/` | 3-tier circles (Close Friends, Acquaintances, Network-Wide), Groundedness Index ranking, rage-bait scrubber. |
+| **Layer 1.1** | **Hidden Asymmetric Reputation Engine** | **Active** | `clearCloud/src/feed/feedManager.js` | Rapid decay for ragebait (-18 to -25); slow accrual for grounded citations (+1.5 to +2.0). |
+| **Layer 1.3** | **The Courtroom Deliberation Forum & DAGs** | **Active** | `clearCloud/src/courtroom/` | Falsifiability Gatekeeper, Compound Claim DAG decomposition, juror voting, and AI Judge synthesis. |
+| **Protocol** | **ATProto & Web3 Identity Broker** | **Active** | `veracities.social/src/identity/` | BskyAgent `@atproto/api` session validation, DID:PLC resolution, and Web3 SIWE EIP-4361. |
+| **Layer 2** | **Validation Market Registry** | **Active** | `veracities.social/src/market/validationMarket.js` | Prediction staking across 4 epistemic outcomes, dynamic odds, and automated settlement. |
+| **Layer 1.3 / Protocol** | **Courtroom Settlement Protocol** | **Active** | `veracities.social/src/settlement/` | 14-day cold case refund (94% refund / 6% fee), Challenge Bond retrials (50% bounty). |
+| **Layer 3** | **Epistemic DAO Governance ("EnDAOsment")** | **Active** | `veracities.social/src/governance/daoRegistry.js` | Proposal lifecycle, weighted voting, and quorum/consensus evaluation. |
 
 ---
 

@@ -24,7 +24,7 @@ Rather than treating social networking, financial markets, and decentralized gov
 * **Layer 3 (The Epistemic DAO)**: The decentralized governance engine—**all about future engagement and ecosystem improvement**, allocating anonymous voting weight based on intellectual honesty, factual grounding, and empathy.
 
 > [!NOTE]
-> For the complete multi-repository technical blueprint across `vera`, `clearCloud`, and `veracities.social`, refer to [**Architecture Blueprint (`docs/architecture.md`)**](./architecture.md).
+> For the complete multi-repository technical blueprint across `vera` (Layer 0 & Ingestion Engine with Feature 1.2 PII Scrubber), `clearCloud` (Unified Social Application: Feature 1.1 Feed + Feature 1.3 Courtroom), and `veracities.social` (Protocol & Settlement Backend: Identity Broker, Validation Markets, DAO Registry, and Settlement Protocol), refer to [**Architecture Blueprint (`docs/architecture.md`)**](./architecture.md).
 
 ```
        ┌────────────────────────────────────────────────────────┐
@@ -120,11 +120,14 @@ Vera Core serves as the foundational client engine running inside the user's bro
 
 ---
 
-## 4. Layer 1: The Social Suite (Future Specification)
+## 4. Layer 1: The Social Suite (Active Multi-Repo Implementation)
 
 The Social Suite is the human interaction layer designed to cultivate authentic relationships, eliminate sensationalist rage-bait, and facilitate structured, adversarial truth discovery.
 
-### 4.1 Feature 1.1 — ClearCloud (Decentralized Social Media)
+### 4.1 Feature 1.1 — ClearCloud (Decentralized Epistemic Social Media)
+> **Hosted In**: [`mrtingalingling/clearCloud`](https://github.com/mrtingalingling/clearCloud) (`src/feed/`)  
+> **Consumes**: On-device AI from `@vera/core` and ATProto/Web3 Auth from `veracities.social`.
+
 ClearCloud combines the real-time discourse of Bluesky/Twitter with the multimedia lifestyle context of Instagram/Little Red Book, built upon a **relational-first, groundedness-ranked** foundation.
 
 #### A. Relational Proximity Circles (3-Tiered Navigation)
@@ -158,6 +161,9 @@ To protect the social network from bad-faith gaming, performative virtue-signali
 ---
 
 ### 4.2 Feature 1.2 — Private Messaging Add-on (WhatsApp, Telegram, WeChat)
+> **Hosted In**: [`mrtingalingling/vera`](https://github.com/mrtingalingling/vera) (`frontend/src/scrubber/piiScrubberService.js`)  
+> **Exported Via**: `@vera/core` for universal on-device consumption across the extension and social apps.
+
 Enables fact-checking directly inside private web messaging environments while guaranteeing strict zero-knowledge privacy.
 
 #### A. Privacy-First Local PII Scrubber (Zero Data Leakage)
@@ -177,6 +183,9 @@ Enables fact-checking directly inside private web messaging environments while g
 ---
 
 ### 4.3 Feature 1.3 — The Courtroom (Deliberation Forum)
+> **Hosted In**: [`mrtingalingling/clearCloud`](https://github.com/mrtingalingling/clearCloud) (`src/courtroom/`)  
+> **Settlement Protocol Enforced By**: [`mrtingalingling/veracities.social`](https://github.com/mrtingalingling/veracities.social) (`src/settlement/`)
+
 A structured, adversarial fact-deliberation forum where claims highlighted from ClearCloud, web pages, or messaging apps are tried as formal "cases".
 
 #### A. The Falsifiability Gatekeeper

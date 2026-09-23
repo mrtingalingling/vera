@@ -1,5 +1,14 @@
 # Repository Edit Log
 
+## [2026-09-23] docs: Align all documentation across 3-repo architecture
+- Branch: `docs/architecture-and-exports` on `vera`
+- Scope: Synchronized all documentation across the multi-repo estate (`vera`, `clearCloud`, `veracities.social`):
+  1. Updated `docs/PRD.md`: Added repository location callouts to Section 4 (Feature 1.1 in `clearCloud`, Feature 1.2 in `vera`, Feature 1.3 in `clearCloud` with settlement in `veracities.social`).
+  2. Updated `docs/features.md`: Promoted Layer 1.1, 1.2, 1.3, and protocol modules from "Planned" to "Active" with exact codebase mappings.
+  3. Updated `docs/user_journeys.md`: Added Journey 9 (Private Messaging On-Device PII Scrubbing) and updated Journey 5 (Courtroom Deliberation) with cross-repo locations.
+  4. Updated `README.md`: Added Feature 1.2 to Key Features and verified multi-repo architecture links.
+  5. Verified `clearCloud` and `veracities.social` `README.md` and `docs/architecture.md` are 100% in sync.
+
 ## [2026-09-23] feat: Architecture Blueprint, @vera/core export, and Layer 1.1-1.3 Multi-Repo Ecosystem
 - Branch: `docs/architecture-and-exports` on `vera` (with `clearCloud` and `veracities.social`)
 - Scope: Multi-repository architecture expansion across Vera ecosystem:

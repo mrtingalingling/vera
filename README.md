@@ -14,16 +14,17 @@
 All product-related documentation is consolidated in the [**`docs/`**](./docs/) directory:
 
 * 📋 [**Master PRD (`docs/PRD.md`)**](./docs/PRD.md): Complete product requirements, architectural thesis (*Truth Settlement*), and 4-layer specification (Layer 0 Active Baseline through Layers 1–3).
-* 🏗️ [**Architecture Blueprint (`docs/architecture.md`)**](./docs/architecture.md): Modular ecosystem architecture across `vera` (Layer 0), `clearCloud` (Layer 1.1), and `veracities.social` (Layer 1.2 & 1.3).
-* ⚙️ [**Features Specification (`docs/features.md`)**](./docs/features.md): Consolidated technical details of active features (local AI Web Worker / Gemini Nano, BYOM presets, 4-verdict DOM highlighting, dual mini-charts, time-bound tab permissions, evidence grounding, and P2P swarm) and future expansions.
-* 🗺️ [**User Journeys (`docs/user_journeys.md`)**](./docs/user_journeys.md): Step-by-step user workflows for on-device checking, time-bound page scanning & DOM highlighting, Google Drive evidence grounding, 1-click uncap, P2P gossip, and courtroom deliberation.
+* 🏗️ [**Architecture Blueprint (`docs/architecture.md`)**](./docs/architecture.md): Modular ecosystem architecture across `vera` (Layer 0 + Feature 1.2), `clearCloud` (Unified Social App: Feature 1.1 & 1.3), and `veracities.social` (Protocol & Settlement Backend).
+* ⚙️ [**Features Specification (`docs/features.md`)**](./docs/features.md): Consolidated technical details of active features across the 3-repo estate and implementation matrix.
+* 🗺️ [**User Journeys (`docs/user_journeys.md`)**](./docs/user_journeys.md): Step-by-step user workflows for on-device checking, time-bound page scanning, PII scrubbing, Google Drive evidence grounding, and courtroom deliberation.
 
 ---
 
-## 🌟 Key Features (Layer 0 Baseline)
+## 🌟 Key Features (Layer 0 Baseline & Feature 1.2)
 
 * **Fine-Grained Reactive Cockpit**: Zero-VDOM fine-grained text rendering built on Svelte 5 runes (`$state`, `$derived`, `$effect`).
 * **Unified Build Pipeline**: Single Vite build compiles synchronously into both `frontend/static/dist/` (web) and `extension/dist/` (Chrome extension).
+* **On-Device PII Scrubber (Feature 1.2)**: Client-side privacy-first redaction of emails, phones, and social handles from private messaging forwards, stripping hearsay fluff and extracting falsifiable claims (`piiScrubberService.js`).
 * **Dual-Execution AI Engine**:
   * **Local In-Browser AI**: Zero-leakage client-side heuristic classification via Web Worker/WebGPU (`localAiService.js`) and direct integration with Chrome Built-In AI (Gemini Nano).
   * **Cloud BYOM Reasoning**: 1-click frictionless Guest Agent preset (uncapped, zero credentials), Google OAuth, custom remote backend URLs, and custom API keys (Gemini, OpenAI, Anthropic, DeepSeek, Grok).
