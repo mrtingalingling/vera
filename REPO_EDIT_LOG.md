@@ -113,9 +113,30 @@
   - `test_p2p_claim_broadcast` in `frontend/src/layer0.test.js`
   - `test_p2p_claim_subscription` in `frontend/src/layer0.test.js`
   - `test_parser_4_categories` in `frontend/src/layer0.test.js`
+## [2026-09-23] docs: Consolidate product documentation into docs/ and resolve conflicting legacy info
+- Branch: `feat/svelte5-byom-metrics`
+- Scope:
+  1. Consolidate all product documentation under the canonical `docs/` folder (with `doc -> docs` symlink for flexible navigation).
+  2. Create comprehensive `docs/features.md` unifying active Layer 0 features (Svelte 5 runes, local AI Web Worker, 4-verdict DOM highlighting, dual mini-charts, P2P swarm) and future Layers 1–3, removing obsolete "VeriFact AI" branding and legacy 3-metric ratings.
+  3. Create updated `docs/user_journeys.md` covering all 5 end-to-end workflows (Local In-Browser fact checking, active tab scanning & WOT highlighting, frictionless 1-click uncap, P2P swarm gossip, Courtroom & truth settlement).
+  4. Create `docs/README.md` documentation index hub.
+  5. Remove duplicate/conflicting root files `features.md` and `user_journeys.md`.
+  6. Rebrand root `README.md` to Vera and link directly to the consolidated `docs/` hub.
+- Files created:
+  - `docs/features.md`: Unified product features specification.
+  - `docs/user_journeys.md`: Unified user journeys.
+  - `docs/README.md`: Central documentation navigation index.
+  - `doc`: Symbolic link pointing to `docs/`.
+- Files modified:
+  - `README.md`: Updated overview, Svelte 5 runes details, and documentation links.
+  - `REPO_EDIT_LOG.md`: Documented consolidation.
+- Files deleted:
+  - `features.md` (root legacy file).
+  - `user_journeys.md` (root legacy file).
 - Verification:
-  - Python tests: `uv run pytest tests/unit` passed (19 passed in 1.07s).
-  - Frontend tests: `npm run test` passed (9 passed in 0.66s).
-  - Production build: `npm run build` compiled Svelte 5 and synced bundle to `extension/dist/` in 1.21s.
+  - Frontend Vitest: 9/9 tests passed (`npm run test`).
+  - Backend Pytest: 19/19 tests passed (`uv run pytest tests/unit/`).
+  - Documentation links and symlink verified.
+
 
 
