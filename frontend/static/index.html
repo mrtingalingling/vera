@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>VeriFact AI - Real-time Fact Checker</title>
+<title>Vera - Decentralized AI Fact Checker</title>
 <link rel="manifest" href="/manifest.webmanifest">
 <meta name="theme-color" content="#0b0d17">
 <meta name="mobile-web-app-capable" content="yes">
@@ -1026,12 +1026,12 @@
     <div class="header-main">
       <div class="brand">
         <span class="material-symbols-outlined brand-icon">security</span>
-        <h1>VeriFact AI</h1>
+        <h1>Vera</h1>
         <button id="themeToggle" class="btn-theme" title="Toggle OLED black mode" style="margin-left: 0.4rem;">
           <span class="material-symbols-outlined" style="font-size: 1rem;">dark_mode</span>
         </button>
         <a href="/frame.html" class="btn-theme" title="Open Svelte 5 Cockpit" style="margin-left: 0.4rem; background: rgba(255, 62, 0, 0.15); border: 1px solid rgba(255, 62, 0, 0.4); color: #ff3e00; text-decoration: none; display: inline-flex; align-items: center; font-size: 0.68rem; font-weight: 700; padding: 0.2rem 0.4rem; border-radius: 6px;">Svelte 5</a>
-        <button id="btnInstallPWA" class="btn-theme" title="Install VeriFact AI App" style="margin-left: 0.4rem; display: none; background: rgba(0, 245, 212, 0.15); border-color: var(--accent); color: var(--accent);">
+        <button id="btnInstallPWA" class="btn-theme" title="Install Vera App" style="margin-left: 0.4rem; display: none; background: rgba(0, 245, 212, 0.15); border-color: var(--accent); color: var(--accent);">
           <span class="material-symbols-outlined" style="font-size: 1rem;">install_desktop</span>
         </button>
         <button id="btnBYOM" class="btn-theme" title="Bring Your Own AI Model / Remote Auth Settings" style="margin-left: 0.4rem; background: rgba(131, 56, 236, 0.2); border-color: #8338ec; color: #a855f7;">
@@ -1326,7 +1326,7 @@ function bubble(who) {
     
     // Bubble area
     const contentBox = el("div", "agent-content");
-    const label = el("div", "agent-label", "VeriFact AI");
+    const label = el("div", "agent-label", "Vera");
     const b = el("div", "bubble");
     
     contentBox.appendChild(label);
@@ -1458,7 +1458,7 @@ btnScan.addEventListener("click", async () => {
 window.addEventListener("load", () => {
   permissionOverlay.classList.remove("hidden");
   const b = bubble("agent");
-  b.textContent = "Welcome to VeriFact AI! Grant tab access to analyze active page claims in real-time or try one of the quick prompts below.";
+  b.textContent = "Welcome to Vera! Grant tab access to analyze active page claims in real-time or try one of the quick prompts below.";
 });
 
 
