@@ -3,7 +3,7 @@
 **Project**: Vera — Decentralized AI-Agentic Fact Verification & Epistemic Social Network  
 **Author / Team**: Core Platform Architecture  
 **Status**: APPROVED SPECIFICATION  
-**Target Release**: Phased (Layer 0 Active; Layers 1–3 Future Milestones)  
+**Target Release**: Phased (Layer 0 Active; Layers 1–3 Future Concurrent Expansions)  
 
 ---
 
@@ -18,46 +18,56 @@ The modern information landscape suffers from three compounding failures:
 ### 1.2 The Vera Thesis: "Truth Settlement"
 Vera transforms verification from a passive, centralized chore into an active, game-theoretically sound **decentralized epistemic ecosystem**. 
 
-By coupling an omnipresent **in-browser AI fact-checking copilot** with a **relational-first social network**, a **poker-style validation market**, and an **anonymous, merit-weighted DAO**, Vera aligns individual financial incentives, social connection, and collective intelligence with objective reality.
+Rather than treating social networking, financial markets, and decentralized governance as isolated, sequential tiers, Vera connects them into an **interwoven truth-settlement engine**:
+* **Layer 1 (The Social Suite)**: The human interaction engine where claims are discovered, filtered, and debated. **Layer 1 has a direct, concurrent effect on Layers 2 and 3**.
+* **Layer 2 (The Validation Market)**: The economic incentive engine—**all about making money from validating facts** via poker-style wagering, parleys, and derivative hedging.
+* **Layer 3 (The Epistemic DAO)**: The decentralized governance engine—**all about future engagement and ecosystem improvement**, allocating anonymous voting weight based on intellectual honesty, factual grounding, and empathy.
 
 ```
-                           ┌─────────────────────────────────────────┐
-                           │         Layer 3: Epistemic DAO          │
-                           │   • Anonymous ZK-SNARK Reputation       │
-                           │   • Empathy & Bridging Voting Power     │
-                           │   • Ecosystem Governance & Upgrades     │
-                           └────────────────────▲────────────────────┘
-                                                │ Anonymous Attestation
-                           ┌────────────────────┴────────────────────┐
-                           │      Layer 2: Validation Market         │
-                           │   • Poker-Style Wagering (Bet/Raise/Fold)│
-                           │   • Parleys & Derivative Options        │
-                           │   • On-Chain + Jury Settlement Oracles  │
-                           └────────────────────▲────────────────────┘
-                                                │ Truth Settlement
-                           ┌────────────────────┴────────────────────┐
-                           │         Layer 1: Social Suite           │
-                           │   1.1 ClearCloud (Relational Feed)      │
-                           │   1.2 Chat Add-on (Local PII Scrubber)  │
-                           │   1.3 Courtroom (Deliberation DAGs)     │
-                           └────────────────────▲────────────────────┘
-                                                │ Grounded Claims
-┌───────────────────────────────────────────────┴───────────────────────────────────────────────┐
-│                               Layer 0: Vera Core Agent (ACTIVE)                               │
-│  • Svelte 5 Runes Architecture (Unified Web Cockpit & Chrome Extension Popup)                 │
-│  • Hybrid In-Browser (WebGPU) + Cloud Reasoning Engines (1-Click Guest & Custom Keys)         │
-│  • Real-Time 4-Category DOM Highlighting & Persistent / Embedded Fact vs. Opinion Mini-Charts │
-│  • libp2p P2P Synchronization Transport Layer                                                 │
-└───────────────────────────────────────────────────────────────────────────────────────────────┘
+       ┌────────────────────────────────────────────────────────┐
+       │                Layer 1: Social Suite                   │
+       │  • ClearCloud: Relational Feed & Hidden Reputation     │
+       │  • Chat Add-on: WebGPU Local PII Scrubber              │
+       │  • The Courtroom: Falsifiable Deliberation & DAGs      │
+       └──────────────┬──────────────────────────┬──────────────┘
+                      │                          │
+       Direct Quality │                          │ Spawns Claim
+       & EQ Signals   │                          │ Markets & Jury
+                      ▼                          ▼
+┌─────────────────────────────┐   ┌─────────────────────────────┐
+│   Layer 3: Epistemic DAO    │   │ Layer 2: Validation Market  │
+│  (Governance & Ecosystem    │   │  (Monetizing Fact Discovery │
+│         Improvement)        │   │     & Truth Settlement)     │
+│ • Anonymous ZK-SNARK Bridge │   │ • Poker-Style Wagering      │
+│ • Empathy / Bridging Votes  │   │ • Parleys & Derivatives     │
+│ • Proposal & Upgrade Power  │   │ • On-Chain + Jury Oracles   │
+└─────────────────────────────┘   └─────────────────────────────┘
+                      ▲                          ▲
+                      └──────────────┬───────────┘
+                                     │ Grounded Metrics &
+                                     │ Verification Hooks
+┌────────────────────────────────────┴──────────────────────────────────────────┐
+│                      Layer 0: Vera Core Agent (ACTIVE)                        │
+│  • Svelte 5 Runes Unified Frame (Web Cockpit & Chrome Extension Popup)        │
+│  • Hybrid In-Browser (WebGPU) + BYOM Cloud Agents (1-Click & Custom Keys)     │
+│  • Real-Time 4-Category Verdict DOM Highlighting                              │
+│  • Persistent & Embedded Fact vs. Opinion/Speculation Mini-Charts             │
+│  • libp2p Decentralized P2P Transport Layer                                   │
+└───────────────────────────────────────────────────────────────────────────────┘
 ```
 
 ---
 
-## 2. System Architecture & Layer Boundaries
+## 2. System Architecture & Layer Relationships
 
-### Layer Scope Classification
-* **Layer 0 (Vera Core)**: **ACTIVE / IN PRODUCTION (Repository Base)**.
-* **Layers 1, 2, and 3**: **FUTURE SYSTEM EXPANSIONS**.
+### 2.1 Layer Classification
+* **Layer 0 (Vera Core)**: **ACTIVE BASELINE (In Repository)**. Foundational client, extension popup, unified build, BYOM guest/cloud agent, mini-charts, and 4-category highlighting.
+* **Layers 1, 2, and 3**: **FUTURE CONCURRENT EXPANSIONS**.
+
+### 2.2 The Direct Interconnection Principle (Non-Sequential Dynamics)
+Layer 1 does **not** sit beneath Layer 2 and Layer 3 in a slow waterfall. Instead, user activity in Layer 1 continuously and concurrently powers both Layer 2 and Layer 3:
+1. **Layer 1 $\rightarrow$ Layer 2 (Claim Monetization)**: A trending claim or disputed assertion in ClearCloud or the Courtroom directly seeds a Validation Market contract, allowing participants to stake capital, raise, or fold as evidence develops. Courtroom jury performance directly determines eligibility and weighting in Validation Market settlement oracles.
+2. **Layer 1 $\rightarrow$ Layer 3 (Reputation & Governance)**: The quality of a user's contributions, the factual rigor of their posts, their willingness to steel-man opposing views, and their lack of rage-bait directly alter their hidden reputation. This score feeds the ZK-SNARK identity bridge granting voting power in the DAO.
 
 ---
 
@@ -66,7 +76,7 @@ By coupling an omnipresent **in-browser AI fact-checking copilot** with a **rela
 Vera Core serves as the foundational client engine running inside the user's browser, available as both a web standalone frame and a browser extension.
 
 ### 3.1 Unified Svelte 5 Runtime & Build Pipeline
-* **Signal Reactivity**: Built entirely with Svelte 5 Runes (`$state`, `$derived`, `$effect`) for zero-VDOM, fine-grained text node rendering.
+* **Signal Reactivity**: Built with Svelte 5 Runes (`$state`, `$derived`, `$effect`) for zero-VDOM, fine-grained text node rendering.
 * **Unified Vite Compilation**: `frontend/vite.config.js` maintains a single source of truth, compiling into `frontend/static/dist/` and automatically synchronizing to `extension/dist/`.
 * **Portable Frame Mounting**: Both `frontend/static/frame.html` and `extension/popup.html` mount `#svelte-frame-root` with zero drift.
 
@@ -92,44 +102,57 @@ Vera Core serves as the foundational client engine running inside the user's bro
 
 ## 4. Layer 1: The Social Suite (Future Specification)
 
+The Social Suite is the human interaction layer designed to cultivate authentic relationships, eliminate sensationalist rage-bait, and facilitate structured, adversarial truth discovery.
+
 ### 4.1 Feature 1.1 — ClearCloud (Decentralized Social Media)
-ClearCloud is a multi-modal social feed (combining the status flow of Facebook/Bluesky with the rich visual lifestyle context of Instagram/Little Red Book), designed with a **relationship-first, groundedness-ranked** paradigm.
+ClearCloud combines the real-time discourse of Bluesky/Twitter with the multimedia lifestyle context of Instagram/Little Red Book, built upon a **relational-first, groundedness-ranked** foundation.
 
 #### A. Relational Proximity Circles (3-Tiered Navigation)
-The feed completely discards global engagement-maximizing algorithms in favor of 3 progressively expanding circles:
+Global engagement algorithms are replaced by three progressively expanding circles:
 1. **Tier 1: Close Friends**
-   * Displays exclusively updates from the user's intimate social circle.
-   * **Rage-Bait Scrubber**: Users can toggle *"Filter Out Non-Personal Content"*. If a close friend reposts political outrage or non-personal memes, it is hidden from Tier 1, preserving intimacy.
+   * Displays exclusively personal updates from intimate social contacts.
+   * **Rage-Bait Scrubber**: Users can enable *"Filter Out Non-Personal Content"*. If a close friend reposts political rage-bait, viral outrage, or non-personal memes, it is automatically hidden from Tier 1, preserving intimacy.
 2. **Tier 2: Friends & Acquaintances**
-   * Direct contacts, colleagues, and mutual interactions with whom the user does not share close-circle status.
+   * Direct contacts, colleagues, and mutual interactions who are not in the close circle.
 3. **Tier 3: Network-Wide**
-   * Public figures, news outlets, organizations, and global creators.
+   * Public figures, news networks, institutions, and global creators.
 
 #### B. Groundedness Score Algorithmic Ranking
-Within Tiers 2 and 3, posts are ranked by their **Groundedness Index** ($G$):
+Within Tiers 2 and 3, posts are prioritized by their **Groundedness Index** ($G$):
 $$G = \frac{\text{Verifiable Fact Content}}{\text{Verifiable Facts} + \text{Unsubstantiated Speculation} + (\text{Debunked Claims} \times 3)}$$
-* Posts with high factual backing are promoted.
-* Speculation is clearly tagged with Vera's purple gauge.
-* Pure rage-bait without factual grounding is algorithmically deprioritized.
+* Posts with high factual grounding receive preferential distribution.
+* Speculation and opinions are flagged with Vera's purple gauge.
+* Content with high falsehood or ungrounded claims is algorithmically suppressed.
+
+#### C. Hidden Reputation Engine & Asymmetric Trust Dynamics
+To protect the social network from bad-faith gaming, performative virtue-signaling, and clout-chasing, each user possesses an internal **Hidden Reputation Score**:
+1. **Hidden by Default**: The score is tracked silently by the protocol and is **not displayed as a public vanity badge**. This prevents sybil actors from optimizing vanity metrics.
+2. **Asymmetric Accrual Dynamics ("Trust is Hard to Build, Fast to Lose")**:
+   * **High, Swift Penalties**: Posting divisive content, unbacked rage-bait, conspiratorial fabrications, or claims debunked by the Courtroom incurs immediate, severe reputation deductions.
+   * **Slow, Deliberate Accrual**: High-quality, verified, factually grounded, and constructive posts increase reputation gradually over extended periods of consistent intellectual honesty.
+3. **Direct Algorithmic Visibility Impact**:
+   * A user's hidden reputation directly dictates **how likely other users are to see their posts** across Tier 2 (Friends) and Tier 3 (Network-Wide).
+   * **High-Reputation Creators**: Enjoy amplified organic reach and higher visibility across acquaintance feeds and network recommendations.
+   * **Low-Reputation / Chronic Rage-Baiters**: Their non-personal posts are automatically deprioritized and throttled across non-close circles, suffocating disinformation at the distribution level without requiring heavy-handed censorship.
 
 ---
 
 ### 4.2 Feature 1.2 — Private Messaging Add-on (WhatsApp, Telegram, WeChat)
-Enables users to fact-check claims directly within private web chats without sacrificing privacy.
+Enables fact-checking directly inside private web messaging environments while guaranteeing strict zero-knowledge privacy.
 
 #### A. Privacy-First Local PII Scrubber (Zero Data Leakage)
-1. **Client-Side Ingestion**: When a user highlights a message or taps "Check with Vera" inside WhatsApp Web, Telegram Web, or WeChat Web, the text is passed to an isolated **WebGPU Web Worker**.
-2. **Local PII Stripping**: A local in-browser NER (Named Entity Recognition) model removes:
+1. **Client-Side Ingestion**: When a user selects a message to verify inside WhatsApp Web, Telegram Web, or WeChat Web, text is routed to an isolated **WebGPU Web Worker**.
+2. **Local PII Stripping**: A local on-device NER (Named Entity Recognition) model scrubs:
    * Names, phone numbers, email addresses, handles.
    * Specific temporal or geographical identifiers.
-   * Private contextual chatter.
-3. **Core Claim Extraction**: Converts *"Hey John, my cousin at St. Jude Hospital said lemon water cures COVID"* into:
-   `Claim: Lemon water cures COVID-19.`
+   * Private chatter and conversational pleasantries.
+3. **Core Claim Extraction**: Converts *"Hey Dave, my doctor friend at Mayo Clinic says drinking warm water with salt cures COVID"* into:
+   `Claim: Drinking warm water with salt cures COVID-19.`
 
 #### B. Explicit User Opt-In for Cloud Verification
-* The sanitized claim is displayed in a preview modal:
-  > *"Sanitized claim to verify: 'Lemon water cures COVID-19'. No personal information will leave your device."*
-* The user explicitly approves sending the sanitized claim to cloud reasoning engines or decentralized Courtroom archives.
+* The sanitized claim is presented in an in-app verification preview:
+  > *"Sanitized claim to verify: 'Drinking warm water with salt cures COVID-19'. Zero private or personal information will leave your machine."*
+* The user provides explicit opt-in confirmation before sending the sanitized claim to cloud reasoning engines or the decentralized Courtroom.
 
 ---
 
@@ -137,9 +160,9 @@ Enables users to fact-check claims directly within private web chats without sac
 A structured, adversarial fact-deliberation forum where claims highlighted from ClearCloud, web pages, or messaging apps are tried as formal "cases".
 
 #### A. The Falsifiability Gatekeeper
-* Vera AI presides as a strict gatekeeper.
-* **Verifiable Facts Only**: "Company X filed for Chapter 11 bankruptcy" or "Global mean temperature rose 1.2°C" $\rightarrow$ **Case Accepted**.
-* **Subjective / Metaphysical Claims Rejected**: "God exists", "Vanilla tastes better than chocolate", or "The government is morally corrupt" $\rightarrow$ **Rejected with explanatory tag**: *"Unverifiable subjective statement or metaphysical belief."*
+* Vera AI presides as a strict gatekeeper:
+* **Verifiable Claims Permitted**: "Company X filed for bankruptcy on Tuesday" or "Atmospheric CO2 reached 420 ppm" $\rightarrow$ **Case Admitted**.
+* **Unverifiable Subjective Claims Rejected**: "God is real", "Jazz is better than rock", or "The senator is wicked" $\rightarrow$ **Rejected with explanatory tag**: *"Unverifiable subjective statement, aesthetic preference, or metaphysical belief."*
 
 #### B. Case Lifecycle & Resolution Triggers
 Cases remain open, living dossiers without an arbitrary hard deadline, concluding via one of three paths:
@@ -178,14 +201,15 @@ Cases remain open, living dossiers without an arbitrary hard deadline, concludin
 
 ## 5. Layer 2: The Validation Market (Future Specification)
 
-The Validation Market connects directly to the Courtroom, allowing users to monetize their research, source verification, and analytical rigor through game-theoretic staking.
+**Core Purpose: Making money from validating facts.**  
+The Validation Market is an economic truth-settlement protocol where users monetize analytical rigor, research, and source verification.
 
 ### 5.1 Account Linking & Wallets
 * Users maintain a dedicated Validation Market profile linked cryptographically to their Vera identity.
 * Supports multi-currency escrow: fiat on-ramps (Stripe/Wise) and Web3 crypto deposits (USDC, ETH, Solana).
 
 ### 5.2 Poker-Style Wagering Mechanics
-Unlike standard binary prediction markets (which are static "Yes/No" bets), Vera utilizes dynamic **Evidence Round Wagering**:
+Instead of static binary prediction markets, Vera models verification as dynamic **Evidence Round Wagering**:
 
 ```
 [Round 1: Pre-Flop] ───► [Round 2: Evidence Drop] ───► [Round 3: Cross-Exam] ───► [Showdown]
@@ -193,13 +217,13 @@ Unlike standard binary prediction markets (which are static "Yes/No" bets), Vera
   Bet / Check             Raise / Call / Fold             Re-raise / Fold          Jury Decides
 ```
 
-* **Bet / Check**: Users take initial positions on a claim's veracity based on initial public statements.
-* **Raise / Call**: As participants introduce new verifiable documents, archival links, or sensor data, players can raise the pot or call.
-* **Fold (Risk Mitigation)**: If an opposing participant introduces devastating primary evidence disproving your position, you may **Fold** before the final showdown, forfeiting only your prior bets and saving the remainder of your capital.
+* **Bet / Check**: Users take initial positions on a claim's veracity based on public reporting.
+* **Raise / Call**: As participants introduce verifiable documents, sensor data, or primary records, players raise the stakes or call.
+* **Fold (Risk Mitigation)**: If an opposing participant introduces definitive primary evidence disproving your position, you may **Fold** before the final showdown, forfeiting only your prior bets and saving the remainder of your capital.
 
 ### 5.3 Parleys & Derivatives
 * **Truth Parleys**: Users bundle multiple distinct claims into a high-conviction slip (e.g., *"Claim A is Misinformed AND Claim B is Verified AND Claim C goes Cold"*), multiplying potential payouts.
-* **Hedge Options**: Users staking on long-term corporate or geopolitical claims can buy derivative puts/calls against claim resolution outcomes to protect their staking capital against sudden evidence revelations.
+* **Hedge Options**: Users staking on long-term corporate or geopolitical claims can purchase derivative puts/calls against claim resolution outcomes to protect their staking capital against sudden evidence drops.
 
 ### 5.4 Settlement Oracle Architecture
 Wagers are settled deterministically using a dual-oracle mechanism:
@@ -210,40 +234,41 @@ Wagers are settled deterministically using a dual-oracle mechanism:
 
 ## 6. Layer 3: The Epistemic DAO (Future Specification)
 
-The Epistemic DAO provides community ownership over Vera's algorithms, dispute resolution rules, and treasury.
+**Core Purpose: Future engagement and ecosystem improvement.**  
+The Epistemic DAO governs platform evolution, algorithmic weights, dispute resolution rules, and treasury allocation without relying on plutocratic token voting.
 
 ### 6.1 Epistemic & Empathic Reputation Metrics
-Voting power is **not** purchased with capital (1-token-1-vote is prohibited to prevent plutocracy). Instead, voting power is earned through a multi-dimensional **Epistemic Quotient (EQ)**:
+Voting power is earned through a multi-dimensional **Epistemic Quotient (EQ)** derived directly from Layer 1 and Layer 2 behavior:
 
 $$EQ = w_1 \cdot \text{Factuality} + w_2 \cdot \text{Bridging Consensus} + w_3 \cdot \text{Steel-Manning} - w_4 \cdot \text{Toxicity}$$
 
-1. **Factuality Accuracy**: Track record of successful, verified contributions in the Courtroom and Validation Market.
+1. **Factuality Accuracy**: Track record of successful, verified contributions in ClearCloud, the Courtroom, and the Validation Market.
 2. **Bridging Consensus**: Modeled after the Polis / Community Notes bridging algorithm—rewarding arguments that persuade participants across ideological divides rather than within echo chambers.
 3. **Steel-Manning**: Quantified bonus for users who accurately articulate the strongest version of an opposing stance before countering it.
 4. **Local Toxicity Suppression**: On-device NLP penalizing ad-hominem attacks, emotional manipulation, and bad-faith rhetoric.
 
 ### 6.2 Anonymous ZK-SNARK Identity Bridge
-To protect users from doxxing, state censorship, and social retaliation, the DAO operates on a separate, decoupled infrastructure:
+To protect users from doxxing, state censorship, and social retaliation, the DAO operates on a decoupled, separate governance infrastructure:
 
 ```
-┌─────────────────────────┐               ┌─────────────────────────┐
-│     Vera Ecosystem      │               │     Separate DAO App    │
-│  • Browsing History     │               │  • Governance Proposals │
-│  • Social Interactions  │               │  • Voting Executions    │
-│  • Validation Activity  │               │  • Treasury Allocations │
-└────────────┬────────────┘               └────────────▲────────────┘
-             │                                         │
-             ▼                                         │
-   ┌───────────────────┐                     ┌─────────┴─────────┐
-   │ Epistemic State & │                     │ Zero-Knowledge    │
-   │ Private Merkle Tree│                     │ Proof Verification│
-   └─────────┬─────────┘                     └─────────▲─────────┘
-             │                                         │
-             └───────────► [ZK-SNARK Prover] ──────────┘
-                           (Semaphore Protocol)
-                           "I am a Tier-3 Truth Arbiter
-                           with EQ > 85, without revealing
-                           my wallet, name, or history."
+┌───────────────────────────────────────┐         ┌───────────────────────────────────────┐
+│        Vera Platform Activity         │         │         Separate DAO Governance       │
+│  • Layer 1 ClearCloud Quality         │         │  • Protocol Upgrade Voting            │
+│  • Courtroom Jury Accrual             │         │  • Algorithmic Weight Adjustments     │
+│  • Validation Market Accuracy         │         │  • Community Treasury Allocation      │
+└──────────────────┬────────────────────┘         └───────────────────▲───────────────────┘
+                   │                                                  │
+                   ▼                                                  │
+         ┌───────────────────┐                              ┌─────────┴─────────┐
+         │ Epistemic State & │                              │ Zero-Knowledge    │
+         │ Private Merkle Tree│                              │ Proof Verification│
+         └─────────┬─────────┘                              └─────────▲─────────┘
+                   │                                                  │
+                   └────────────────► [ZK-SNARK Prover] ──────────────┘
+                                      (Semaphore Protocol)
+                                      "I am a Tier-3 Truth Arbiter
+                                      with EQ > 85, without revealing
+                                      my wallet, name, or history."
 ```
 
 * **Semaphore / ZK-SNARK Protocol**: The user generates a client-side Zero-Knowledge proof attesting:
@@ -266,35 +291,30 @@ To protect users from doxxing, state censorship, and social retaliation, the DAO
 
 ---
 
-## 8. Phased Implementation Roadmap
+## 8. Concurrent Evolution Roadmap
+
+Because Layer 1 directly feeds Layer 2 and Layer 3, their development is designed to progress **concurrently** rather than sequentially:
 
 ```
-Phase 0 (Completed): Layer 0 Baseline
-  • Svelte 5 Universal Frame & Vite multi-target build (Web + Extension)
-  • BYOM 1-Click Guest preset & custom AI provider portal
-  • Real-time 4-verdict DOM highlighting & embedded/persistent mini-charts
+[Layer 0: Active Baseline] ─────────────────────────────────────────────► (Continuous Polish)
+  • Svelte 5 Universal Frame & Vite build
+  • BYOM 1-Click Guest preset & provider portal
+  • Real-time 4-verdict DOM highlighting & mini-charts
 
-Phase 1: Privacy PII Scrubber & Messaging Add-ons (Q4 2026)
-  • Web Worker with local NER model to strip names, phones, locations
-  • WhatsApp Web, Telegram Web, and WeChat Web extension hooks
-  • User opt-in modal before sending sanitized claims to cloud or P2P
+[Layer 1: Social Suite] ────────────────────────────────────────────────► (Concurrent Track A)
+  • Local WebGPU PII Scrubber (Chat Add-on)
+  • ClearCloud 3-Tier Navigation & Hidden Reputation Engine
+  • Courtroom Falsifiability Gatekeeper & DAG Lifecycles
 
-Phase 2: ClearCloud & The Courtroom (Q1–Q2 2027)
-  • 3-tier relational circles (Close Friends, Friends, Network-Wide)
-  • Falsifiability gatekeeper AI agent (verifiable facts only)
-  • Case lifecycle engine (Conclusive proof, 14-day cold refund, claim DAGs)
-  • Anonymous reasoning upvote / judicial guardrail model
+[Layer 2: Validation Market] ───────────────────────────────────────────► (Concurrent Track B)
+  • Poker-style Evidence Round Escrow Contracts
+  • Truth Parleys & Hedging Derivatives
+  • Dual Settlement Oracles (Courtroom Jury + On-Chain Hashes)
 
-Phase 3: Validation Market & Poker Staking (Q2–Q3 2027)
-  • Smart contract escrow for fiat & crypto (USDC/ETH/SOL)
-  • Evidence-round wagering mechanics (Bet, Raise, Call, Fold)
-  • Truth Parleys and hedging derivatives
-  • Dual-oracle settlement (Courtroom Jury + on-chain primary hashes)
-
-Phase 4: Epistemic DAO & ZK-Reputation (Q4 2027 – Q1 2028)
-  • Multi-factor EQ algorithm (Factuality, Bridging Consensus, Steel-Manning, Low Toxicity)
-  • Semaphore ZK-SNARK prover generating anonymous reputation attestations
-  • Integration with external DAO governance and treasury execution
+[Layer 3: Epistemic DAO] ───────────────────────────────────────────────► (Concurrent Track C)
+  • Epistemic Quotient (EQ) Cross-Faction Bridging Metrics
+  • Semaphore ZK-SNARK Client-Side Reputation Provers
+  • Decoupled Anonymous Governance Execution
 ```
 
 ---
@@ -302,6 +322,7 @@ Phase 4: Epistemic DAO & ZK-Reputation (Q4 2027 – Q1 2028)
 ## 9. Verification & Success Metrics
 
 1. **Epistemic Precision**: Ratio of Courtroom-settled claims whose verdicts remain undisputed over 12 months (>98%).
-2. **Privacy Integrity**: Zero instances of PII leaving the local browser thread during private messaging grounding.
-3. **Market Game-Theoretic Robustness**: Resistance to 51% sybil-wager attacks in the Validation Market via Courtroom jury checks.
-4. **Discourse Health**: Positive delta in cross-faction bridging consensus score across controversial claims in ClearCloud.
+2. **Hidden Reputation Efficacy**: 90%+ reduction in non-personal rage-bait impressions across Tiers 2 & 3 within 30 days of bad-faith activity.
+3. **Privacy Integrity**: Zero instances of PII leaving the local browser thread during private messaging grounding.
+4. **Market Game-Theoretic Robustness**: Resistance to 51% sybil-wager attacks in the Validation Market via Courtroom jury checks.
+5. **Discourse Health**: Positive delta in cross-faction bridging consensus score across controversial claims in ClearCloud.
