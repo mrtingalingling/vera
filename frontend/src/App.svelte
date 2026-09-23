@@ -6,6 +6,7 @@
   import PermissionModal from './components/PermissionModal.svelte';
   import SourceEvidencePanel from './components/SourceEvidencePanel.svelte';
   import CatalogPanel from './components/CatalogPanel.svelte';
+  import ScrubberPanel from './components/ScrubberPanel.svelte';
   import { createP2PNode } from './p2pNode.js';
   import { analyzeClaimLocally } from './localAiService.js';
   import { scanPageContent, highlightPageContent } from './scannerService.js';
@@ -35,9 +36,10 @@
   });
   let timeLeftFormatted = $state("00:00");
 
-  // Evidence Sources & Fact Catalog Panels State
+  // Evidence Sources, Fact Catalog & Scrubber Panels State
   let isSourcePanelOpen = $state(false);
   let isCatalogPanelOpen = $state(false);
+  let isScrubberPanelOpen = $state(false);
   let personalSources = $state([
     { id: 1, text: "Google Docs: Apollo_11_Grounded_Telemetry.gdoc (The Apollo 11 moon mission successfully landed on July 20, 1969.)", active: true },
     { id: 2, text: "Google Sheets: Fact_Checker_Algorithms_Matrix.gsheet (Vera utilizes advanced machine learning scoring for verification.)", active: true },
@@ -505,12 +507,39 @@
 
   function toggleSourcePanel() {
     isSourcePanelOpen = !isSourcePanelOpen;
-    if (isSourcePanelOpen) isCatalogPanelOpen = false;
+    if (isSourcePanelOpen) {
+      isCatalogPanelOpen = false;
+      isScrubberPanelOpen = false;
+    }
   }
 
   function toggleCatalogPanel() {
     isCatalogPanelOpen = !isCatalogPanelOpen;
-    if (isCatalogPanelOpen) isSourcePanelOpen = false;
+    if (isCatalogPanelOpen) {
+      isSourcePanelOpen = false;
+      isScrubberPanelOpen = false;
+    }
+  }
+
+  function toggleScrubberPanel() {
+    isScrubberPanelOpen = !isScrubberPanelOpen;
+    if (isScrubberPanelOpen) {
+      isSourcePanelOpen = false;
+      isCatalogPanelOpen = false;
+    }
+  }
+
+  async function handleScrubberVerify(preview) {
+    if (!preview || !preview.coreClaim) return;
+    isScrubberPanelOpen = false;
+    showToast("⚡ Verifying sanitized claim on-device...");
+    await sendMessage(`[Scrubbed Claim] ${preview.coreClaim}`);
+  }
+
+  function handleScrubberDocket(preview) {
+    if (!preview || !preview.coreClaim) return;
+    const shortClaim = preview.coreClaim.length > 30 ? preview.coreClaim.slice(0, 30) + "..." : preview.coreClaim;
+    showToast(`⚖️ Docketed: "${shortClaim}" to clearCloud!`);
   }
 
   async function syncActivePremises() {
@@ -611,7 +640,7 @@
     {p2pStatus}
     {peersCount}
     onToggleTheme={() => isDarkMode = !isDarkMode}
-    onOpenByom={() => { isByomModalOpen = true; isSourcePanelOpen = false; isCatalogPanelOpen = false; }}
+    onOpenByom={() => { isByomModalOpen = true; isSourcePanelOpen = false; isCatalogPanelOpen = false; isScrubberPanelOpen = false; }}
     onClearHistory={handleClearHistory}
   />
 
@@ -652,10 +681,24 @@
     >
       <div class="control-btn-left">
         <span class="material-symbols-outlined icon-catalog">database</span>
-        <span>Fact Catalog & Metrics</span>
+        <span>Fact Catalog</span>
       </div>
       <span class="material-symbols-outlined expand-icon">
         {isCatalogPanelOpen ? 'expand_less' : 'expand_more'}
+      </span>
+    </button>
+
+    <button 
+      type="button" 
+      class="control-btn {isScrubberPanelOpen ? 'active' : ''}" 
+      onclick={toggleScrubberPanel}
+    >
+      <div class="control-btn-left">
+        <span class="material-symbols-outlined icon-scrubber">shield</span>
+        <span>PII Scrubber</span>
+      </div>
+      <span class="material-symbols-outlined expand-icon">
+        {isScrubberPanelOpen ? 'expand_less' : 'expand_more'}
       </span>
     </button>
   </div>
@@ -674,6 +717,13 @@
     isOpen={isCatalogPanelOpen}
     onFetchCatalog={handleFetchCatalog}
     onSaveCatalog={handleSaveCatalog}
+  />
+
+  <ScrubberPanel 
+    isOpen={isScrubberPanelOpen}
+    onVerifyOnDevice={handleScrubberVerify}
+    onDocketToCourtroom={handleScrubberDocket}
+    onToast={showToast}
   />
 
   <!-- Active Tab Scanning Bar with Hourglass Timer & Highlight Action -->
@@ -881,9 +931,9 @@
 
   .control-center-grid {
     display: grid;
-    grid-template-columns: 1fr 1fr;
-    gap: 0.45rem;
-    padding: 0.4rem 0.65rem;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 0.35rem;
+    padding: 0.4rem 0.5rem;
     border-bottom: 1px solid var(--border);
     background: rgba(17, 19, 30, 0.45);
   }
@@ -930,6 +980,11 @@
   .icon-catalog {
     font-size: 0.95rem;
     color: #00bbf9;
+  }
+
+  .icon-scrubber {
+    font-size: 0.95rem;
+    color: #10b981;
   }
 
   .expand-icon {

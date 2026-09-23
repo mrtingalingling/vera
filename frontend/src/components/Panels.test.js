@@ -214,4 +214,79 @@ describe('Auxiliary Features: Tab Permission, Highlighting & Remote Endpoint', (
   });
 });
 
+describe('Private Messaging PII Scrubber Drawer UI Logic', () => {
+  it('manages 3-drawer mutual exclusivity accordion state', () => {
+    let isSourcePanelOpen = false;
+    let isCatalogPanelOpen = false;
+    let isScrubberPanelOpen = false;
+
+    function toggleSource() {
+      isSourcePanelOpen = !isSourcePanelOpen;
+      if (isSourcePanelOpen) {
+        isCatalogPanelOpen = false;
+        isScrubberPanelOpen = false;
+      }
+    }
+
+    function toggleCatalog() {
+      isCatalogPanelOpen = !isCatalogPanelOpen;
+      if (isCatalogPanelOpen) {
+        isSourcePanelOpen = false;
+        isScrubberPanelOpen = false;
+      }
+    }
+
+    function toggleScrubber() {
+      isScrubberPanelOpen = !isScrubberPanelOpen;
+      if (isScrubberPanelOpen) {
+        isSourcePanelOpen = false;
+        isCatalogPanelOpen = false;
+      }
+    }
+
+    // Open Scrubber
+    toggleScrubber();
+    expect(isScrubberPanelOpen).toBe(true);
+    expect(isSourcePanelOpen).toBe(false);
+    expect(isCatalogPanelOpen).toBe(false);
+
+    // Opening Source should close Scrubber
+    toggleSource();
+    expect(isSourcePanelOpen).toBe(true);
+    expect(isScrubberPanelOpen).toBe(false);
+    expect(isCatalogPanelOpen).toBe(false);
+
+    // Opening Catalog should close Source
+    toggleCatalog();
+    expect(isCatalogPanelOpen).toBe(true);
+    expect(isSourcePanelOpen).toBe(false);
+    expect(isScrubberPanelOpen).toBe(false);
+  });
+
+  it('scrubs forwarded message and produces an interactive approval preview', async () => {
+    const { piiScrubber } = await import('../scrubber/piiScrubberService.js');
+    const rawMsg = "Hey guys, my doctor friend at Mayo Clinic says atmospheric CO2 reached 420 ppm in 2024. Email alice@clinic.org or call 555-987-6543!";
+    
+    const preview = piiScrubber.createVerificationPreview(rawMsg);
+    expect(preview).toBeDefined();
+    expect(preview.sanitizedText).toContain('[REDACTED_EMAIL]');
+    expect(preview.sanitizedText).toContain('[REDACTED_PHONE]');
+    expect(preview.sanitizedText).not.toContain('alice@clinic.org');
+    expect(preview.sanitizedText).not.toContain('555-987-6543');
+    expect(preview.coreClaim).toContain('Atmospheric CO2 reached 420 ppm in 2024');
+    expect(preview.isApproved).toBe(false);
+
+    // Simulate user approving for on-device verification
+    preview.isApproved = true;
+    const result = await piiScrubber.confirmAndVerify(preview, async (claim) => ({
+      verdict: 'verified',
+      claim,
+      confidence: 0.94
+    }));
+
+    expect(result.verdict).toBe('verified');
+    expect(result.claim).toContain('Atmospheric CO2 reached 420 ppm in 2024');
+  });
+});
+
 
