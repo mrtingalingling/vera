@@ -192,6 +192,19 @@ Cases remain open, living dossiers without an arbitrary hard deadline, concludin
      * *Sub-Case A*: Was Vaccine X banned in Japan?
      * *Sub-Case B*: What were the documented medical causes?
    * The master case resolves logically once all child nodes conclude.
+4. **Case Reopening, Appeals & Retrial Mechanism (New Wager / Challenge Bond)**:
+   * A settled or cold case may be formally reopened for retrial through a **new staked wager**, ensuring the historical record remains dynamic, falsifiable, and protected against premature or biased consensus:
+     * **Trigger A: Fresh Material Evidence**: New verifiable primary documentation, newly declassified records, scientific replications, or cryptographic proofs that were unavailable or undiscovered during the original deliberation period.
+     * **Trigger B: Voter Participation Deficit or Probable Bias**:
+       * *Early-Stage Community Vulnerability*: Cases decided when the platform was nascent and absolute voter count was small.
+       * *Low Relative Quorum*: When jury turnout on the case was statistically negligible or unrepresentative relative to the broader active platform population.
+       * *Factional / Sybil Brigading Bias*: Statistical anomaly detection indicating localized voter coordination or echo-chamber upvoting skewed the initial verdict.
+   * **Anti-Spam Challenge Bond**:
+     * To prevent bad-faith denialism and endless frivolous retrials of settled facts, reopening requires an **escalated Challenge Wager / Staking Bond** (skin in the game).
+     * **If the Retrial Reaffirms the Original Verdict**: The challenger forfeits their bond, which is distributed as a bounty reward to the reaffirming jurors and the protocol reserve.
+     * **If the Retrial Overturns the Original Verdict**: The challenger's bond is returned with a substantial bounty reward from the retrial pool, the public verdict is revised, and the historical correction is etched into the decentralized ledger.
+   * **Dynamic Quorum Scaling**:
+     * The required voter quorum for retrial scales dynamically with the size of the active ecosystem ($Q_{appeal} = \max(N_{min}, 5\% \times \text{Active Platform Community})$), preventing small factions from defending a biased initial outcome.
 
 #### C. The Jury & Judge Governance Model
 * **The Jury (Community)**: Users anonymously upvote or downvote arguments strictly based on the **rigor of reasoning, source credibility, and absence of logical fallacies**.
@@ -226,9 +239,10 @@ Instead of static binary prediction markets, Vera models verification as dynamic
 * **Hedge Options**: Users staking on long-term corporate or geopolitical claims can purchase derivative puts/calls against claim resolution outcomes to protect their staking capital against sudden evidence drops.
 
 ### 5.4 Settlement Oracle Architecture
-Wagers are settled deterministically using a dual-oracle mechanism:
+Wagers are settled deterministically using a multi-tiered oracle mechanism:
 1. **Decentralized Courtroom Jury Verdict**: Cryptographic tally of supermajority votes from validated high-reputation community members.
 2. **On-Chain Primary Evidence Attestation**: Cryptographic hashes of immutable sources (Etherscan, government registries, SEC filings, signed IPFS payloads) verified via smart contracts.
+3. **Appellate Reopening & Dispute Window**: Settled wagers are subject to a time-locked challenge window. Staking an escalated challenge bond citing material new evidence or demonstrating statistically low/biased voter turnout triggers a Courtroom retrial before escrowed funds are permanently released.
 
 ---
 
