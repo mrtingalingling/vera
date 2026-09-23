@@ -13,17 +13,18 @@ const SSN_CREDIT_REGEX = /\b(?:\d{3}-\d{2}-\d{4}|\d{4}[-\s]?\d{4}[-\s]?\d{4}[-\s
 // Conversational greetings & personal preamble markers
 const GREETINGS_REGEX = /^(?:hey|hi|hello|dear|listen|yo|sup|good\s+(?:morning|afternoon|evening))\s+[a-zA-Z0-9_.\s]+?[,!.]\s*/i;
 
-// Hearsay / authority preambles (e.g., "my doctor friend at Mayo Clinic says", "Dr. Alan at Stanford claims")
+// Hearsay / authority preambles (e.g., "my doctor friend at Mayo Clinic says", "Dr. Alan at Stanford claims", "NASA confirmed")
 const HEARSAY_PREAMBLES = [
   /^(?:my\s+[\w\s.]*?(?:friend|doctor|uncle|cousin|mom|dad|colleague|brother|sister|source)[\w\s.]*?\s+(?:says|claims|told\s+me)\s+(?:that\s+)?)/i,
   /^(?:(?:dr\.|doctor|professor)\s+[\w\s.]*?\s+(?:says|claims|reported)\s+(?:that\s+)?)/i,
+  /^(?:(?:nasa|cdc|fda|who|un)\s+(?:confirmed|reported|stated|announced)\s+(?:that\s+)?)/i,
   /^(?:someone\s+forwarded\s+this(?:\s+to\s+me)?[:,\s]*)/i,
   /^(?:did\s+you\s+hear\s+(?:that)?[:,\s]*)/i
 ];
 
 // Trailing calls to action / contact instructions
 const TRAILING_CHATTER = [
-  /[.!]?\s*(?:call|phone|contact|message|ping|reach)\s+(?:him|her|them|me)\s+at\s+.*$/i,
+  /[.!]?\s*(?:call|phone|contact|message|ping|reach|email)\s+(?:(?:him|her|them|me)\s+at\s+|at\s+)?.*$/i,
   /[.!]?\s*(?:please\s+)?forward\s+this\s+to\s+.*$/i,
   /[.!]?\s*let\s+me\s+know\s+what\s+you\s+think.*$/i
 ];
