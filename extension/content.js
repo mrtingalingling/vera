@@ -17,21 +17,30 @@ function injectVeriFactStyles() {
       transition: all 0.2s ease !important;
     }
     
+    .verifact-verdict-verified,
     .verifact-verdict-true {
       background-color: rgba(46, 213, 115, 0.22) !important;
       border-bottom: 2px solid #2ed573 !important;
       color: inherit !important;
     }
 
+    .verifact-verdict-disputed {
+      background-color: rgba(255, 159, 67, 0.22) !important;
+      border-bottom: 2px solid #ff9f43 !important;
+      color: inherit !important;
+    }
+
+    .verifact-verdict-misinformed,
     .verifact-verdict-false {
       background-color: rgba(255, 71, 87, 0.22) !important;
       border-bottom: 2px solid #ff4757 !important;
       color: inherit !important;
     }
 
+    .verifact-verdict-context,
     .verifact-verdict-misleading {
-      background-color: rgba(255, 171, 0, 0.22) !important;
-      border-bottom: 2px solid #ffab00 !important;
+      background-color: rgba(165, 94, 234, 0.22) !important;
+      border-bottom: 2px solid #a55eea !important;
       color: inherit !important;
     }
 
@@ -78,9 +87,10 @@ function injectVeriFactStyles() {
       pointer-events: auto !important;
     }
 
-    .verifact-badge-true { color: #2ed573 !important; font-weight: 700 !important; }
-    .verifact-badge-false { color: #ff4757 !important; font-weight: 700 !important; }
-    .verifact-badge-misleading { color: #ffab00 !important; font-weight: 700 !important; }
+    .verifact-badge-verified, .verifact-badge-true { color: #2ed573 !important; font-weight: 700 !important; }
+    .verifact-badge-disputed { color: #ff9f43 !important; font-weight: 700 !important; }
+    .verifact-badge-misinformed, .verifact-badge-false { color: #ff4757 !important; font-weight: 700 !important; }
+    .verifact-badge-context, .verifact-badge-misleading { color: #a55eea !important; font-weight: 700 !important; }
   `;
   document.head.appendChild(styleTag);
 }
@@ -122,18 +132,25 @@ function highlightClaimsOnPage(claims) {
 
     const verdict = (item.verdict || 'misleading').toLowerCase();
     const confidence = item.confidence || 90;
-    const sources = item.sources ? item.sources.join(', ') : 'VeriFact AI Grounded Database';
-    const explanation = item.explanation || 'Analyzed by VeriFact AI Reasoning Engine.';
+    const sources = item.sources ? item.sources.join(', ') : 'Vera Grounded Database';
+    const explanation = item.explanation || 'Analyzed by Vera Reasoning Engine.';
 
-    let verdictBadge = '🟡 MISLEADING / UNVERIFIED';
-    let badgeClass = 'verifact-badge-misleading';
+    let verdictBadge = `🟣 NEEDS ADDITIONAL CONTEXT (${confidence}%)`;
+    let badgeClass = 'verifact-badge-context';
+    let verdictClass = 'verifact-verdict-context';
 
-    if (verdict.includes('true')) {
-      verdictBadge = `🟢 VERIFIED TRUE (${confidence}%)`;
-      badgeClass = 'verifact-badge-true';
-    } else if (verdict.includes('false')) {
-      verdictBadge = `🔴 FALSE / DEBUNKED (${confidence}%)`;
-      badgeClass = 'verifact-badge-false';
+    if (verdict.includes('true') || verdict.includes('verified') || verdict.includes('factual')) {
+      verdictBadge = `🟢 VERIFIED FACT (${confidence}%)`;
+      badgeClass = 'verifact-badge-verified';
+      verdictClass = 'verifact-verdict-verified';
+    } else if (verdict.includes('dispute') || verdict.includes('contest')) {
+      verdictBadge = `🟠 DISPUTED CLAIM (${confidence}%)`;
+      badgeClass = 'verifact-badge-disputed';
+      verdictClass = 'verifact-verdict-disputed';
+    } else if (verdict.includes('false') || verdict.includes('misinform') || verdict.includes('debunk')) {
+      verdictBadge = `🔴 MISINFORMED / FALSE (${confidence}%)`;
+      badgeClass = 'verifact-badge-misinformed';
+      verdictClass = 'verifact-verdict-misinformed';
     }
 
     // Search across text nodes
@@ -147,7 +164,7 @@ function highlightClaimsOnPage(claims) {
         node.nodeValue = node.nodeValue.substr(0, index);
 
         const highlightSpan = document.createElement('mark');
-        highlightSpan.className = `verifact-highlight verifact-verdict-${verdict.includes('true') ? 'true' : verdict.includes('false') ? 'false' : 'misleading'}`;
+        highlightSpan.className = `verifact-highlight ${verdictClass}`;
         highlightSpan.textContent = matchingText;
 
         // Create WOT Tooltip
@@ -156,7 +173,7 @@ function highlightClaimsOnPage(claims) {
         tooltipDiv.innerHTML = `
           <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:5px; border-bottom:1px solid rgba(255,255,255,0.1); padding-bottom:4px;">
             <span class="${badgeClass}">${verdictBadge}</span>
-            <span style="font-size:10px; color:#9ca3af;">VeriFact AI</span>
+            <span style="font-size:10px; color:#9ca3af;">Vera</span>
           </div>
           <div style="margin-bottom:6px; font-weight:400; color:#e5e7eb;">${explanation}</div>
           <div style="font-size:10px; color:#9ca3af; border-top:1px solid rgba(255,255,255,0.06); padding-top:4px;">

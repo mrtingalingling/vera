@@ -1,32 +1,62 @@
 import pytest
+from frontend.main import _check_and_increment_rate_limit, _query_byom_provider
 
-def test_query_limit_cap():
-    # Mock user session
-    user_queries = 15
-    has_remote_auth = False
-    
-    def mock_can_query(queries, auth):
-        if auth:
-            return True
-        return queries < 15
-        
-    assert mock_can_query(14, False) == True
-    assert mock_can_query(15, False) == False
-    assert mock_can_query(15, True) == True
+def test_free_tier_under_limit():
+    """Row 1: Under limit user query is allowed with remaining count decremented."""
+    user_id = "test-user-under-limit"
+    allowed, remaining = _check_and_increment_rate_limit(user_id, has_byom_key=False)
+    assert allowed is True
+    assert remaining == 14
 
-def test_frictionless_auth_unlocks_cap():
-    # Mock auth flow
-    user_queries = 15
-    auth_token = None
+def test_free_tier_at_limit_blocked():
+    """Row 2: User at limit (15 queries) is blocked."""
+    user_id = "test-user-at-limit"
+    for _ in range(15):
+        _check_and_increment_rate_limit(user_id, has_byom_key=False)
     
-    def mock_authenticate():
-        return "mock_oauth_token_123"
-        
-    auth_token = mock_authenticate()
+    allowed, remaining = _check_and_increment_rate_limit(user_id, has_byom_key=False)
+    assert allowed is False
+    assert remaining == 0
+
+def test_one_click_byom_uncaps_limit():
+    """Row 3: 1-Click BYOM agent uncaps queries immediately."""
+    user_id = "test-user-one-click"
+    # Reach limit first
+    for _ in range(15):
+        _check_and_increment_rate_limit(user_id, has_byom_key=False)
     
-    def mock_can_query_with_token(queries, token):
-        if token is not None:
-            return True
-        return queries < 15
-        
-    assert mock_can_query_with_token(15, auth_token) == True
+    # 16th query with 1-click in-app agent / BYOM active
+    allowed, remaining = _check_and_increment_rate_limit(user_id, has_byom_key=True)
+    assert allowed is True
+    assert remaining == 999
+
+def test_custom_api_key_uncaps_limit():
+    """Row 4: Custom API key uncaps queries."""
+    user_id = "test-user-custom-key"
+    allowed, remaining = _check_and_increment_rate_limit(user_id, has_byom_key=True)
+    assert allowed is True
+    assert remaining == 999
+
+@pytest.mark.asyncio
+async def test_google_oauth_provider_supported():
+    """Row 5: 1-click Google OAuth / in-app session doesn't throw Unsupported provider error."""
+    # Should handle google_oauth or one_click gracefully
+    res = await _query_byom_provider("google_oauth", "mock_oauth_token", "gemini-1.5-pro", "Is water wet?")
+    assert len(res) > 0
+    assert "text" in res[0]
+
+@pytest.mark.asyncio
+async def test_guest_agent_preset_without_credentials():
+    """Row 3: Guest Agent preset executes fact-checks seamlessly without manual credential entry."""
+    res = await _query_byom_provider("guest_agent", "", "gemini-1.5-flash", "Is the sky blue?")
+    assert len(res) > 0
+    assert "text" in res[0]
+    assert "Guest Agent" in res[0]["text"] or "1-Click" in res[0]["text"]
+
+@pytest.mark.asyncio
+async def test_google_ai_session_preset():
+    """Row 3: Google AI One-Click Session preset executes without error."""
+    res = await _query_byom_provider("google_ai_session", "", "gemini-1.5-flash", "Is Paris in France?")
+    assert len(res) > 0
+    assert "text" in res[0]
+
