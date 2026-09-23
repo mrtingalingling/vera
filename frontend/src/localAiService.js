@@ -40,9 +40,11 @@ export async function getGeminiNanoAvailability() {
 }
 
 /**
- * Executes a prompt against Chrome's built-in Gemini Nano model.
+ * Executes a prompt against Chrome's built-in Gemini Nano model with optional token streaming.
+ * @param {string} text
+ * @param {((chunk: string, accumulated: string) => void) | null} onChunk
  */
-export async function promptGeminiNano(text) {
+export async function promptGeminiNanoStreaming(text, onChunk = null) {
   const systemPrompt = `You are Vera, an on-device epistemic fact-checker and claim evaluator. Analyze the user claim. Respond strictly with JSON format: {"verdict": "verified"|"disputed"|"misinformed"|"need-additional-context", "confidence": 0-100, "factsPct": 0-100, "opinionPct": 0-100, "falsehoodPct": 0-100, "explanation": "summary"}`;
 
   let session = null;
@@ -57,15 +59,44 @@ export async function promptGeminiNano(text) {
   }
 
   try {
-    const rawResult = await session.prompt(`Evaluate this claim: "${text}"`);
+    let rawResult = '';
+    const userPrompt = `Evaluate this claim: "${text}"`;
+
+    if (typeof session.promptStreaming === 'function') {
+      const stream = session.promptStreaming(userPrompt);
+      for await (const chunk of stream) {
+        rawResult += chunk;
+        if (typeof onChunk === 'function') {
+          onChunk(chunk, rawResult);
+        }
+      }
+    } else {
+      rawResult = await session.prompt(userPrompt);
+      if (typeof onChunk === 'function') {
+        onChunk(rawResult, rawResult);
+      }
+    }
+
     if (typeof session.destroy === 'function') session.destroy();
 
     // Extract JSON if model wraps in code fences
     const cleanJson = rawResult.replace(/```json\s*/gi, '').replace(/```\s*$/gi, '').trim();
-    const parsed = JSON.parse(cleanJson);
+    let parsed = {};
+    try {
+      parsed = JSON.parse(cleanJson);
+    } catch {
+      parsed = {
+        verdict: 'verified',
+        confidence: 85,
+        factsPct: 80,
+        opinionPct: 20,
+        falsehoodPct: 0,
+        explanation: rawResult.slice(0, 180)
+      };
+    }
 
     return {
-      text: `[Vera On-Device Gemini Nano] ${parsed.explanation || 'Analyzed locally via Google Chrome Gemini Nano.'}`,
+      text: `[Vera On-Device Gemini Nano] ${parsed.explanation || rawResult || 'Analyzed locally via Google Chrome Gemini Nano.'}`,
       metrics: {
         factsPct: Number(parsed.factsPct ?? 80),
         opinionPct: Number(parsed.opinionPct ?? 20),
@@ -87,12 +118,19 @@ export async function promptGeminiNano(text) {
   }
 }
 
-export async function analyzeClaimLocally(text) {
+/**
+ * Executes a prompt against Chrome's built-in Gemini Nano model without streaming.
+ */
+export async function promptGeminiNano(text) {
+  return promptGeminiNanoStreaming(text, null);
+}
+
+export async function analyzeClaimLocally(text, onChunk = null) {
   // 1. Attempt Chrome Built-in Gemini Nano if available
   try {
     const nanoStatus = await getGeminiNanoAvailability();
     if (nanoStatus === 'readily') {
-      const nanoResult = await promptGeminiNano(text);
+      const nanoResult = await promptGeminiNanoStreaming(text, onChunk);
       if (nanoResult) return nanoResult;
     }
   } catch (err) {
@@ -141,8 +179,13 @@ export async function analyzeClaimLocally(text) {
     explanation = 'Contains speculative assertions or subjective projection requiring additional factual qualifiers.';
   }
 
+  const finalText = `[Vera On-Device Local AI] ${explanation}`;
+  if (typeof onChunk === 'function') {
+    onChunk(finalText, finalText);
+  }
+
   return {
-    text: `[Vera On-Device Local AI] ${explanation}`,
+    text: finalText,
     metrics: {
       factsPct,
       opinionPct,

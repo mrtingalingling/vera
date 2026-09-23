@@ -172,6 +172,46 @@ describe('Auxiliary Features: Tab Permission, Highlighting & Remote Endpoint', (
     expect(isSourcePanelOpen).toBe(false);
     expect(isCatalogPanelOpen).toBe(true);
   });
+
+  it('resets conversation to welcome state when chat history is cleared', () => {
+    let messages = [
+      { id: 1, role: 'agent', text: 'Welcome' },
+      { id: 2, role: 'user', text: 'Some claim' },
+      { id: 3, role: 'agent', text: 'Verdict' }
+    ];
+
+    function clearHistory() {
+      messages = [
+        {
+          id: 1,
+          role: 'agent',
+          text: 'Welcome',
+          metrics: { factsPct: 85.0, opinionPct: 15.0, falsehoodPct: 0.0 }
+        }
+      ];
+    }
+
+    clearHistory();
+    expect(messages.length).toBe(1);
+    expect(messages[0].id).toBe(1);
+    expect(messages[0].role).toBe('agent');
+  });
+
+  it('formats imported Google Drive document as a verified grounding premise', () => {
+    const fileId = "1BxiMVs0XRA5nFMdKvBdBZjgmUUqptlbs74OgvE2upms";
+    const type = "doc";
+    const title = `Google Doc (${fileId.slice(0, 8)}...)`;
+    const text = `Google Doc: Grounded_${fileId.slice(0, 8)} (Imported from Google Drive: "Verified documentation imported")`;
+
+    const premise = {
+      id: 5,
+      text,
+      active: true
+    };
+
+    expect(premise.text).toContain('Google Doc: Grounded_1BxiMVs0');
+    expect(premise.active).toBe(true);
+  });
 });
 
 

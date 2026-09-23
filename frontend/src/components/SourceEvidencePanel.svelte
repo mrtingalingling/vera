@@ -1,4 +1,6 @@
 <script>
+  import { fetchGoogleDriveContent } from "../googleDriveService.js";
+
   let {
     isOpen = false,
     sources = [],
@@ -10,6 +12,8 @@
   } = $props();
 
   let customInput = $state("");
+  let driveUrlInput = $state("");
+  let isImportingDrive = $state(false);
 
   function handleAdd() {
     const text = customInput.trim();
@@ -22,6 +26,23 @@
     if (e.key === "Enter") {
       e.preventDefault();
       handleAdd();
+    }
+  }
+
+  async function handleImportDrive() {
+    const url = driveUrlInput.trim();
+    if (!url) return;
+    isImportingDrive = true;
+    try {
+      const res = await fetchGoogleDriveContent(url);
+      if (res && res.text) {
+        onAddSource(res.text);
+        driveUrlInput = "";
+      }
+    } catch (err) {
+      alert(err.message || "Failed to import Google Drive document.");
+    } finally {
+      isImportingDrive = false;
     }
   }
 </script>
@@ -43,6 +64,25 @@
           class="evidence-input"
         />
         <button type="button" class="btn-add" onclick={handleAdd}>Add</button>
+      </div>
+
+      <!-- Live Google Drive URL Importer -->
+      <div class="input-row drive-import-row">
+        <input 
+          type="text" 
+          placeholder="Paste Google Doc or Sheet URL..." 
+          bind:value={driveUrlInput}
+          onkeydown={(e) => { if (e.key === 'Enter') { e.preventDefault(); handleImportDrive(); } }}
+          class="evidence-input drive-input"
+        />
+        <button 
+          type="button" 
+          class="btn-import-drive" 
+          onclick={handleImportDrive}
+          disabled={isImportingDrive || !driveUrlInput.trim()}
+        >
+          {isImportingDrive ? "Importing..." : "Import & Ground"}
+        </button>
       </div>
 
       <!-- Google Drive / Google Workspace Link Buttons -->
@@ -159,6 +199,36 @@
   .btn-add:hover {
     box-shadow: 0 0 10px rgba(0, 245, 212, 0.3);
     transform: translateY(-0.5px);
+  }
+
+  .drive-input:focus {
+    border-color: #4285F4;
+    background: rgba(66, 133, 244, 0.08);
+  }
+
+  .btn-import-drive {
+    background: rgba(66, 133, 244, 0.18);
+    border: 1px solid rgba(66, 133, 244, 0.45);
+    color: #8ab4f8;
+    border-radius: 8px;
+    padding: 0 0.75rem;
+    font-size: 0.72rem;
+    font-weight: 600;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: all 0.2s ease;
+  }
+
+  .btn-import-drive:hover:not(:disabled) {
+    background: rgba(66, 133, 244, 0.32);
+    border-color: #4285F4;
+    color: #fff;
+    box-shadow: 0 0 10px rgba(66, 133, 244, 0.3);
+  }
+
+  .btn-import-drive:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
   }
 
   .workspace-btn-row {

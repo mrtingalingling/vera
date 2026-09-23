@@ -6,7 +6,8 @@
     p2pStatus = "connected",
     peersCount = 2,
     onToggleTheme = () => {},
-    onOpenByom = () => {}
+    onOpenByom = () => {},
+    onClearHistory = () => {}
   } = $props();
 </script>
 
@@ -27,6 +28,14 @@
       title="Bring Your Own Agent / 1-Click Connect"
     >
       <span class="material-symbols-outlined">key</span>
+    </button>
+
+    <button 
+      class="btn-icon" 
+      onclick={onClearHistory} 
+      title="Clear chat history and local cache"
+    >
+      <span class="material-symbols-outlined">delete_sweep</span>
     </button>
 
     <span class="badge badge-p2p" title="Decentralized P2P Swarm Gossip ({peersCount} peers active)">

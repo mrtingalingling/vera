@@ -1,4 +1,5 @@
 <script>
+  import { onMount } from 'svelte';
   import Header from './components/Header.svelte';
   import MiniChart from './components/MiniChart.svelte';
   import ByomModal from './components/ByomModal.svelte';
@@ -8,6 +9,13 @@
   import { createP2PNode } from './p2pNode.js';
   import { analyzeClaimLocally } from './localAiService.js';
   import { scanPageContent, highlightPageContent } from './scannerService.js';
+  import {
+    loadMessagesFromDB,
+    saveMessageToDB,
+    clearMessagesFromDB,
+    loadPremisesFromDB,
+    savePremisesToDB
+  } from './db.js';
 
   // --- Svelte 5 Runes State ---
   let isDarkMode = $state(true);
@@ -204,6 +212,38 @@
     return () => clearInterval(permInterval);
   });
 
+  onMount(async () => {
+    try {
+      const savedMessages = await loadMessagesFromDB();
+      if (savedMessages && savedMessages.length > 0) {
+        messages = savedMessages;
+      }
+      const savedPremises = await loadPremisesFromDB();
+      if (savedPremises && savedPremises.length > 0) {
+        personalSources = savedPremises;
+      }
+    } catch (e) {
+      console.warn("[Vera] DB hydration error:", e);
+    }
+  });
+
+  async function handleClearHistory() {
+    await clearMessagesFromDB();
+    messages = [
+      {
+        id: 1,
+        role: "agent",
+        text: "👋 Welcome to Vera! I am your decentralized AI fact-checking agent. Enter a claim, run on-device local AI, or activate a 1-Click Guest session.",
+        metrics: {
+          factsPct: 85.0,
+          opinionPct: 15.0,
+          falsehoodPct: 0.0
+        }
+      }
+    ];
+    showToast("Chat history cleared from local storage");
+  }
+
   async function sendMessage(textToSend) {
     const text = (textToSend || inputText).trim();
     if (!text || isLoading) return;
@@ -211,18 +251,28 @@
     inputText = "";
     isLoading = true;
 
-    // Append user message
-    messages = [
-      ...messages,
-      { id: Date.now(), role: "user", text, metrics: null }
-    ];
+    // Append and persist user message
+    const userMsg = { id: Date.now(), role: "user", text, metrics: null };
+    messages = [...messages, userMsg];
+    await saveMessageToDB(userMsg);
 
     try {
       const byomSettings = JSON.parse(localStorage.getItem("byom_settings") || "{}");
 
-      // Mode A: Local In-Browser AI Execution (Zero Cloud Calls)
+      // Mode A: Local In-Browser AI Execution (Zero Cloud Calls) with Token Streaming
       if (byomSettings.provider === "local_worker") {
-        const localRes = await analyzeClaimLocally(text);
+        const agentMsgId = Date.now() + 1;
+        const placeholderMsg = {
+          id: agentMsgId,
+          role: "agent",
+          text: "Analyzing claim on-device...",
+          metrics: null
+        };
+        messages = [...messages, placeholderMsg];
+
+        const localRes = await analyzeClaimLocally(text, (chunk, accumulated) => {
+          messages = messages.map(m => m.id === agentMsgId ? { ...m, text: accumulated } : m);
+        });
         const claimMetrics = localRes.metrics;
         
         // Broadcast claim attestation to local P2P swarm
@@ -237,15 +287,15 @@
           title: "Persistent Page & Session Analysis"
         };
 
-        messages = [
-          ...messages,
-          {
-            id: Date.now() + 1,
-            role: "agent",
-            text: localRes.text,
-            metrics: claimMetrics
-          }
-        ];
+        const finalAgentMsg = {
+          id: agentMsgId,
+          role: "agent",
+          text: localRes.text,
+          metrics: claimMetrics
+        };
+
+        messages = messages.map(m => m.id === agentMsgId ? finalAgentMsg : m);
+        await saveMessageToDB(finalAgentMsg);
         return;
       }
 
@@ -311,30 +361,28 @@
         title: "Persistent Page & Session Analysis"
       };
 
-      // Append agent message with embedded response-card metrics
-      messages = [
-        ...messages,
-        {
-          id: Date.now() + 1,
-          role: "agent",
-          text: responseText,
-          metrics: claimMetrics
-        }
-      ];
+      // Append agent message with embedded response-card metrics & persist to DB
+      const cloudAgentMsg = {
+        id: Date.now() + 1,
+        role: "agent",
+        text: responseText,
+        metrics: claimMetrics
+      };
+      messages = [...messages, cloudAgentMsg];
+      await saveMessageToDB(cloudAgentMsg);
     } catch (e) {
-      messages = [
-        ...messages,
-        {
-          id: Date.now() + 1,
-          role: "agent",
-          text: `⚠️ Error verifying claim: ${e.message}`,
-          metrics: {
-            factsPct: 50.0,
-            opinionPct: 50.0,
-            falsehoodPct: 0.0
-          }
+      const errorMsg = {
+        id: Date.now() + 1,
+        role: "agent",
+        text: `⚠️ Error verifying claim: ${e.message}`,
+        metrics: {
+          factsPct: 50.0,
+          opinionPct: 50.0,
+          falsehoodPct: 0.0
         }
-      ];
+      };
+      messages = [...messages, errorMsg];
+      await saveMessageToDB(errorMsg);
     } finally {
       isLoading = false;
     }
@@ -466,6 +514,7 @@
   }
 
   async function syncActivePremises() {
+    await savePremisesToDB(personalSources);
     const activeTexts = personalSources.filter(s => s.active).map(s => s.text);
     await sendMessage(
       `[Sources Control Update] I have updated my reference sources in the UI. ` +
@@ -563,6 +612,7 @@
     {peersCount}
     onToggleTheme={() => isDarkMode = !isDarkMode}
     onOpenByom={() => { isByomModalOpen = true; isSourcePanelOpen = false; isCatalogPanelOpen = false; }}
+    onClearHistory={handleClearHistory}
   />
 
   <!-- Persistent Header / Sidebar Mini-Chart Dashboard -->

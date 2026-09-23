@@ -43,6 +43,15 @@ describe('Layer 0 Truth Table Tests', () => {
     expect(analysis.claims[0].verdict).toBe('verified');
   });
 
+  it('test_byom_local_worker_streaming_callback', async () => {
+    let receivedChunk = '';
+    const analysis = await analyzeClaimLocally('Water boils at 100 degrees Celsius at sea level.', (chunk) => {
+      receivedChunk = chunk;
+    });
+    expect(receivedChunk).toContain('Vera On-Device Local AI');
+    expect(analysis.metrics.factsPct).toBeGreaterThan(70);
+  });
+
   // Row 4: P2P claim broadcast
   it('test_p2p_claim_broadcast', async () => {
     const node = createP2PNode({ peerId: 'peer-test-1' });

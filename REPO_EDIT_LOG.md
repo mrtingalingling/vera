@@ -227,3 +227,30 @@
   - Vitest: 18/18 passed (`npm run test`).
   - Pytest: 19/19 passed (`uv run pytest tests/unit/`).
   - Production build: `npm run build` compiled in 1.38s.
+
+## [2026-09-23] feat: Implement Track B Layer 0 Production Integrations (Live Drive Grounding, Gemini Nano Streaming, IndexedDB VeraDB)
+- Branch: `feat/svelte5-byom-metrics`
+- Scope:
+  1. Live Google Drive Grounding & URL Importer:
+     - Implemented `frontend/src/googleDriveService.js` to parse Google Docs (`/document/d/...`) and Sheets (`/spreadsheets/d/...`), query Google Drive REST API export endpoints (`text/plain` and `text/csv`) using `chrome.identity.getAuthToken` with automatic graceful offline simulation.
+     - Added `"https://www.googleapis.com/auth/drive.readonly"` scope to `oauth2` in `extension/manifest.json`.
+     - Added dedicated URL input and "Import & Ground" action in `frontend/src/components/SourceEvidencePanel.svelte`.
+     - Created `frontend/src/googleDriveService.test.js` with 8 comprehensive unit tests.
+  2. Chrome Built-In AI (Gemini Nano) Streaming:
+     - Implemented `promptGeminiNanoStreaming(text, onChunk)` in `frontend/src/localAiService.js` utilizing `window.ai.languageModel.create()` with `promptStreaming()` async iteration.
+     - Added `onChunk` callback support to `analyzeClaimLocally(text, onChunk)` for real-time progressive token streaming.
+     - Wired token streaming updates into `frontend/src/App.svelte` for instant visual response feedback.
+     - Added streaming callback unit test to `frontend/src/layer0.test.js`.
+  3. Offline-First IndexedDB Session History & Claim Cache (VeraDB):
+     - Implemented zero-dependency native IndexedDB storage `frontend/src/db.js` (`VeraDB` v1) with object stores:
+       - `messages`: stores conversation history and metric attributions.
+       - `premises`: stores active grounding sources and Google Drive references.
+       - `claims_cache`: stores evaluated claims indexed by cryptographic hash.
+       - In-memory fallback support for environments without IndexedDB access.
+     - Added `frontend/src/db.test.js` with 5 unit tests.
+     - Integrated `onMount` hydration in `frontend/src/App.svelte` to restore past session conversations and grounding premises.
+     - Added `delete_sweep` "Clear Chat History" action in `frontend/src/components/Header.svelte` that purges messages from DB with toast confirmation.
+  4. Test Coverage & Build Synchronization:
+     - 36 Vitest unit tests (all passing).
+     - 19 Pytest unit tests (all passing).
+     - Full production build compiled with lockstep sync to `extension/dist/`.
