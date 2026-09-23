@@ -2,6 +2,8 @@
   import Header from './components/Header.svelte';
   import MiniChart from './components/MiniChart.svelte';
   import ByomModal from './components/ByomModal.svelte';
+  import SourceEvidencePanel from './components/SourceEvidencePanel.svelte';
+  import CatalogPanel from './components/CatalogPanel.svelte';
   import { createP2PNode } from './p2pNode.js';
   import { analyzeClaimLocally } from './localAiService.js';
   import { scanPageContent, highlightPageContent } from './scannerService.js';
@@ -14,6 +16,15 @@
   let inputText = $state("");
   let isLoading = $state(false);
   let activeTabTitle = $state("Current Webpage / Document");
+
+  // Evidence Sources & Fact Catalog Panels State
+  let isSourcePanelOpen = $state(false);
+  let isCatalogPanelOpen = $state(false);
+  let personalSources = $state([
+    { id: 1, text: "Google Docs: Apollo_11_Grounded_Telemetry.gdoc (The Apollo 11 moon mission successfully landed on July 20, 1969.)", active: true },
+    { id: 2, text: "Google Sheets: Fact_Checker_Algorithms_Matrix.gsheet (Vera utilizes advanced machine learning scoring for verification.)", active: true },
+    { id: 3, text: "Google Docs: Vertex_Platform_Guide.gdoc (Google Cloud Vertex AI is a fully managed agent development platform.)", active: true }
+  ]);
 
   // P2P Swarm Node
   const p2pNode = createP2PNode();
@@ -247,6 +258,72 @@
     sendMessage(sample);
   }
 
+  function toggleSourcePanel() {
+    isSourcePanelOpen = !isSourcePanelOpen;
+    if (isSourcePanelOpen) isCatalogPanelOpen = false;
+  }
+
+  function toggleCatalogPanel() {
+    isCatalogPanelOpen = !isCatalogPanelOpen;
+    if (isCatalogPanelOpen) isSourcePanelOpen = false;
+  }
+
+  async function syncActivePremises() {
+    const activeTexts = personalSources.filter(s => s.active).map(s => s.text);
+    await sendMessage(
+      `[Sources Control Update] I have updated my reference sources in the UI. ` +
+      `Please set my active scenario premises for this session to: ${JSON.stringify(activeTexts)}. ` +
+      `Let me know that my custom Workspace references are successfully loaded for future fact-checking!`
+    );
+  }
+
+  async function handleAddSource(text) {
+    const newId = personalSources.length ? Math.max(...personalSources.map(s => s.id)) + 1 : 1;
+    personalSources = [...personalSources, { id: newId, text, active: true }];
+    await syncActivePremises();
+  }
+
+  async function handleToggleSource(id, active) {
+    personalSources = personalSources.map(s => s.id === id ? { ...s, active } : s);
+    await syncActivePremises();
+  }
+
+  async function handleLinkGoogleDoc() {
+    const docPresets = [
+      "Google Docs: Project_Grounded_Claims_2026.gdoc (Verified telemetry data: All SpaceX Mars claims in 2024 are fully simulated and fictional.)",
+      "Google Docs: Corporate_Verified_Facts.gdoc (Official guideline: Vera runs strictly on verified knowledge bases.)",
+      "Google Docs: Science_Digest_Climate.gdoc (Scientific consensus: Earth is a perfect oblate spheroid.)"
+    ];
+    const preset = docPresets[personalSources.length % docPresets.length];
+    const newId = personalSources.length ? Math.max(...personalSources.map(s => s.id)) + 1 : 1;
+    personalSources = [...personalSources, { id: newId, text: preset, active: true }];
+    await syncActivePremises();
+  }
+
+  async function handleLinkGoogleSheet() {
+    const sheetPresets = [
+      "Google Sheets: Verified_Fact_Matrix_Q4.gsheet (Contains 100 rows of official climate and astronomical verified reference truths.)",
+      "Google Sheets: Hallucination_Control_Database.gsheet (Contains threshold parameters for fact-checking scoring algorithms.)",
+      "Google Sheets: Historical_Anomalies.gsheet (Contains list of debunked internet hoaxes and historical timeline metrics.)"
+    ];
+    const preset = sheetPresets[personalSources.length % sheetPresets.length];
+    const newId = personalSources.length ? Math.max(...personalSources.map(s => s.id)) + 1 : 1;
+    personalSources = [...personalSources, { id: newId, text: preset, active: true }];
+    await syncActivePremises();
+  }
+
+  async function handleShareFact(text) {
+    await sendMessage(`Please share this verified reference fact to the global community pool so other users can fact-check against it: "${text}"`);
+  }
+
+  async function handleFetchCatalog() {
+    await sendMessage("Please fetch the recent fact-checks from the Firestore catalog and present them in a clean summary table with metrics.");
+  }
+
+  async function handleSaveCatalog(data) {
+    await sendMessage(`Save this verified fact check to the catalog: Claim: "${data.claim}", Verdict: "${data.verdict}", Accuracy: ${data.accuracy}%, Falsehood: ${data.falsehood}%, Hallucination: ${data.hallucination}%.`);
+  }
+
   function handleByomConnected(info) {
     isUncapped = info.uncapped;
     messages = [
@@ -289,6 +366,53 @@
       title=""
     />
   </div>
+
+  <!-- Control Center: Sources/Evidence & Fact Catalog Grid -->
+  <div class="control-center-grid">
+    <button 
+      type="button" 
+      class="control-btn {isSourcePanelOpen ? 'active' : ''}" 
+      onclick={toggleSourcePanel}
+    >
+      <div class="control-btn-left">
+        <span class="material-symbols-outlined icon-sources">cloud_sync</span>
+        <span>Evidence & Docs ({personalSources.filter(s => s.active).length})</span>
+      </div>
+      <span class="material-symbols-outlined expand-icon">
+        {isSourcePanelOpen ? 'expand_less' : 'expand_more'}
+      </span>
+    </button>
+
+    <button 
+      type="button" 
+      class="control-btn {isCatalogPanelOpen ? 'active' : ''}" 
+      onclick={toggleCatalogPanel}
+    >
+      <div class="control-btn-left">
+        <span class="material-symbols-outlined icon-catalog">database</span>
+        <span>Fact Catalog & Metrics</span>
+      </div>
+      <span class="material-symbols-outlined expand-icon">
+        {isCatalogPanelOpen ? 'expand_less' : 'expand_more'}
+      </span>
+    </button>
+  </div>
+
+  <SourceEvidencePanel 
+    isOpen={isSourcePanelOpen}
+    sources={personalSources}
+    onAddSource={handleAddSource}
+    onToggleSource={handleToggleSource}
+    onLinkDoc={handleLinkGoogleDoc}
+    onLinkSheet={handleLinkGoogleSheet}
+    onShareFact={handleShareFact}
+  />
+
+  <CatalogPanel 
+    isOpen={isCatalogPanelOpen}
+    onFetchCatalog={handleFetchCatalog}
+    onSaveCatalog={handleSaveCatalog}
+  />
 
   <!-- Active Tab Scanning Bar -->
   <div class="active-tab-bar">
@@ -443,6 +567,64 @@
     font-weight: 700;
     text-transform: uppercase;
     letter-spacing: 0.5px;
+    color: var(--text-muted);
+  }
+
+  .control-center-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.45rem;
+    padding: 0.4rem 0.65rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(17, 19, 30, 0.45);
+  }
+
+  .control-btn {
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 0.35rem 0.55rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.2s ease;
+    color: var(--text);
+  }
+
+  .control-btn:hover {
+    background: rgba(255, 255, 255, 0.06);
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .control-btn.active {
+    background: rgba(0, 245, 212, 0.06);
+    border-color: #00f5d4;
+  }
+
+  .control-btn-left {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    font-size: 0.7rem;
+    font-weight: 600;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .icon-sources {
+    font-size: 0.95rem;
+    color: #00f5d4;
+  }
+
+  .icon-catalog {
+    font-size: 0.95rem;
+    color: #00bbf9;
+  }
+
+  .expand-icon {
+    font-size: 0.9rem;
     color: var(--text-muted);
   }
 

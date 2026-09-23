@@ -155,6 +155,34 @@
   - Vitest: 10/10 passed (`npm run test`).
   - Pytest: 19/19 passed (`uv run pytest tests/unit/`).
   - Production build: `npm run build` compiled in 1.44s.
+## [2026-09-23] feat: port Evidence Sources, Google Drive linking, and Fact Catalog into Svelte 5 cockpit
+- Branch: `feat/svelte5-byom-metrics`
+- Scope:
+  1. Restore full feature parity with `main` by porting the Evidence & Grounding Sources drawer and the Fact Catalog & Database Metrics drawer into the modern Svelte 5 component architecture.
+  2. Created `frontend/src/components/SourceEvidencePanel.svelte`:
+     - Allows adding custom facts and evidence links.
+     - Direct "Link Google Doc" and "Link Google Sheet" buttons connecting to Google Drive presets/references.
+     - Toggle switch on each reference source to selectively include/exclude it from active grounding premise synchronization (`syncActivePremises`).
+     - Share button to publish verified reference facts to the global community pool.
+  3. Created `frontend/src/components/CatalogPanel.svelte`:
+     - Allows submitting fact-check claims directly to the Firestore catalog with 4-category verdict and metrics (accuracy confidence, falsehood confidence, hallucination/opinion %).
+     - "Fetch Database Catalog & Metrics Table" action to retrieve historical fact-checks.
+  4. Updated `frontend/src/App.svelte`:
+     - Added 2-column control center grid (`Evidence & Docs` and `Fact Catalog & Metrics`) below the Persistent MiniChart Dashboard.
+     - Wired reactive runes state and premise synchronization handlers.
+  5. Created `frontend/src/components/Panels.test.js`:
+     - Unit tests for source filtering, Google Drive Doc/Sheet circular preset selection, and catalog payload formatting (15/15 Vitest tests passing).
+- Files modified:
+  - `frontend/src/components/SourceEvidencePanel.svelte` (NEW)
+  - `frontend/src/components/CatalogPanel.svelte` (NEW)
+  - `frontend/src/components/Panels.test.js` (NEW)
+  - `frontend/src/App.svelte`: Integrated control center grid and panels.
+  - `frontend/static/dist/` & `extension/dist/`: Recompiled production bundles.
+- Verification:
+  - Vitest: 15/15 passed (`npm run test`).
+  - Pytest: 19/19 passed (`uv run pytest tests/unit/`).
+  - Production build: `npm run build` compiled cleanly.
+
 
 
 
