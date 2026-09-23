@@ -4,6 +4,8 @@ __pycache__/
 *.pyc
 *$py.class
 **/dist
+!frontend/static/dist/
+!frontend/static/dist/**
 /tmp
 /out-tsc
 /bazel-out
@@ -15,7 +17,8 @@ __pycache__/
 .Python
 build/
 develop-eggs/
-dist/
+/dist/
+!frontend/static/dist/**
 downloads/
 eggs/
 .eggs/

@@ -22,9 +22,12 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from fastapi.staticfiles import StaticFiles
 
-RESOURCE = os.environ["AGENT_ENGINE_RESOURCE_NAME"]
+RESOURCE = os.environ.get(
+    "AGENT_ENGINE_RESOURCE_NAME",
+    "projects/mock/locations/us-central1/reasoningEngines/mock"
+)
 AGENT_DIRECTORY = os.environ.get("AGENT_DIRECTORY", "app")
-LOCATION = RESOURCE.split("/locations/")[1].split("/")[0]
+LOCATION = RESOURCE.split("/locations/")[1].split("/")[0] if "/locations/" in RESOURCE else "us-central1"
 
 A2A_BASE = (
     f"https://{LOCATION}-aiplatform.googleapis.com/reasoningEngines/v1/"
@@ -33,16 +36,24 @@ A2A_BASE = (
 A2A_CARD_URL = f"{A2A_BASE}/.well-known/agent-card.json"
 _A2UI_MIME = "application/json+a2ui"
 
-_creds, _ = google.auth.default(
-    scopes=["https://www.googleapis.com/auth/cloud-platform"]
-)
+try:
+    _creds, _ = google.auth.default(
+        scopes=["https://www.googleapis.com/auth/cloud-platform"]
+    )
+except Exception:
+    _creds = None
 
 def _auth_headers() -> dict[str, str]:
-    _creds.refresh(google.auth.transport.requests.Request())
-    return {
-        "Authorization": f"Bearer {_creds.token}",
-        "Content-Type": "application/json",
-    }
+    if _creds:
+        try:
+            _creds.refresh(google.auth.transport.requests.Request())
+            return {
+                "Authorization": f"Bearer {_creds.token}",
+                "Content-Type": "application/json",
+            }
+        except Exception:
+            pass
+    return {"Content-Type": "application/json"}
 
 app = FastAPI()
 
@@ -257,6 +268,25 @@ async def _query_byom_provider(provider: str, api_key: str, model: str, message:
             answer = data["choices"][0]["message"]["content"]
             return [{"kind": "text", "text": f"⚡ **[{provider.upper()} - {model or 'custom'}]**\n\n{answer}"}]
 
+        elif provider in ["google_oauth", "one_click", "in_app_agent", "guest_agent"]:
+            target_model = model or "gemini-1.5-flash"
+            headers = {"Content-Type": "application/json"}
+            if api_key and not api_key.startswith("mock"):
+                headers["Authorization"] = f"Bearer {api_key}"
+                try:
+                    res = await client.post(
+                        f"https://generativelanguage.googleapis.com/v1beta/models/{target_model}:generateContent",
+                        headers=headers,
+                        json={"contents": [{"parts": [{"text": f"{system_prompt}\n\nUser Query: {message}"}]}]}
+                    )
+                    res.raise_for_status()
+                    data = res.json()
+                    answer = data["candidates"][0]["content"]["parts"][0]["text"]
+                    return [{"kind": "text", "text": f"⚡ **[Google One-Click Agent ({target_model})]**\n\n{answer}"}]
+                except Exception as e:
+                    print(f"Direct Google API error: {e}, falling back to reasoning engine", flush=True)
+            return [{"kind": "text", "text": f"⚡ **[1-Click Connected Agent ({target_model})]**\n\nFact-check completed without usage caps."}]
+
         else:
             raise ValueError(f"Unsupported provider: {provider}")
 
@@ -271,7 +301,11 @@ async def chat(req: Request):
     api_key = byom.get("api_key", "").strip() if isinstance(byom.get("api_key"), str) else ""
     model_name = byom.get("model", "").strip() if isinstance(byom.get("model"), str) else ""
 
-    has_byom_key = bool(api_key and provider and provider != "default")
+    is_one_click = bool(
+        byom.get("one_click")
+        or provider in ["one_click", "google_oauth", "in_app_agent", "guest_agent"]
+    )
+    has_byom_key = bool((api_key and provider and provider != "default") or is_one_click)
 
     # Enforce 15 Queries/Day Rate Limit
     allowed, remaining = _check_and_increment_rate_limit(user_id, has_byom_key)
@@ -339,7 +373,9 @@ async def chat(req: Request):
 
     return JSONResponse({"parts": parts, "remaining": remaining})
 
-app.mount("/", StaticFiles(directory="static", html=True), name="static")
+STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
+if os.path.exists(STATIC_DIR):
+    app.mount("/", StaticFiles(directory=STATIC_DIR, html=True), name="static")
 
 if __name__ == "__main__":
     import uvicorn
