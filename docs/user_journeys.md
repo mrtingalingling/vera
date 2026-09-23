@@ -1,6 +1,7 @@
 # Vera: User Journeys & End-to-End Workflows
 
-This document maps the primary user workflows across the **Vera Ecosystem**, reflecting the active **Layer 0** capabilities and future **Layers 1–3** interactions.
+> [!NOTE]
+> **Source of Truth**: [`docs/PRD.md`](./PRD.md) is the authoritative architectural and requirements specification. For the implementation matrix and file entrypoints, see [`docs/features.md`](./features.md). This document maps human interaction narratives and end-to-end user workflows.
 
 ---
 
