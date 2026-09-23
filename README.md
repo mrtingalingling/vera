@@ -14,6 +14,7 @@
 All product-related documentation is consolidated in the [**`docs/`**](./docs/) directory:
 
 * 📋 [**Master PRD (`docs/PRD.md`)**](./docs/PRD.md): Complete product requirements, architectural thesis (*Truth Settlement*), and 4-layer specification (Layer 0 Active Baseline through Layers 1–3).
+* 🏗️ [**Architecture Blueprint (`docs/architecture.md`)**](./docs/architecture.md): Modular ecosystem architecture across `vera` (Layer 0), `clearCloud` (Layer 1.1), and `veracities.social` (Layer 1.2 & 1.3).
 * ⚙️ [**Features Specification (`docs/features.md`)**](./docs/features.md): Consolidated technical details of active features (local AI Web Worker / Gemini Nano, BYOM presets, 4-verdict DOM highlighting, dual mini-charts, time-bound tab permissions, evidence grounding, and P2P swarm) and future expansions.
 * 🗺️ [**User Journeys (`docs/user_journeys.md`)**](./docs/user_journeys.md): Step-by-step user workflows for on-device checking, time-bound page scanning & DOM highlighting, Google Drive evidence grounding, 1-click uncap, P2P gossip, and courtroom deliberation.
 

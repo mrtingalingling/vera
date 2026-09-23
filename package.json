@@ -2,6 +2,13 @@
   "name": "vera-workspace",
   "version": "1.0.0",
   "description": "Vera - Decentralized AI Fact Verification & Epistemic Grounding",
+  "type": "module",
+  "main": "frontend/src/index.js",
+  "module": "frontend/src/index.js",
+  "exports": {
+    ".": "./frontend/src/index.js",
+    "./*": "./frontend/src/*"
+  },
   "private": true,
   "scripts": {
     "dev": "npm --prefix frontend run dev",

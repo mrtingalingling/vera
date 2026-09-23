@@ -23,6 +23,9 @@ Rather than treating social networking, financial markets, and decentralized gov
 * **Layer 2 (The Validation Market)**: The economic incentive engine—**all about making money from validating facts** via poker-style wagering, parleys, and derivative hedging.
 * **Layer 3 (The Epistemic DAO)**: The decentralized governance engine—**all about future engagement and ecosystem improvement**, allocating anonymous voting weight based on intellectual honesty, factual grounding, and empathy.
 
+> [!NOTE]
+> For the complete multi-repository technical blueprint across `vera`, `clearCloud`, and `veracities.social`, refer to [**Architecture Blueprint (`docs/architecture.md`)**](./architecture.md).
+
 ```
        ┌────────────────────────────────────────────────────────┐
        │                Layer 1: Social Suite                   │
