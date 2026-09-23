@@ -14,6 +14,7 @@
 All product-related documentation is consolidated in the [**`docs/`**](./docs/) directory:
 
 * 📋 [**Master PRD (`docs/PRD.md`)**](./docs/PRD.md): Complete product requirements, architectural thesis (*Truth Settlement*), and 4-layer specification (Layer 0 Active Baseline through Layers 1–3).
+* 🧭 [**Architecture, Caveats & Deployment Guide (`docs/ARCHITECTURE_CAVEATS_AND_ROADMAP.md`)**](./docs/ARCHITECTURE_CAVEATS_AND_ROADMAP.md): **Authoritative canonical specification** covering the 3-repo architecture, production caveats ledger, step-by-step module connection & deployment, upgrade warnings, and AI agent maintenance instructions.
 * 🏗️ [**Architecture Blueprint (`docs/architecture.md`)**](./docs/architecture.md): Modular ecosystem architecture across `vera` (Layer 0 + Feature 1.2), `clearCloud` (Unified Social App: Feature 1.1 & 1.3), and `veracities.social` (Protocol & Settlement Backend).
 * ⚙️ [**Features Specification (`docs/features.md`)**](./docs/features.md): Consolidated technical details of active features across the 3-repo estate and implementation matrix.
 * 🗺️ [**User Journeys (`docs/user_journeys.md`)**](./docs/user_journeys.md): Step-by-step user workflows for on-device checking, time-bound page scanning, PII scrubbing, Google Drive evidence grounding, and courtroom deliberation.
@@ -148,8 +149,8 @@ Open **`http://localhost:8080/`** or **`http://localhost:8080/frame.html`** in y
 ---
 
 ## 🧪 Testing
-
-Run both frontend and backend suites simultaneously with one root command:
+ 
+Run both frontend and backend suites simultaneously with one command:
 ```bash
 npm test
 ```
@@ -158,7 +159,13 @@ Or run individual suites:
 # Backend Python tests (19 unit tests)
 npm run test:backend
 
-# Frontend Vitest tests (18 unit tests)
+# Frontend Vitest tests (42 unit tests across 6 suites)
 npm run test:frontend
+```
+
+To run the unified 196-test suite across all three repositories (`vera`, `clearCloud`, `veracities.social`), use the root runner:
+```bash
+# From workspace root (/config/Desktop):
+npm run test:all
 ```
 

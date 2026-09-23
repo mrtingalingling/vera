@@ -59,3 +59,28 @@ Ask the user: Option A (simple single-project) or Option B (full CI/CD pipeline 
 - **Run Python with `uv`**: `uv run python script.py`. Run `agents-cli install` first.
 - **Stop on repeated errors**: If the same error appears 3+ times, fix the root cause instead of retrying.
 - **Terraform conflicts** (Error 409): Use `terraform import` instead of retrying creation.
+
+---
+
+## 🌐 Multi-Repo Ecosystem Guidelines (Vera, ClearCloud, Veracities)
+
+When working across the three repositories (`mrtingalingling/vera`, `mrtingalingling/clearCloud`, `mrtingalingling/veracities.social`), AI Agents must adhere to the following architectural laws:
+
+1. **Strict Separation of Powers**:
+   - **`vera`**: Client ingestion, Chrome MV3 extension, local on-device AI heuristics, and zero-leakage PII scrubbing.
+   - **`clearCloud`**: Civic feed & Courtroom deliberation. **NEVER inject betting, market wagering, or token speculation into clearCloud**.
+   - **`veracities.social`**: Prediction market staking, Truth Parleys, derivative hedges, oracle relayers, and Epistemic DAO governance. **NEVER inject judicial juror deliberation into veracities.social**.
+2. **Svelte 5 Runes Invariant**:
+   - Use `$state`, `$derived`, `$derived.by`, `$effect`, and `$props`.
+   - **NEVER import legacy Svelte 3/4 stores** (`writable`, `derived`) or write `$:` reactive declarations into components.
+3. **Smart Contract ABI & Address Synchronization**:
+   - Solidity contracts live in `veracities.social/contracts/`.
+   - Whenever editing Solidity contracts, recompile via `npm run compile:contracts` from root to ensure exported addresses in `src/config/contracts.json` remain in sync across both `veracities.social` and `clearCloud`.
+4. **Mandatory Full Test Suite Verification**:
+   - After modifying any code across the three repositories, run the root test suite:
+     ```bash
+     cd /config/Desktop && npm run test:all
+     ```
+   - Confirm that all 196 tests (43 clearCloud + 92 veracities + 42 vera frontend + 19 vera backend) pass before concluding work.
+5. **Authoritative Specification**:
+   - Detailed caveats, deployment steps, and upgrade warnings are maintained in [**`docs/ARCHITECTURE_CAVEATS_AND_ROADMAP.md`**](./docs/ARCHITECTURE_CAVEATS_AND_ROADMAP.md). Always consult this file as the single source of truth.
