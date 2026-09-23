@@ -78,3 +78,41 @@ This document maps the primary user workflows across the **Vera Ecosystem**, ref
    - *14-Day Stale Refund*: If no conclusive proof emerges after two weeks, 94% of wagers are refunded (6% platform fee).
    - *Case Reopening*: If biased voter turnout or new post-settlement evidence emerges, an escalated challenge wager reopens the case with dynamic quorum scaling.
 5. **Reputation Feedback**: The user's hidden reputation score increases, conferring anonymous ZK-SNARK governance voting rights in the Epistemic DAO (Layer 3).
+
+---
+
+## Journey 6: Time-Bound Tab Permission & In-Page Visual Annotation
+
+**Persona**: Privacy-conscious browser reading an online news article.
+
+1. **Permission Request**: The user opens the Vera extension. In the active tab bar, the "Tab Access" pill alerts the user that reading access is currently not granted.
+2. **Duration Selection**: The user clicks the button. The **Time-Bound Permission Modal** appears with options: *Just once*, *For 15 Minutes*, *For 1 Hour*, or *Always for this domain*.
+3. **Granting Access**: The user selects **For 15 Minutes**. The modal closes, and the active tab bar displays an animated rotating SVG hourglass with a live countdown: `Active: 14:59`.
+4. **Highlighting Claims**: The user clicks the discrete **"Highlight"** button in the tab bar.
+5. **DOM Highlighting**: Vera extracts page sentences, categorizes claims into 4 epistemic categories, and injects `<mark>` tags into the webpage DOM.
+6. **WOT Hover**: The user reads the article; hovering over colored claim spans reveals Web-of-Trust cards with confidence scores, cited sources, and epistemic reasoning.
+7. **Expiration**: After 15 minutes, the timer reaches zero, permission expires, and the banner resets to protect user privacy.
+
+---
+
+## Journey 7: Grounding with Personal Google Drive Docs & Custom Knowledge Pool
+
+**Persona**: Enterprise researcher or policy analyst fact-checking against proprietary internal data.
+
+1. **Opening Evidence Drawer**: The user clicks **"Evidence & Docs"** in the Control Center grid.
+2. **Linking Google Docs**: The user clicks **"Link Google Doc"** (or **"Link Google Sheet"**), connecting an internal reference document into the active grounding pool.
+3. **Adding Custom Facts**: The user enters custom empirical statements and research URLs directly into the drawer.
+4. **Selective Grounding**: The user toggles specific premises on or off. Vera calls `syncActivePremises`, injecting the active subset into the agent's prompt context.
+5. **Grounded Query**: The user asks a question in the chat. The agent validates against both public truth and the user's active custom Google Docs / Sheets references.
+6. **Community Sharing**: The user clicks **"Share Fact"** to anonymously publish the verified reference to the decentralized community pool.
+
+---
+
+## Journey 8: Cataloging Verified Claims & Epistemic History Querying
+
+**Persona**: Data journalist archiving fact-check investigations into a persistent store.
+
+1. **Opening Fact Catalog Drawer**: The user clicks **"Fact Catalog & Metrics"** in the Control Center grid.
+2. **Logging a Claim**: The user enters a verified claim statement, selects a verdict (`Verified Fact`, `Disputed Claim`, `Misinformed / False`, or `Needs Additional Context`), and configures confidence sliders (e.g., 90% accuracy, 5% falsehood, 5% speculation).
+3. **Saving to Database**: Clicking **"Save Fact-Check to Catalog"** writes the record directly to Firestore.
+4. **Fetching Historical Truth Records**: The user clicks **"Fetch Database Catalog & Metrics Table"** to retrieve and review recent community fact-checks, verification hashes, and aggregate truth metrics.

@@ -61,6 +61,7 @@ This document details the complete feature set of the **Vera Ecosystem**, organi
 ### 2.3 Bring Your Own Model (BYOM) & Frictionless Authentication
 - **1-Click Guest Agent Preset**: One-click activation sets an in-app Google AI agent session with zero credentials required, permanently unlocking uncapped fact-checking (`remaining: 999`).
 - **1-Click Local In-Browser AI**: Switches the client to pure on-device zero-leakage mode.
+- **Chrome Built-In AI (Gemini Nano)**: Directly queries browser on-device LLM capabilities (`window.ai` / `ai.languageModel`) when available.
 - **Google Account OAuth**: Default authenticated path using Chrome Identity or Google OAuth tokens.
 - **Multi-Provider API Integration**: Supports direct API key entry for:
   - Google Gemini (Gemini 2.5 Flash / Pro)
@@ -69,10 +70,25 @@ This document details the complete feature set of the **Vera Ecosystem**, organi
   - DeepSeek (DeepSeek V3 / R1)
   - xAI Grok (Grok-2)
   - OpenRouter / Custom endpoints
+- **Custom Remote Backend Endpoint URL**:
+  - Allows users to route extension queries to a custom Cloud Run, private Agent Gateway, or local Ollama proxy instead of `http://localhost:8080/chat`.
+  - Persisted in `localStorage` and `chrome.storage.local` with an instant one-click reset action.
 
-### 2.4 Real-Time Webpage Scanning & Bi-Directional DOM Highlighting
-- **Active Tab Scanning (`frontend/src/scannerService.js`)**:
-  - The "Scan Page" button in the extension popup sends `GET_PAGE_CONTENT` to the host page via Chrome messaging, extracting visible text and titles.
+### 2.4 Time-Bound Tab Permissions & In-Page DOM Verification
+- **Time-Bound Tab Access Modal (`frontend/src/components/PermissionModal.svelte`)**:
+  - Enforces explicit user consent before extracting DOM content.
+  - Granular duration options:
+    - *Just once*: One-shot scanning / highlighting access.
+    - *For 15 Minutes*: Short reading session.
+    - *For 1 Hour*: Extended research session.
+    - *Always for this domain* (`∞`): Continuous authorization.
+- **Animated SVG Hourglass Live Countdown Indicator**:
+  - An animated rotating SVG hourglass lives in the active tab toolbar.
+  - Displays remaining authorization time (`Active: MM:SS` or `Active: ∞`).
+  - Clicking the banner opens the modal to extend duration or immediately revoke access.
+- **Discrete User Actions**:
+  - **"Scan Page"**: Extracts active tab content and conducts conversational multi-turn analysis inside the Cockpit chat stream.
+  - **"Highlight Claims"**: In-page visual annotation that directly injects traffic-light highlights on the webpage DOM without cluttering the chat.
 - **4-Category Verdict Classification (`extension/content.js`)**:
   - Highlights claims directly within the webpage DOM:
     1. 🟢 **Verified Fact** (`verifact-verdict-verified`): Grounded in established empirical baselines.
@@ -86,7 +102,7 @@ This document details the complete feature set of the **Vera Ecosystem**, organi
 - **Fact vs. Opinion/Speculation Breakdown (`frontend/metrics.py`)**:
   - Calculates real-time ratios: `factsPct`, `opinionPct`, `falsehoodPct`.
 - **Persistent Header Dashboard**:
-  - Top bar of `App.svelte` maintains cumulative session and page-level factual health.
+  - Top bar maintains cumulative session and page-level factual health.
 - **Embedded Response Cards**:
   - Every individual chat message displays a claim-specific breakdown gauge.
 
@@ -96,7 +112,17 @@ This document details the complete feature set of the **Vera Ecosystem**, organi
   - P2P claim broadcasting (`publishClaim`) and subscription (`subscribeClaims`).
   - Swarm connection status indicator (`⚡ P2P (2)`) in the frame header.
 
-### 2.7 Google Cloud Backend Grounding
+### 2.7 Evidence Sources & Grounding Premise Drawer (`frontend/src/components/SourceEvidencePanel.svelte`)
+- **Custom Evidence & Reference Links**: Users can input reference statements and research URLs.
+- **Google Drive Integration**: One-click linking to **Google Docs** and **Google Sheets** telemetry/guideline presets.
+- **Dynamic Premise Synchronization (`syncActivePremises`)**: Toggle switches enable users to selectively include or exclude specific sources from the active agent grounding prompt.
+- **Community Pool Sharing**: Users can publish verified reference facts to the shared community truth pool.
+
+### 2.8 Fact Catalog & Database Metrics Drawer (`frontend/src/components/CatalogPanel.svelte`)
+- **Direct Catalog Logging**: Submit verified fact-checks directly to the Firestore truth catalog with 4-category verdicts and granular confidence metrics (accuracy %, falsehood %, speculation %).
+- **Database Querying**: "Fetch Database Catalog & Metrics Table" action retrieves historical fact-checks for transparency.
+
+### 2.9 Google Cloud Backend Grounding
 - **Vertex AI Reasoning Engine (`app/agent.py`)**: Gemini-powered conversational agent with tool orchestration.
 - **Code Executor Python Sandbox**: Executes statistical heuristic calculations for confidence weighting.
 - **Vertex AI RAG Engine**: Indexes verified truth documents and guidelines for grounded answers.

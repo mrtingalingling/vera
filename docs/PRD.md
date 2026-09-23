@@ -81,22 +81,39 @@ Vera Core serves as the foundational client engine running inside the user's bro
 * **Portable Frame Mounting**: Both `frontend/static/frame.html` and `extension/popup.html` mount `#svelte-frame-root` with zero drift.
 
 ### 3.2 Dual-Execution AI Architecture
-* **Local In-Browser Engine**: Web Worker offload for WebGPU-accelerated models (WebLLM / Transformers.js / ONNX Runtime Web).
+* **Local In-Browser Engine**: Web Worker offload for WebGPU-accelerated models (`localAiService.js`) and direct integration with Chrome Built-In AI (Gemini Nano).
 * **Cloud Reasoning Engine & BYOM 1-Click**:
   * **Frictionless Guest Agent**: 1-click in-app activation setting `provider: "guest_agent"` with zero credentials required; unlocks uncapped queries (`remaining: 999`).
   * **Google Account OAuth**: Default authenticated path using Chrome Identity or web OAuth tokens.
   * **Custom AI Providers**: Direct API key connections to Gemini, OpenAI, Anthropic, xAI Grok, DeepSeek, and OpenRouter.
+  * **Custom Remote Backend Endpoint URL**: Configurable routing allowing deployment to custom Cloud Run or Agent Gateway instances.
 
-### 3.3 Verifiable Metrics & DOM Highlighting
+### 3.3 Verifiable Metrics, DOM Highlighting & Time-Bound Access
+* **Time-Bound Tab Permissions**:
+  * Granular duration modal: `Just once`, `For 15 Minutes`, `For 1 Hour`, and `Always for this domain` (`∞`).
+  * Animated rotating SVG hourglass banner in active tab toolbar showing real-time countdown (`Active: MM:SS`).
+* **Discrete Actions**:
+  * **"Scan Page"**: Extract page text and analyze conversationally in Cockpit chat.
+  * **"Highlight Claims"**: In-page visual annotation marking claims directly on host DOM with WOT hover cards.
 * **4-Category Verdict Classification**:
   1. `verified` (Emerald): Grounded in primary factual sources.
   2. `disputed` (Amber): Conflicting evidence across reliable authorities.
   3. `misinformed` (Rose): Definitively refuted claims or hallucinations.
   4. `need-additional-context` (Purple): Missing critical qualifiers or nuance.
 * **Dual Mini-Chart Display**:
-  * **Persistent Dashboard**: Frame header tracks cumulative session and page-level Fact vs. Opinion/Speculation ratios.
+  * **Persistent Dashboard**: Header tracks cumulative session and page-level Fact vs. Opinion/Speculation ratios.
   * **Embedded Response Cards**: Every fact-check message renders its own claim-specific breakdown gauge.
-* **P2P Transport**: Foundational libp2p browser node integration for decentralized peer-to-peer data transport.
+* **P2P Transport**: Foundational libp2p browser node integration for decentralized peer-to-peer data transport (`p2pNode.js`).
+
+### 3.4 Grounding Evidence & Fact Catalog Drawers
+* **Evidence Sources Drawer (`SourceEvidencePanel.svelte`)**:
+  * User-provided custom research notes and URLs.
+  * Native linking to Google Docs and Google Sheets truth matrices.
+  * Dynamic premise toggle synchronization (`syncActivePremises`) updating agent context on the fly.
+  * Community pool sharing.
+* **Fact Catalog & Database Metrics Drawer (`CatalogPanel.svelte`)**:
+  * Direct submission of fact-check assertions to Firestore with 4-category verdicts and accuracy / falsehood / speculation percentages.
+  * Live querying of database history table.
 
 ---
 

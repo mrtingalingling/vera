@@ -1,0 +1,14 @@
+{
+  "name": "vera-workspace",
+  "version": "1.0.0",
+  "description": "Vera - Decentralized AI Fact Verification & Epistemic Grounding",
+  "private": true,
+  "scripts": {
+    "dev": "npm --prefix frontend run dev",
+    "build": "npm --prefix frontend run build",
+    "test:frontend": "npm --prefix frontend run test",
+    "test:backend": "uv run pytest tests/unit/",
+    "test": "npm run test:frontend && npm run test:backend",
+    "serve": "uv run python frontend/main.py"
+  }
+}
