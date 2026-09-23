@@ -9,6 +9,7 @@
   let isUncapped = $state(false);
   let authMessage = $state("");
   let nanoStatus = $state("checking");
+  let backendUrl = $state("");
 
   $effect(() => {
     if (isOpen) {
@@ -34,6 +35,7 @@
       if (saved.api_key) apiKey = saved.api_key;
       if (saved.model) modelName = saved.model;
       isUncapped = !!(saved.one_click || (saved.api_key && saved.provider !== "default"));
+      backendUrl = localStorage.getItem("backendUrl") || "";
     } catch (e) {
       // ignore
     }
@@ -114,6 +116,21 @@
       one_click: false
     };
     localStorage.setItem("byom_settings", JSON.stringify(settings));
+    
+    // Save or clear backendUrl
+    const urlTrimmed = backendUrl.trim();
+    if (urlTrimmed) {
+      localStorage.setItem("backendUrl", urlTrimmed);
+      if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
+        chrome.storage.local.set({ backendUrl: urlTrimmed });
+      }
+    } else {
+      localStorage.removeItem("backendUrl");
+      if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
+        chrome.storage.local.remove("backendUrl");
+      }
+    }
+
     isUncapped = !!(settings.api_key && settings.provider !== "default");
     isOpen = false;
     onConnected({ uncapped: isUncapped, provider });
@@ -121,8 +138,13 @@
 
   function handleClearKey() {
     localStorage.removeItem("byom_settings");
+    localStorage.removeItem("backendUrl");
+    if (typeof chrome !== "undefined" && chrome.storage && chrome.storage.local) {
+      chrome.storage.local.remove("backendUrl");
+    }
     apiKey = "";
     modelName = "";
+    backendUrl = "";
     provider = "default";
     isUncapped = false;
     isOpen = false;
@@ -260,6 +282,26 @@
           type="text" 
           placeholder="e.g. gpt-4o-mini, claude-3-5-sonnet, deepseek-chat" 
           bind:value={modelName}
+          class="input-field"
+        />
+
+        <!-- Auxiliary Feature: Custom Remote Backend Endpoint URL -->
+        <div class="field-label-row" style="margin-top: 0.8rem; border-top: 1px solid rgba(255,255,255,0.08); padding-top: 0.6rem;">
+          <label for="backend-url-input">Custom Backend Endpoint URL</label>
+          <button 
+            type="button" 
+            class="portal-link" 
+            onclick={() => { backendUrl = ""; }}
+            title="Reset to local server"
+          >
+            Reset
+          </button>
+        </div>
+        <input 
+          id="backend-url-input"
+          type="text" 
+          placeholder="e.g. http://localhost:8080/chat or Cloud Run URL" 
+          bind:value={backendUrl}
           class="input-field"
         />
 

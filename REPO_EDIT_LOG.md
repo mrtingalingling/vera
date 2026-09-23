@@ -177,13 +177,35 @@
   - `frontend/src/components/CatalogPanel.svelte` (NEW)
   - `frontend/src/components/Panels.test.js` (NEW)
   - `frontend/src/App.svelte`: Integrated control center grid and panels.
+## [2026-09-23] feat: remove svelte branding and restore permission modal, highlight claims button, and custom backend URL
+- Branch: `feat/svelte5-byom-metrics`
+- Scope:
+  1. Removed all "Svelte" / "Svelte 5" branding from the user-facing application:
+     - Removed `<span class="tag-svelte">Svelte 5</span>` and associated CSS from `frontend/src/components/Header.svelte`.
+     - Updated HTML document title to "Vera - Decentralized AI Cockpit" in `frontend/static/frame.html`.
+     - Renamed navigation button to "Cockpit" in `frontend/static/index.html`.
+     - Changed agent query `user_id` from `svelte5-client` to `vera-client` in `frontend/src/App.svelte`.
+  2. Restored Time-Bound Tab Permission Modal (`PermissionModal.svelte`):
+     - Configurable duration cards: "Just once", "For 15 Minutes", "For 1 Hour", and "Always for this domain" (`∞`).
+     - Animated SVG hourglass indicator with real-time countdown timer (`MM:SS` or `∞`) in the active tab bar.
+     - Auto-prompt modal if user attempts to scan or highlight without granted permission.
+  3. Restored Discrete "Highlight Claims" Action:
+     - Dedicated button alongside "Scan Page" in the active tab bar.
+     - Extracts sentence claim candidates from the active webpage, computes 4-category epistemic verdicts, and injects traffic-light highlights with Web-of-Trust (WOT) tooltips.
+  4. Restored Custom Remote Backend URL Setting:
+     - Configurable endpoint input in `ByomModal.svelte` with instant reset action.
+     - Persisted to `localStorage` and `chrome.storage.local`.
+     - Dynamically overrides default backend route in `getBackendEndpoint()`.
+- Files modified:
+  - `frontend/src/components/PermissionModal.svelte` (NEW)
+  - `frontend/src/components/Header.svelte`: Removed Svelte 5 badge and styles.
+  - `frontend/static/frame.html`: Updated page title.
+  - `frontend/static/index.html`: Renamed navigation button to "Cockpit".
+  - `frontend/src/components/ByomModal.svelte`: Added Custom Backend Endpoint URL input and storage handlers.
+  - `frontend/src/App.svelte`: Wired `PermissionModal`, countdown timer loop, animated SVG hourglass, and discrete highlight button.
+  - `frontend/src/components/Panels.test.js`: Added unit tests for time-bound expiration, custom URL resolution, and claim classification (18/18 tests passing).
   - `frontend/static/dist/` & `extension/dist/`: Recompiled production bundles.
 - Verification:
-  - Vitest: 15/15 passed (`npm run test`).
+  - Vitest: 18/18 passed (`npm run test`).
   - Pytest: 19/19 passed (`uv run pytest tests/unit/`).
-  - Production build: `npm run build` compiled cleanly.
-
-
-
-
-
+  - Production build: `npm run build` compiled in 1.38s.

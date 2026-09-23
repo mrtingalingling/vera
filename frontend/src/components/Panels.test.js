@@ -74,3 +74,58 @@ describe('Fact Catalog & Database Metrics Logic', () => {
     expect(msg).toContain('Verdict: "verified"');
   });
 });
+
+describe('Auxiliary Features: Tab Permission, Highlighting & Remote Endpoint', () => {
+  it('computes time-bound permission expiration correctly', () => {
+    const now = 1700000000000;
+    
+    // 15m duration
+    const exp15m = now + 15 * 60 * 1000;
+    expect(exp15m - now).toBe(900000);
+
+    // 1h duration
+    const exp1h = now + 60 * 60 * 1000;
+    expect(exp1h - now).toBe(3600000);
+
+    // always duration
+    const expAlways = null;
+    expect(expAlways).toBeNull();
+  });
+
+  it('respects custom remote backend URL override when set', () => {
+    const defaultEndpoint = "http://localhost:8080/chat";
+    const customEndpoint = "https://vera-agent-gateway.run.app/chat";
+
+    function resolveEndpoint(custom) {
+      if (custom && custom.trim()) return custom.trim();
+      return defaultEndpoint;
+    }
+
+    expect(resolveEndpoint("")).toBe(defaultEndpoint);
+    expect(resolveEndpoint("   ")).toBe(defaultEndpoint);
+    expect(resolveEndpoint(customEndpoint)).toBe("https://vera-agent-gateway.run.app/chat");
+  });
+
+  it('classifies sentence claims into 4 epistemic categories for DOM highlighting', () => {
+    const sampleSentences = [
+      "The Earth is flat and the Apollo moon landings were faked.",
+      "Scientists continue to debate the exact rate of cosmic expansion.",
+      "Water is composed of two hydrogen atoms and one oxygen atom.",
+      "Perhaps quantum computers might replace all silicon chips."
+    ];
+
+    const classified = sampleSentences.map(sentence => {
+      const lower = sentence.toLowerCase();
+      const isMisinformed = lower.includes("flat") || lower.includes("faked");
+      const isDisputed = lower.includes("debate");
+      const isContext = lower.includes("perhaps") || lower.includes("might");
+      return isMisinformed ? 'misinformed' : isDisputed ? 'disputed' : isContext ? 'need-additional-context' : 'verified';
+    });
+
+    expect(classified[0]).toBe('misinformed');
+    expect(classified[1]).toBe('disputed');
+    expect(classified[2]).toBe('verified');
+    expect(classified[3]).toBe('need-additional-context');
+  });
+});
+

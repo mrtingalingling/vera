@@ -14,7 +14,6 @@
   <div class="brand">
     <span class="material-symbols-outlined brand-icon">security</span>
     <h1>Vera</h1>
-    <span class="tag-svelte">Svelte 5</span>
 
     <button class="btn-icon" onclick={onToggleTheme} title="Toggle theme">
       <span class="material-symbols-outlined">
@@ -72,16 +71,6 @@
     background: linear-gradient(135deg, #00f5d4, #8338ec);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-  }
-
-  .tag-svelte {
-    font-size: 0.6rem;
-    font-weight: 700;
-    padding: 0.1rem 0.35rem;
-    border-radius: 4px;
-    background: rgba(255, 62, 0, 0.15);
-    color: #ff3e00;
-    border: 1px solid rgba(255, 62, 0, 0.3);
   }
 
   .btn-icon {
