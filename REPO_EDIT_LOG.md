@@ -119,13 +119,12 @@
   1. Consolidate all product documentation under the canonical `docs/` folder (with `doc -> docs` symlink for flexible navigation).
   2. Create comprehensive `docs/features.md` unifying active Layer 0 features (Svelte 5 runes, local AI Web Worker, 4-verdict DOM highlighting, dual mini-charts, P2P swarm) and future Layers 1–3, removing obsolete "VeriFact AI" branding and legacy 3-metric ratings.
   3. Create updated `docs/user_journeys.md` covering all 5 end-to-end workflows (Local In-Browser fact checking, active tab scanning & WOT highlighting, frictionless 1-click uncap, P2P swarm gossip, Courtroom & truth settlement).
-  4. Create `docs/README.md` documentation index hub.
-  5. Remove duplicate/conflicting root files `features.md` and `user_journeys.md`.
-  6. Rebrand root `README.md` to Vera and link directly to the consolidated `docs/` hub.
+  4. Maintain a single definitive README.md at the project root linking directly to docs/PRD.md, docs/features.md, and docs/user_journeys.md (avoiding duplicate docs/README.md).
+  5. Remove duplicate/conflicting root files features.md and user_journeys.md.
+  6. Rebrand root README.md to Vera.
 - Files created:
   - `docs/features.md`: Unified product features specification.
   - `docs/user_journeys.md`: Unified user journeys.
-  - `docs/README.md`: Central documentation navigation index.
   - `doc`: Symbolic link pointing to `docs/`.
 - Files modified:
   - `README.md`: Updated overview, Svelte 5 runes details, and documentation links.
@@ -133,6 +132,7 @@
 - Files deleted:
   - `features.md` (root legacy file).
   - `user_journeys.md` (root legacy file).
+  - `docs/README.md` (removed to preserve a single repository README).
 - Verification:
   - Frontend Vitest: 9/9 tests passed (`npm run test`).
   - Backend Pytest: 19/19 tests passed (`uv run pytest tests/unit/`).

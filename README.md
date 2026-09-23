@@ -16,7 +16,6 @@ All product-related documentation is consolidated in the [**`docs/`**](./docs/) 
 * 📋 [**Master PRD (`docs/PRD.md`)**](./docs/PRD.md): Complete product requirements, architectural thesis (*Truth Settlement*), and 4-layer specification (Layer 0 Active Baseline through Layers 1–3).
 * ⚙️ [**Features Specification (`docs/features.md`)**](./docs/features.md): Consolidated technical details of active features (Svelte 5 runes, local AI Web Worker, BYOM presets, 4-verdict DOM highlighting, dual mini-charts, P2P swarm) and future expansions.
 * 🗺️ [**User Journeys (`docs/user_journeys.md`)**](./docs/user_journeys.md): Step-by-step user workflows for on-device checking, extension page scanning, frictionless 1-click uncap, P2P gossip, and courtroom deliberation.
-* 📑 [**Documentation Hub (`docs/README.md`)**](./docs/README.md): Quick navigation index for all documentation.
 
 ---
 
