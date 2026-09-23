@@ -44,3 +44,19 @@ async def test_google_oauth_provider_supported():
     res = await _query_byom_provider("google_oauth", "mock_oauth_token", "gemini-1.5-pro", "Is water wet?")
     assert len(res) > 0
     assert "text" in res[0]
+
+@pytest.mark.asyncio
+async def test_guest_agent_preset_without_credentials():
+    """Row 3: Guest Agent preset executes fact-checks seamlessly without manual credential entry."""
+    res = await _query_byom_provider("guest_agent", "", "gemini-1.5-flash", "Is the sky blue?")
+    assert len(res) > 0
+    assert "text" in res[0]
+    assert "Guest Agent" in res[0]["text"] or "1-Click" in res[0]["text"]
+
+@pytest.mark.asyncio
+async def test_google_ai_session_preset():
+    """Row 3: Google AI One-Click Session preset executes without error."""
+    res = await _query_byom_provider("google_ai_session", "", "gemini-1.5-flash", "Is Paris in France?")
+    assert len(res) > 0
+    assert "text" in res[0]
+

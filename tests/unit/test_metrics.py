@@ -34,3 +34,18 @@ def test_metrics_ratio_empty_or_zero():
     assert result["verifiable_facts_pct"] == 50.0
     assert result["opinion_speculation_pct"] == 50.0
     assert result["dominant_category"] == "NEUTRAL"
+
+def test_analyze_claim_metrics_speculative_text():
+    """Row 8: Text with speculative wording computes opinion dominant ratio."""
+    from frontend.metrics import analyze_claim_metrics
+    result = analyze_claim_metrics(text="In my opinion, I think AI might replace programmers maybe in the future.")
+    assert result["opinion_speculation_pct"] >= 50.0
+    assert result["dominant_category"] == "OPINION/SPECULATION"
+
+def test_analyze_claim_metrics_factual_text():
+    """Row 9: Text with factual wording computes fact dominant ratio."""
+    from frontend.metrics import analyze_claim_metrics
+    result = analyze_claim_metrics(text="Scientific data and official records confirmed the Apollo mission was verified in 1969.")
+    assert result["verifiable_facts_pct"] >= 70.0
+    assert result["dominant_category"] == "FACT"
+

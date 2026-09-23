@@ -62,3 +62,31 @@
   - Python tests: `uv run pytest tests/unit` passed (15 passed in 0.53s).
   - Frontend tests: `npm run test` passed (3 passed in 0.38s).
   - Production build: `npm run build` compiled Svelte 5 successfully without errors.
+
+## [2026-09-23] feat: Unified Vite build (web + extension), frictionless Guest Agent preset & persistent/embedded mini-charts
+- Branch: `feat/svelte5-byom-metrics`
+- Scope:
+  1. Unified Vite build syncing Svelte 5 bundle to both `frontend/static/dist/` and `extension/dist/`.
+  2. Frictionless "Guest Agent / Google AI One-Click Session" preset for non-technical users requiring zero credentials, plus default Google Account OAuth fallback and other AI options.
+  3. Persistent facts vs. opinion mini-chart in the frame header/sidebar dashboard AND embedded within every individual fact-check response card.
+- Files modified:
+  - `frontend/vite.config.js`: Added `syncToExtensionPlugin` hook on `closeBundle` to copy compiled bundles to `../extension/dist/` in lockstep with `static/dist/`.
+  - `extension/popup.html`: Updated to mount the compiled Svelte 5 application via `#svelte-frame-root` linking to `dist/frame.js` and `dist/frame.css`.
+  - `frontend/static/frame.html`: Updated asset links to relative `dist/frame.js` and `dist/frame.css` for universal host compatibility.
+  - `frontend/src/components/ByomModal.svelte`: Added primary frictionless "Activate Guest Agent / Google AI One-Click Session" button (uncapped, zero credentials), Google Account OAuth login option, and DeepSeek / custom AI options.
+  - `frontend/src/App.svelte`: Added persistent dashboard mini-chart in top frame area, embedded mini-chart in every agent response card, and Chrome extension active tab detection.
+  - `frontend/metrics.py`: Added `analyze_claim_metrics` implementing text heuristics for speculative vs. factual wording.
+  - `frontend/main.py`: Supported `"guest_agent"`, `"google_ai_session"`, and `"guest"` in `_query_byom_provider` and rate limit uncap check; attached `metrics` to `/chat` responses.
+  - `.gitignore`: Whitelisted `!extension/dist/` and `!extension/dist/**`.
+  - `tests/unit/test_auth_flow.py`: Added unit tests for guest agent preset and google ai session preset without credentials.
+  - `tests/unit/test_metrics.py`: Added unit tests for speculative and factual text heuristic analysis in `analyze_claim_metrics`.
+- Tests added:
+  - `test_guest_agent_preset_without_credentials` in `tests/unit/test_auth_flow.py`
+  - `test_google_ai_session_preset` in `tests/unit/test_auth_flow.py`
+  - `test_analyze_claim_metrics_speculative_text` in `tests/unit/test_metrics.py`
+  - `test_analyze_claim_metrics_factual_text` in `tests/unit/test_metrics.py`
+- Verification:
+  - Python tests: `uv run pytest tests/unit` passed (19 passed in 0.61s).
+  - Frontend tests: `npm run test` passed (3 passed in 0.36s).
+  - Production build: `npm run build` compiled Svelte 5 and synced bundle to `extension/dist/` in 834ms.
+

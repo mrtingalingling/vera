@@ -6,6 +6,8 @@ __pycache__/
 **/dist
 !frontend/static/dist/
 !frontend/static/dist/**
+!extension/dist/
+!extension/dist/**
 /tmp
 /out-tsc
 /bazel-out

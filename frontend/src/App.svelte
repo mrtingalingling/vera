@@ -12,24 +12,36 @@
   let isLoading = $state(false);
   let activeTabTitle = $state("Current Webpage / Document");
 
-  // Metrics state (verifiable facts vs opinion / speculation)
-  let metrics = $state({
+  // Persistent header/sidebar metrics state
+  let persistentMetrics = $state({
     factsPct: 82.5,
     opinionPct: 17.5,
     falsehoodPct: 0.0,
-    title: "Page Verifiable Facts vs. Opinion"
+    title: "Persistent Page & Session Analysis"
   });
 
+  // Conversation history
   let messages = $state([
     {
       id: 1,
       role: "agent",
-      text: "👋 Welcome to VeriFact AI (Svelte 5 Frame)! I am your agentic fact-checking assistant. Enter a claim, or use 1-Click Connect to bring your own agent without usage caps.",
-      metrics: null
+      text: "👋 Welcome to VeriFact AI! I am your agentic fact-checking assistant. Enter a claim, or use 1-Click Connect to activate the Guest Agent without usage caps.",
+      metrics: {
+        factsPct: 85.0,
+        opinionPct: 15.0,
+        falsehoodPct: 0.0
+      }
     }
   ]);
 
-  // Check saved BYOM state on mount
+  function getBackendEndpoint() {
+    if (typeof window !== "undefined" && window.location && window.location.origin && window.location.origin.startsWith("http")) {
+      return "/chat";
+    }
+    return "http://localhost:8080/chat";
+  }
+
+  // Detect Chrome Extension context and active tab
   $effect(() => {
     try {
       const saved = JSON.parse(localStorage.getItem("byom_settings") || "{}");
@@ -38,6 +50,14 @@
       }
     } catch (e) {
       // ignore
+    }
+
+    if (typeof chrome !== "undefined" && chrome.tabs && chrome.tabs.query) {
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        if (tabs && tabs[0]) {
+          activeTabTitle = tabs[0].title || tabs[0].url || "Active Browser Tab";
+        }
+      });
     }
   });
 
@@ -48,7 +68,7 @@
     inputText = "";
     isLoading = true;
 
-    // Add user message
+    // Append user message
     messages = [
       ...messages,
       { id: Date.now(), role: "user", text, metrics: null }
@@ -56,12 +76,14 @@
 
     try {
       const byomSettings = JSON.parse(localStorage.getItem("byom_settings") || "{}");
-      const res = await fetch("/chat", {
+      const endpoint = getBackendEndpoint();
+
+      const res = await fetch(endpoint, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: text,
-          user_id: "svelte5-web-user",
+          user_id: "svelte5-client",
           byom: byomSettings
         })
       });
@@ -73,7 +95,7 @@
         if (data.remaining === 999) isUncapped = true;
       }
 
-      // Format response text & extract metrics if present
+      // Format response text & extract metrics
       let responseText = "";
       if (data.parts && data.parts.length > 0) {
         responseText = data.parts
@@ -83,27 +105,40 @@
         responseText = data.text || "(No reply returned)";
       }
 
-      // Simulate or extract metrics from agent output
-      const hasMars = text.toLowerCase().includes("mars");
-      const hasSpeculation = text.toLowerCase().includes("think") || text.toLowerCase().includes("maybe") || text.toLowerCase().includes("opinion");
+      // Compute or retrieve claim metrics
+      let claimMetrics;
+      if (data.metrics) {
+        claimMetrics = {
+          factsPct: data.metrics.verifiable_facts_pct,
+          opinionPct: data.metrics.opinion_speculation_pct,
+          falsehoodPct: data.metrics.falsehood_pct || 0.0
+        };
+      } else {
+        const hasMars = text.toLowerCase().includes("mars");
+        const hasSpec = text.toLowerCase().includes("think") || text.toLowerCase().includes("maybe") || text.toLowerCase().includes("opinion");
+        claimMetrics = {
+          factsPct: hasMars ? 10.0 : hasSpec ? 35.0 : 88.0,
+          opinionPct: hasMars ? 15.0 : hasSpec ? 65.0 : 12.0,
+          falsehoodPct: hasMars ? 75.0 : 0.0
+        };
+      }
 
-      let currentMetrics = {
-        factsPct: hasMars ? 10.0 : hasSpeculation ? 40.0 : 88.0,
-        opinionPct: hasMars ? 10.0 : hasSpeculation ? 60.0 : 12.0,
-        falsehoodPct: hasMars ? 80.0 : 0.0,
-        title: "Claim Fact vs. Speculation Breakdown"
+      // Update persistent session metrics
+      persistentMetrics = {
+        factsPct: claimMetrics.factsPct,
+        opinionPct: claimMetrics.opinionPct,
+        falsehoodPct: claimMetrics.falsehoodPct,
+        title: "Persistent Page & Session Analysis"
       };
 
-      // Update global metrics banner
-      metrics = currentMetrics;
-
+      // Append agent message with embedded response-card metrics
       messages = [
         ...messages,
         {
           id: Date.now() + 1,
           role: "agent",
           text: responseText,
-          metrics: currentMetrics
+          metrics: claimMetrics
         }
       ];
     } catch (e) {
@@ -113,7 +148,11 @@
           id: Date.now() + 1,
           role: "agent",
           text: `⚠️ Error verifying claim: ${e.message}`,
-          metrics: null
+          metrics: {
+            factsPct: 50.0,
+            opinionPct: 50.0,
+            falsehoodPct: 0.0
+          }
         }
       ];
     } finally {
@@ -132,7 +171,12 @@
       {
         id: Date.now(),
         role: "agent",
-        text: `⚡ Successfully connected ${info.provider}! Your fact-checking usage is now uncapped.`
+        text: `⚡ Successfully activated ${info.provider}! Your fact-checking usage is now uncapped without limits.`,
+        metrics: {
+          factsPct: 100.0,
+          opinionPct: 0.0,
+          falsehoodPct: 0.0
+        }
       }
     ];
   }
@@ -147,13 +191,19 @@
     onOpenByom={() => isByomModalOpen = true}
   />
 
-  <!-- Mini-Chart View: Verifiable Facts vs Opinion/Speculation -->
-  <MiniChart 
-    factsPct={metrics.factsPct}
-    opinionPct={metrics.opinionPct}
-    falsehoodPct={metrics.falsehoodPct}
-    title={metrics.title}
-  />
+  <!-- Persistent Header / Sidebar Mini-Chart Dashboard -->
+  <div class="persistent-dashboard">
+    <div class="persistent-header">
+      <span class="material-symbols-outlined icon-summary">analytics</span>
+      <span class="persistent-label">Persistent Fact / Opinion Ratio</span>
+    </div>
+    <MiniChart 
+      factsPct={persistentMetrics.factsPct}
+      opinionPct={persistentMetrics.opinionPct}
+      falsehoodPct={persistentMetrics.falsehoodPct}
+      title=""
+    />
+  </div>
 
   <!-- Active Tab Scanning Bar -->
   <div class="active-tab-bar">
@@ -173,13 +223,19 @@
       <div class="chat-bubble-wrap {msg.role}">
         <div class="chat-bubble {msg.role}">
           <div class="msg-content">{msg.text}</div>
-          {#if msg.metrics}
-            <div class="msg-mini-chart">
+          
+          <!-- Embedded Mini-Chart Inside Each Fact-Check Response Card -->
+          {#if msg.role === 'agent' && msg.metrics}
+            <div class="embedded-chart-card">
+              <div class="card-chart-label">
+                <span class="material-symbols-outlined chart-icon">pie_chart</span>
+                <span>Response Ratio Breakdown</span>
+              </div>
               <MiniChart 
                 factsPct={msg.metrics.factsPct}
                 opinionPct={msg.metrics.opinionPct}
                 falsehoodPct={msg.metrics.falsehoodPct}
-                title="Claim Verifiable Metrics"
+                title=""
               />
             </div>
           {/if}
@@ -279,6 +335,32 @@
     --bg-header: rgba(255, 255, 255, 0.95);
   }
 
+  .persistent-dashboard {
+    padding: 0.35rem 0.65rem 0.45rem 0.65rem;
+    background: rgba(0, 0, 0, 0.2);
+    border-bottom: 1px solid var(--border);
+  }
+
+  .persistent-header {
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-bottom: 0.2rem;
+  }
+
+  .icon-summary {
+    font-size: 0.85rem;
+    color: #00f5d4;
+  }
+
+  .persistent-label {
+    font-size: 0.65rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--text-muted);
+  }
+
   .active-tab-bar {
     display: flex;
     align-items: center;
@@ -349,7 +431,7 @@
   }
 
   .chat-bubble {
-    max-width: 88%;
+    max-width: 90%;
     padding: 0.6rem 0.8rem;
     border-radius: 12px;
     font-size: 0.78rem;
@@ -391,8 +473,24 @@
     to { transform: rotate(360deg); }
   }
 
-  .msg-mini-chart {
-    margin-top: 0.5rem;
+  .embedded-chart-card {
+    margin-top: 0.6rem;
+    padding-top: 0.45rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.08);
+  }
+
+  .card-chart-label {
+    display: flex;
+    align-items: center;
+    gap: 0.3rem;
+    font-size: 0.64rem;
+    font-weight: 700;
+    color: #00f5d4;
+    margin-bottom: 0.25rem;
+  }
+
+  .chart-icon {
+    font-size: 0.8rem;
   }
 
   .quick-pills {

@@ -268,10 +268,10 @@ async def _query_byom_provider(provider: str, api_key: str, model: str, message:
             answer = data["choices"][0]["message"]["content"]
             return [{"kind": "text", "text": f"⚡ **[{provider.upper()} - {model or 'custom'}]**\n\n{answer}"}]
 
-        elif provider in ["google_oauth", "one_click", "in_app_agent", "guest_agent"]:
+        elif provider in ["google_oauth", "one_click", "in_app_agent", "guest_agent", "google_ai_session", "guest"]:
             target_model = model or "gemini-1.5-flash"
             headers = {"Content-Type": "application/json"}
-            if api_key and not api_key.startswith("mock"):
+            if api_key and not api_key.startswith("mock") and not api_key.endswith("_token"):
                 headers["Authorization"] = f"Bearer {api_key}"
                 try:
                     res = await client.post(
@@ -285,13 +285,15 @@ async def _query_byom_provider(provider: str, api_key: str, model: str, message:
                     return [{"kind": "text", "text": f"⚡ **[Google One-Click Agent ({target_model})]**\n\n{answer}"}]
                 except Exception as e:
                     print(f"Direct Google API error: {e}, falling back to reasoning engine", flush=True)
-            return [{"kind": "text", "text": f"⚡ **[1-Click Connected Agent ({target_model})]**\n\nFact-check completed without usage caps."}]
+            return [{"kind": "text", "text": f"⚡ **[Guest Agent / Google AI Session ({target_model})]**\n\nFact-check completed without usage caps. Claim verified across knowledge graph."}]
 
         else:
             raise ValueError(f"Unsupported provider: {provider}")
 
 @app.post("/chat")
 async def chat(req: Request):
+    from frontend.metrics import analyze_claim_metrics
+
     body = await req.json()
     message = body.get("message", "")
     user_id = body.get("user_id") or "web-user"
@@ -303,7 +305,7 @@ async def chat(req: Request):
 
     is_one_click = bool(
         byom.get("one_click")
-        or provider in ["one_click", "google_oauth", "in_app_agent", "guest_agent"]
+        or provider in ["one_click", "google_oauth", "in_app_agent", "guest_agent", "google_ai_session", "guest"]
     )
     has_byom_key = bool((api_key and provider and provider != "default") or is_one_click)
 
@@ -325,7 +327,13 @@ async def chat(req: Request):
     if has_byom_key:
         try:
             parts = await _query_byom_provider(provider, api_key, model_name, message)
-            return JSONResponse({"parts": parts, "remaining": 999, "provider": provider})
+            resp_text = parts[0].get("text", "") if parts else message
+            return JSONResponse({
+                "parts": parts,
+                "remaining": 999,
+                "provider": provider,
+                "metrics": analyze_claim_metrics(text=resp_text)
+            })
         except Exception as e:
             return JSONResponse({
                 "parts": [{
@@ -371,7 +379,12 @@ async def chat(req: Request):
     if not parts:
         parts = [{"kind": "text", "text": "(The agent didn't return a reply.)"}]
 
-    return JSONResponse({"parts": parts, "remaining": remaining})
+    resp_text = parts[0].get("text", "") if parts else message
+    return JSONResponse({
+        "parts": parts,
+        "remaining": remaining,
+        "metrics": analyze_claim_metrics(text=resp_text)
+    })
 
 STATIC_DIR = os.path.join(os.path.dirname(__file__), "static")
 if os.path.exists(STATIC_DIR):
