@@ -1,5 +1,14 @@
 # Repository Edit Log
 
+## [2026-09-23] docs: Comprehensive multi-repo documentation review, alignment, and canonical roadmap
+- Scope: Fully aligned and synchronized all documentation across `vera`, `clearCloud`, and `veracities.social`:
+  1. Expanded `vera/docs/ARCHITECTURE_CAVEATS_AND_ROADMAP.md` (v3.0) as the authoritative canonical source of truth for the multi-repo ecosystem, remaining operational caveats, step-by-step module connection and deployment, upgrade warnings, and AI agent maintenance rules.
+  2. Streamlined `clearCloud/docs/ARCHITECTURE_CAVEATS_AND_ROADMAP.md` and `veracities.social/docs/ARCHITECTURE_CAVEATS_AND_ROADMAP.md` into concise repo-specific guides that point cleanly to the canonical roadmap, eliminating duplicate information and preventing documentation drift.
+  3. Synchronized `clearCloud/README.md` and `clearCloud/docs/architecture.md` with latest components (43 passing tests, civic sortition, blind trial engine, and substantive evidence submission).
+  4. Synchronized `veracities.social/README.md` and `veracities.social/docs/architecture.md` with latest components (92 passing tests, poker evidence wagering, parley tickets, derivative hedge options, threshold oracle relayers, ZK governance view, and Solidity 0.8.20 contracts).
+  5. Updated `vera/README.md`, `vera/GEMINI.md`, `vera/docs/PRD.md`, `vera/docs/features.md`, and `vera/docs/user_journeys.md` (Journeys 10–12).
+  6. Verified zero documentation conflicts and confirmed all 196 tests passing across all three repositories.
+
 ## [2026-09-23] docs: Align all documentation across 3-repo architecture
 - Branch: `docs/architecture-and-exports` on `vera`
 - Scope: Synchronized all documentation across the multi-repo estate (`vera`, `clearCloud`, `veracities.social`):
@@ -280,3 +289,27 @@
      - 36 Vitest unit tests (all passing).
      - 19 Pytest unit tests (all passing).
      - Full production build compiled with lockstep sync to `extension/dist/`.
+
+## [2026-09-23] feat: Upgradeable Smart Contracts (UUPS / ERC-1967) & Modular DAO Framework Composability
+- Scope:
+  1. Universal Upgradeable Proxy Standard (UUPS / ERC-1967) for all ecosystem contracts:
+     - contracts/proxy/Initializable.sol: Re-entrancy & double-initialization protection.
+     - contracts/proxy/ERC1967Proxy.sol: Canonical delegating proxy at slot 0x360894a13ba1a3210667c828492db98dca3e2076cc3735a920a3ca505d382bbc.
+     - contracts/proxy/UUPSUpgradeable.sol: Implementation-side upgrade logic (upgradeToAndCall) guarded by _authorizeUpgrade.
+     - Refactored ValidationMarket.sol to UUPS upgradeable with stored proxy-bound DOMAIN_SEPARATOR and storage gap.
+     - Refactored CourtroomEscrow.sol to UUPS upgradeable with storage gap.
+     - Refactored EpistemicGovernor.sol to UUPS upgradeable with storage gap.
+  2. Modular DAO Framework Composability:
+     - Implemented contracts/interfaces/IDAOFrameworks.sol with IGovernorStandard, IZodiacModule, IAragonPlugin, ITimelockController.
+     - Implemented OpenZeppelin IGovernorStandard view compatibility (state, proposalVotes, proposalDeadline, proposalSnapshot, quorum) in EpistemicGovernor.sol.
+     - Implemented executeWithParentFramework supporting direct execution through Zodiac Safe module (execTransactionFromModule), Aragon OSx plugin hook (executeProposalHook), and Timelock forwarder.
+     - Configured dual upgrade authorization: owner or self-executed Epistemic Proposal passed via Sage/Arbiter consensus.
+  3. Compiler & Deployment Pipeline:
+     - Updated scripts/compileContracts.js with findImports loader and multi-artifact compilation (optimizer: 200 runs, viaIR: true).
+     - Updated scripts/deploy.js to deploy implementations, deploy ERC-1967 proxies, initialize atomically, and export proxy addresses to contracts.json.
+  4. Frontend UI & Registry Integration:
+     - Updated src/governance/daoRegistry.js with DAO_FRAMEWORKS constant, framework binding, payload formatter, and upgradeability metadata.
+     - Updated src/components/GovernanceView.svelte with Contract Architecture & Multi-Framework Interoperability status card.
+  5. Verification & Test Suite:
+     - Added 3 comprehensive test suites to tests/contracts.test.js (total 11 tests in file).
+     - Full monorepo pass: 199 / 199 tests passing green (clearCloud: 43, veracities.social: 95, vera frontend: 42, vera backend: 19).

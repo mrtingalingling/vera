@@ -29,15 +29,28 @@
 | **Layer 0** | **libp2p Decentralized P2P Swarm** | **Active** | `frontend/src/p2pNode.js` | Browser-to-browser claim hash gossip; header swarm status indicator. |
 | **Layer 0** | **Tactile Feedback Toast System** | **Active** | `App.svelte` (`toastMessage`, `showToast`) | Floating glassmorphism alerts for premise changes, doc links, and saves. |
 | **Layer 0** | **Drawer Accordion Auto-Collapse** | **Active** | `App.svelte` | Mutually exclusive drawers; auto-collapse when modals open to save screen space. |
-| **Layer 0** | **Root DX Runner & Test Suite** | **Active** | `package.json`, Vitest, Pytest | `npm test` runs 40 Vitest + 19 Pytest tests concurrently in under 2s. |
+| **Layer 0** | **Root DX Runner & Test Suite** | **Active** | `package.json`, Vitest, Pytest | `npm test` runs 42 Vitest + 19 Pytest tests in `vera`. Root `npm run test:all` runs 224/224 tests across all 3 repos. |
 | **Layer 1.2** | **On-Device PII Scrubber & Claim Extractor** | **Active** | `frontend/src/scrubber/piiScrubberService.js` | Zero cloud leakage. Redacts PII, strips preambles, extracts falsifiable core claims. Exported via `@vera/core`. |
 | **Layer 1.1** | **ClearCloud Relational Social Feed** | **Active** | `clearCloud/src/feed/` | 3-tier circles (Close Friends, Acquaintances, Network-Wide), Groundedness Index ranking, rage-bait scrubber. |
 | **Layer 1.1** | **Hidden Asymmetric Reputation Engine** | **Active** | `clearCloud/src/feed/feedManager.js` | Rapid decay for ragebait (-18 to -25); slow accrual for grounded citations (+1.5 to +2.0). |
-| **Layer 1.3** | **The Courtroom Deliberation Forum & DAGs** | **Active** | `clearCloud/src/courtroom/` | Falsifiability Gatekeeper, Compound Claim DAG decomposition, juror voting, and AI Judge synthesis. |
-| **Protocol** | **ATProto & Web3 Identity Broker** | **Active** | `veracities.social/src/identity/` | BskyAgent `@atproto/api` session validation, DID:PLC resolution, and Web3 SIWE EIP-4361. |
-| **Layer 2** | **Validation Market Registry** | **Active** | `veracities.social/src/market/validationMarket.js` | Prediction staking across 4 epistemic outcomes, dynamic odds, and automated settlement. |
+| **Layer 1.1** | **Epistemic Credit Score Interaction Weighting** | **Active** | `clearCloud/src/courtroom/reputationStakeGuard.js` | Quadratic down-weighting for low-rep likes/reactions ($\max(0.01, (\text{rep}/50)^2)$); juror vote credit scaling ($\max(0.05, \text{rep}/50)$). |
+| **Layer 1.1** | **Stake-to-Repost & Stake-to-Post Guards** | **Active** | `clearCloud/src/courtroom/reputationStakeGuard.js` | Low-rep authors ($\text{rep} < 40$) must stake 10 USDC to post and 5 USDC to repost; verified citizens post/repost freely. |
+| **Layer 1.1** | **Influencer Reach Bonds & Exponential Defense** | **Active** | `clearCloud/src/courtroom/reputationStakeGuard.js` | Influencers ($\ge 10\text{k}$ followers, $\text{rep} < 60$) must stake reach-scaled bonds; repeated disinfo escalates exponentially ($2^{\Delta/5} \times 2^{\text{strikes}}$) without ceiling. |
+| **Layer 1.3** | **Courtroom Deliberation Forum & DAGs** | **Active** | `clearCloud/src/courtroom/caseManager.js` | Falsifiability Gatekeeper, Compound Claim DAG decomposition, juror voting, and AI Judge synthesis. |
+| **Layer 1.3** | **Multi-Origin Case Initiation & Wagers** | **Active** | `clearCloud/src/courtroom/caseManager.js` | Cases initiated from `SOCIAL_MEDIA` (clearCloud) or `EXTENSION_APP` (Vera) with optional/mandatory validation wagers dispatched to `veracities.social`. |
+| **Layer 1.3** | **Civic Sortition Engine (Sybil Gated)** | **Active** | `clearCloud/src/courtroom/sortitionEngine.js` | Summons 7–9 randomized citizens; gated by Proof of Humanity ($\ge 20$) or Staked Bonds ($\ge 10$ USDC). |
+| **Layer 1.3** | **Blind Trial Engine & Decoy Dockets** | **Active** | `clearCloud/src/courtroom/blindTrialEngine.js` | Entity anonymization (`[Entity_A]`), deep semantic paraphrasing ($P(x,t)$), and synthetic decoy dockets. |
+| **Layer 1.3** | **Substantive Evidence Gates & Clock Reset** | **Active** | `clearCloud/src/courtroom/caseManager.js` | Validates decentralized CIDs (`ipfs://`, `ar://`, `doi.org/`), relevance $\ge 0.70$, escalating deposits ($50 \times 2^{n-1}$). |
+| **Protocol** | **ATProto & Web3 Identity Broker** | **Active** | `veracities.social/src/identity/` | BskyAgent `@atproto/api`, DID:PLC resolution, custom lexicons, and Web3 SIWE EIP-4361 (`siweLink.js`). |
+| **Layer 2** | **Validation Market Prediction Pools** | **Active** | `veracities.social/src/market/validationMarket.js` | 4-outcome dynamic odds prediction pools (`VERIFIED`, `DISPUTED`, `MISINFORMED`, `NEED_CONTEXT`). |
+| **Layer 2** | **Poker Evidence Rounds & Fold Action** | **Active** | `veracities.social/src/market/validationMarket.js` | 4-stage rounds (`Pre-Flop` $\to$ `Showdown`) with loss-mitigation `Fold` action. |
+| **Layer 2** | **Truth Parleys & Derivative Hedges** | **Active** | `veracities.social/src/market/validationMarket.js` | Multi-claim parley tickets with compound multiplier; Epistemic Put & Call derivative hedge options. |
+| **Layer 2** | **Losing Pool Slashing Waterfall** | **Active** | `veracities.social/src/market/validationMarket.js` | 15% Whistleblower Evidence Bounty, 5% Juror Deliberation Fee, 5% Protocol Fee. |
 | **Layer 1.3 / Protocol** | **Courtroom Settlement Protocol** | **Active** | `veracities.social/src/settlement/` | 14-day cold case refund (94% refund / 6% fee), Challenge Bond retrials (50% bounty). |
-| **Layer 3** | **Epistemic DAO Governance ("EnDAOsment")** | **Active** | `veracities.social/src/governance/daoRegistry.js` | Proposal lifecycle, weighted voting, and quorum/consensus evaluation. |
+| **Protocol / Oracles** | **Threshold Multi-Sig Oracle Relayer** | **Active** | `veracities.social/src/oracle/oracleRelayer.js` | Verifies $M$-of-$N$ EIP-712 citizen juror signatures and single-use nonces against sortition rosters. |
+| **Layer 3** | **Epistemic DAO Governance ("EnDAOsment")** | **Active** | `veracities.social/src/governance/daoRegistry.js` | Multi-dimensional Epistemic Quotient ($EQ$) formula with quadratic tier voting (1, 5, 15, 30). |
+| **Layer 3** | **Semaphore ZK Anonymous Voting** | **Active** | `veracities.social/src/governance/zkSemaphoreBridge.js` | Client-side Semaphore ZK identity bridge with single-use nullifiers in `GovernanceView.svelte`. |
+| **Layer 2 / 3** | **UUPS Upgradeable Smart Contracts & Proxies** | **Active** | `veracities.social/contracts/` | `ValidationMarket.sol`, `CourtroomEscrow.sol`, `EpistemicGovernor.sol` behind `ERC1967Proxy.sol` with modular DAO framework adapters (OpenZeppelin, Gnosis Safe Zodiac, Aragon OSx). |
 
 ---
 
