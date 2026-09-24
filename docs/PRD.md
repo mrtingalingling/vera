@@ -30,6 +30,7 @@ Rather than treating social networking, financial markets, and decentralized gov
        ┌────────────────────────────────────────────────────────┐
        │                Layer 1: Social Suite                   │
        │  • ClearCloud: Relational Feed & Hidden Reputation     │
+       │  • Epistemic Credit Score & Exponential Disinfo Defense│
        │  • Chat Add-on: WebGPU Local PII Scrubber              │
        │  • The Courtroom: Falsifiable Deliberation & DAGs      │
        └──────────────┬──────────────────────────┬──────────────┘
@@ -42,18 +43,20 @@ Rather than treating social networking, financial markets, and decentralized gov
 │  (Governance & Ecosystem    │   │  (Monetizing Fact Discovery │
 │         Improvement)        │   │     & Truth Settlement)     │
 │ • Anonymous ZK-SNARK Bridge │   │ • Poker-Style Wagering      │
-│ • Empathy / Bridging Votes  │   │ • Parleys & Derivatives     │
-│ • Proposal & Upgrade Power  │   │ • On-Chain + Jury Oracles   │
+│ • UUPS Upgradeable Proxies  │   │ • Parleys & Derivatives     │
+│ • Modular Framework Adapters│   │ • On-Chain + Jury Oracles   │
+│ • Empathy / Bridging Votes  │   │ • 14-Day 94%/6% Refunds     │
 └─────────────────────────────┘   └─────────────────────────────┘
                       ▲                          ▲
                       └──────────────┬───────────┘
                                      │ Grounded Metrics &
-                                     │ Verification Hooks
+                                     │ Multi-Origin Case Wagers
 ┌────────────────────────────────────┴──────────────────────────────────────────┐
 │                      Layer 0: Vera Core Agent (ACTIVE)                        │
 │  • Svelte 5 Runes Unified Frame (Web Cockpit & Chrome Extension Popup)        │
 │  • Hybrid In-Browser (WebGPU) + BYOM Cloud Agents (1-Click & Custom Keys)     │
 │  • Real-Time 4-Category Verdict DOM Highlighting                              │
+│  • Multi-Origin Case Initiation from Social Feed & Extension Overlay          │
 │  • Persistent & Embedded Fact vs. Opinion/Speculation Mini-Charts             │
 │  • libp2p Decentralized P2P Transport Layer                                   │
 └───────────────────────────────────────────────────────────────────────────────┘

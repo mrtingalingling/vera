@@ -26,6 +26,7 @@ graph TD
     subgraph LayerApp ["Unified Social Application (mrtingalingling/clearCloud)"]
         A_Feed["The Feed & Relational Circles (Feature 1.1)<br/>(Close Friends, Acquaintances, Network)"]
         A_Grounded["Groundedness Index (G) & Hidden Rep<br/>(feedManager.js)"]
+        A_Guard["Reputation Stake Guard & Credit Score<br/>(reputationStakeGuard.js)"]
         A_Gate["Falsifiability Gatekeeper<br/>(falsifiabilityGatekeeper.js)"]
         A_Court["Courtroom Deliberation Forum (Feature 1.3)<br/>(caseManager.js & CourtroomView.svelte)"]
         A_Blind["Blind Trial & Decoy Docket Engine<br/>(blindTrialEngine.js)"]
@@ -41,14 +42,18 @@ graph TD
         P_Settle["Courtroom Settlement Protocol<br/>(courtroomSettlement.js)"]
         P_Oracle["Threshold Multi-Sig Oracle Relayer<br/>(oracleRelayer.js)"]
         P_DAO["Epistemic DAO & ZK Semaphore Bridge<br/>(zkSemaphoreBridge.js & daoRegistry.js)"]
-        P_EVM["EVM Smart Contracts (Base / Arbitrum)<br/>(ValidationMarket, Escrow, EpistemicGovernor)"]
+        P_Proxy["UUPS / ERC-1967 Proxies & Modular DAO Adapters<br/>(ERC1967Proxy.sol, IGovernorStandard, IZodiacModule)"]
+        P_EVM["EVM Implementation Contracts<br/>(ValidationMarket, Escrow, EpistemicGovernor)"]
     end
 
     %% Cross-Module Connections
-    Layer0 -->|"Exports @vera/core (PII scrubber, on-device AI, heuristics)"| LayerApp
-    LayerApp -->|"Dispatches verified dockets & M-of-N signed attestations"| LayerProtocol
-    LayerProtocol -->|"Relays settlement & verified truth signals"| LayerApp
-    LayerProtocol -->|"Exports compiled ABIs & contract addresses"| LayerApp
+    Layer0 -->|"Exports @vera/core (PII scrubber, on-device AI)"| LayerApp
+    Layer0 -.->|"Initiates case docket via Extension"| A_Court
+    LayerApp -->|"Dispatches validation wagers & case dockets"| P_Market
+    LayerApp -->|"Dispatches M-of-N signed juror attestations"| P_Oracle
+    LayerProtocol -->|"Relays settlement payouts & verified truth signals"| LayerApp
+    LayerProtocol -->|"Exports compiled ABIs & proxy addresses"| LayerApp
+    P_Proxy -->|"Delegates execution"| P_EVM
 ```
 
 ### Module Responsibilities & Security Boundaries

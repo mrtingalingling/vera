@@ -22,19 +22,25 @@ graph TD
         P_Market["Validation Market Registry<br/>(validationMarket.js)"]
         P_DAO["Epistemic DAO Governance Registry<br/>(daoRegistry.js)"]
         P_Settle["Courtroom Settlement Protocol<br/>(14-day cold 94%/6% fee & challenge bonds)"]
+        P_Proxy["UUPS / ERC-1967 Proxies & Modular DAO Adapters<br/>(ERC1967Proxy.sol, IGovernorStandard, IZodiacModule)"]
     end
 
     subgraph LayerApp ["Unified Social Application (mrtingalingling/clearCloud)"]
         A_Feed["The Feed & Relational Circles (Feature 1.1)<br/>(Close Friends, Acquaintances, Network)"]
-        A_Grounded["Groundedness Index (G) & Hidden Rep<br/>(feedVerifier.js)"]
+        A_Grounded["Groundedness Index (G) & Hidden Rep<br/>(feedManager.js)"]
+        A_Guard["Reputation Stake Guard & Credit Score<br/>(reputationStakeGuard.js)"]
         A_Court["The Courtroom Deliberation Forum (Feature 1.3)<br/>(Compound Claim DAG & Juror Voting)"]
         A_Overlay["Social Overlays<br/>(X, Bluesky, Reddit, YouTube)"]
     end
 
     %% Cross-Repo Interconnections
     Layer0 -->|"Exports @vera/core API (local AI, PII scrubber, P2P)"| LayerApp
-    Layer0 -->|"Supplies verified attestations"| LayerProtocol
+    Layer0 -.->|"Initiates case docket via Extension"| A_Court
+    LayerApp -->|"Dispatches validation wagers & case dockets"| P_Market
+    LayerApp -->|"Dispatches M-of-N signed juror attestations"| LayerProtocol
     LayerProtocol -->|"Provides ATProto Auth & Staking Settlement Protocol"| LayerApp
+    P_Proxy -.->|"Delegates execution"| P_Market
+    P_Proxy -.->|"Delegates execution"| P_DAO
 ```
 
 ---
