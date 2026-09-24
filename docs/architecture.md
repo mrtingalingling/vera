@@ -66,9 +66,18 @@ graph TD
   - `src/identity/`: ATProto provider (`@atproto/api`), DID:PLC directory resolution, custom `social.veracities.*` lexicons, and Web3 SIWE EIP-4361 (`siweLink.js`).
   - `src/market/validationMarket.js`: Validation Market prediction registry, 4-stage Poker evidence wagering (`Pre-Flop` $\to$ `Showdown`), Truth Parleys ticket builder with compound multiplier, and Epistemic Put & Call derivative hedge options.
   - `src/oracle/oracleRelayer.js`: $M$-of-$N$ threshold multi-signature verification for citizen juror attestation payloads using EIP-712 structured data and single-use nonces.
-  - `src/governance/daoRegistry.js` & `zkSemaphoreBridge.js`: Epistemic DAO registry ("EnDAOsment") with Epistemic Quotient ($EQ$) quadratic tier multipliers and Semaphore ZK anonymous ballots.
+  - `src/governance/daoRegistry.js` & `zkSemaphoreBridge.js`: Epistemic DAO registry ("EnDAOsment") with Epistemic Quotient ($EQ$) quadratic tier multipliers, Semaphore ZK anonymous ballots, and two-stage consensus (Stage 1 Approval + Stage 2 Quadratic Voting with credit budgets) integrated with `DAO-Smart-Contract-Framework`.
   - `src/settlement/courtroomSettlement.js`: Courtroom settlement rules (14-day cold case 94% refund / 6% fee, anti-spam challenge bond escrow, 15% whistleblower bounty, 5% juror fee, 5% protocol fee).
-  - `contracts/`: Production Solidity 0.8.20 contracts (`ValidationMarket.sol`, `CourtroomEscrow.sol`, `EpistemicGovernor.sol`) compiled with Solc optimizer.
+  - `contracts/`: Production Solidity 0.8.20 contracts (`ValidationMarket.sol`, `CourtroomEscrow.sol`, `EpistemicGovernor.sol`) compiled with Solc optimizer and modular framework adapters (OpenZeppelin, Gnosis Safe Zodiac, Aragon OSx, EnDAOsment).
+
+---
+
+### Governance Framework ([`mrtingalingling/DAO-Smart-Contract-Framework`](https://github.com/mrtingalingling/DAO-Smart-Contract-Framework))
+- **Execution Environment**: EVM Foundry / Solidity 0.8.27 (via-IR).
+- **Key Modules**:
+  - `contracts/EpistemicCrsManager.sol`: Checkpointed Community Reputation Score (CRS) mapping Epistemic Tiers to snapshot voting power and quadratic credit budgets using OpenZeppelin `Checkpoints.Trace208`.
+  - `contracts/GovernorGeneral.sol`: Multi-stage governance pipeline (Stage 1 Approval $\to$ Stage 2 Quadratic $\to$ Timelock execution).
+  - `test/EpistemicDAO.t.sol`: Full Foundry integration test suite (39/39 passing).
 
 ---
 

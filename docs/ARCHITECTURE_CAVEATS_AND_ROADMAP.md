@@ -4,7 +4,7 @@
 > **Date**: September 2026  
 > **Version**: 3.0 (Full PRD Implementation & Production Readiness Edition)  
 > **Authoritative Role**: Canonical Architecture Blueprint, Production Caveats Ledger, Deployment Runbook & AI Agent Operational Guide  
-> **Estate Test Suite**: **224 / 224 Automated Tests Passing (100% Green)** across all 3 repositories  
+> **Estate Test Suite**: **264 / 264 Automated Tests Passing (100% Green)** across all repositories  
 
 ---
 
@@ -228,16 +228,17 @@ This automatically compiles the Solidity sources and exports contract ABIs and a
 - `clearCloud/src/config/contracts.json`
 
 #### Step 3: Run the Complete Multi-Repo Test Suite
-Verify that all 224 automated tests pass across all repositories:
+Verify that all 264 automated tests pass across all repositories:
 ```bash
 npm run test:all
 ```
 Output breakdown:
+- `DAO-Smart-Contract-Framework`: 7 test suites, **39 / 39 tests passing** (`forge test`)
 - `clearCloud`: 9 test suites, **68 / 68 tests passing** (including 25 governance, credit score, and exponential penalty tests)
-- `veracities.social`: 16 test suites, **95 / 95 tests passing**
+- `veracities.social`: 16 test suites, **96 / 96 tests passing** (including EnDAOsment two-stage governance)
 - `vera` (Frontend): 6 test suites, **42 / 42 tests passing**
 - `vera` (Backend): pytest suite, **19 / 19 tests passing**
-- **Total: 224 / 224 passing (100% green)**
+- **Total: 264 / 264 passing (100% green)**
 
 #### Step 4: Run Applications Locally
 
@@ -416,7 +417,7 @@ When upgrading any part of the codebase, engineers and AI agents must preserve t
      ```bash
      cd /config/Desktop && npm run test:all
      ```
-   - All 224 tests must pass (100% green) before declaring any task complete.
+   - All 264 tests must pass (100% green) before declaring any task complete.
 4. **Single Source of Truth**:
    - This document (`vera/docs/ARCHITECTURE_CAVEATS_AND_ROADMAP.md`) is the canonical source of truth for all cross-repo architecture, remaining caveats, deployment procedures, and upgrade warnings.
    - Documentation in `clearCloud` and `veracities.social` should cross-reference this document to prevent documentation drift and eliminate information duplication.
@@ -431,11 +432,12 @@ When upgrading any part of the codebase, engineers and AI agents must preserve t
 ==========================================================================================
  Repository                   Suite Type             Tests Passed   Pass Rate   Status
 ------------------------------------------------------------------------------------------
+ DAO-Smart-Contract-Framework Foundry (Forge)          39 / 39        100%       PASS
  clearCloud                   Vitest (Unit/E2E)        68 / 68        100%       PASS
- veracities.social            Vitest + Solc            95 / 95        100%       PASS
+ veracities.social            Vitest + Solc            96 / 96        100%       PASS
  vera (frontend)              Vitest (Runes/UI)        42 / 42        100%       PASS
  vera (backend)               Pytest (FastAPI/ADK)     19 / 19        100%       PASS
 ------------------------------------------------------------------------------------------
- TOTAL ECOSYSTEM SUITE                                224 / 224       100%       GREEN
+ TOTAL ECOSYSTEM SUITE                                264 / 264       100%       GREEN
 ==========================================================================================
 ```
