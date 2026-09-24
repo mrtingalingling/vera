@@ -373,6 +373,48 @@ When upgrading any part of the codebase, engineers and AI agents must preserve t
     5. *Reputation Stake Guard* (`reputationStakeGuard.js`): Epistemic credit score interaction weighting, stake-to-repost, influencer broadcast bonds, and exponential disinformation penalties.
   - **Edge Ingestion Engine (`vera/frontend/src/`)**: Discrete services for Local AI (`localAiService.js`), zero-knowledge PII scrubbing (`piiScrubberService.js`), Google Drive integration (`googleDriveService.js`), and IndexedDB caching (`db.js`).
 
+### 9. EnDAOsment Governance Framework Integration: Architecture & Upgrade Dynamics
+- **Overview**: Vera adapts the [`DAO-Smart-Contract-Framework`](https://github.com/mrtingalingling/DAO-Smart-Contract-Framework) ("EnDAOsment") for Layer 3 Epistemic Governance, transitioning away from plutocratic token-weighted voting to multi-dimensional reputation-weighted collective intelligence.
+
+#### A. How the Framework is Leveraged (The 4 Pillars)
+1. **Checkpointed Epistemic CRS (`EpistemicCrsManager.sol`)**:
+   - Implements `ICrsManager` using OpenZeppelin's `Checkpoints.Trace208` to snapshot member Epistemic Tiers and quadratic credit allowances across block numbers.
+   - Maps Vera's 4 Epistemic Tiers to credit budgets:
+     - *Tier 1 (Novice)*: 100 Credits
+     - *Tier 2 (Contributor)*: 500 Credits
+     - *Tier 3 (Arbiter)*: 1,500 Credits
+     - *Tier 4 (Sage Elder)*: 3,000 Credits
+   - Historical lookups (`getPastCrs(account, tokenId, timepoint)`) prevent flash-loan and flash-reputation attacks, ensuring voting power is determined strictly at the proposal snapshot block.
+2. **Two-Stage Deliberation & Quadratic Impact**:
+   - **Stage 1 (Epistemic Approval Vetting)**: Handled by `ApprovalGovernor.sol`. Evaluates qualitative truth and platform safety merits. High-tier Sages and Arbiters screen proposals with quadratic tier weights ($W \in \{1, 5, 15, 30\}$).
+   - **Stage 2 (Quadratic Voting with Credit Budgets)**: Handled by `QuadraticGovernor.sol`. Citizens allocate credits from their budget ($C$), yielding quadratic voting weight:
+     $$V = \lfloor\sqrt{C}\rfloor \quad \text{such that Cost } C = V^2$$
+     This dampens factional brigading, mitigates voter fatigue, and prevents high-reputation coalitions from overpowering broad citizen consensus.
+3. **Safe Timelock Execution**:
+   - Succeeded proposals are queued via OpenZeppelin's `TimelockControllerUpgradeable` (24–48h delay).
+   - Guarantees transparency, allows participants to review changes, and provides a circuit-breaker window before bytecode or parameter adjustments execute on-chain.
+4. **Privacy & Modular Cross-Repo Dispatch**:
+   - In `veracities.social`, citizens cast ballots anonymously using Semaphore zero-knowledge proofs (where only their tier credential is proven, without revealing their DID or wallet address).
+   - `EpistemicGovernor.sol` acts as the modular bridge: it implements `ParentFramework.ENDAOSMENT` and dispatches execution payloads to the framework's `IEnDAOsmentGovernorGeneral` entrypoint.
+
+#### B. Framework Update Dynamics & Resilience Strategy (What Happens if the Framework Updates)
+1. **Decoupled UUPS / ERC-1967 Storage (Zero Data Loss)**:
+   - Both `DAO-Smart-Contract-Framework` contracts (`GovernorGeneral`, `ApprovalGovernor`, `QuadraticGovernor`, `MemberToken`) and Vera's contracts (`EpistemicGovernor`, `EpistemicCrsManager`) run behind independent ERC-1967 proxies with reserved storage gaps (`uint256[45..48] private __gap;`).
+   - When the framework upgrades its implementation logic via `upgradeToAndCall`, only the implementation contract address in the proxy changes.
+   - **Zero Loss of History**: All existing proposals, historical votes, member badges, CRS reputation checkpoints, and voter credit balances remain untouched in persistent proxy storage.
+2. **Backward-Compatible vs. Breaking Interface Evolution**:
+   - *Non-Breaking Updates* (gas optimizations, internal event additions, logic patches): Handled seamlessly with zero downtime or reconfiguration; contracts continue interacting over standard ABI calls.
+   - *Breaking Interface Updates* (changes to function signatures in `IGovernorGeneral`):
+     - `EpistemicGovernor.sol` includes runtime reconfiguration: `configureParentDAO(ParentFramework.ENDAOSMENT, newAddress)` can repoint target framework contracts dynamically.
+     - If the interface signature itself evolves, `EpistemicGovernor` is upgraded via its own UUPS proxy to match the new ABI with zero platform downtime.
+3. **Independent CRS Scoring Heuristics**:
+   - Epistemic Quotient scoring ($EQ = 0.40 \cdot \text{Factuality} + 0.30 \cdot \text{Bridging} + 0.20 \cdot \text{SteelManning} - 0.30 \cdot \text{Toxicity}$) and credit allotments live inside Vera's `EpistemicCrsManager.sol`.
+   - If the framework updates its core rules, Vera's reputation calculation remains fully autonomous. Vera can update CRS weighting or tier credit scales inside `EpistemicCrsManager` independently of framework changes.
+4. **Emergency Fallback & Modular Redundancy**:
+   - If the framework undergoes an emergency freeze, pause, or upstream migration, `EpistemicGovernor.sol` features modular redundancy and can immediately fall back to:
+     - **Standalone Mode**: Executing validated proposals locally via quadratic consensus and Semaphore ZK proofs.
+     - **Alternative Governance Adapters**: Seamlessly routing governance execution to OpenZeppelin Governor (`IGovernorStandard`), Gnosis Safe Zodiac (`IZodiacModule`), or Aragon OSx (`IAragonPlugin`).
+
 ---
 
 ## 6. Notes for Future Maintenance & Development
