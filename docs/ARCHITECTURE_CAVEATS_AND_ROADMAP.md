@@ -88,7 +88,7 @@ graph TD
    - $M$-of-$N$ EIP-712 threshold multi-signature oracle verification.
    - Epistemic DAO ("EnDAOsment") with non-plutocratic Epistemic Quotient ($EQ$) quadratic tier voting.
    - Zero-Knowledge Semaphore identity bridge for anonymous voting with single-use nullifiers.
-   - Production Solidity 0.8.20 contracts (`ValidationMarket.sol`, `CourtroomEscrow.sol`, `EpistemicGovernor.sol`).
+   - Production Solidity 0.8.20 contracts (`ValidationMarket.sol`, `CourtroomEscrow.sol`, `EpistemicGovernor.sol`, `EpistemicCrsManager.sol`).
 
 ---
 
@@ -219,7 +219,7 @@ cd vera && agents-cli install && cd ..
 ```
 
 #### Step 2: Compile All EVM Smart Contracts
-Compile `ValidationMarket.sol`, `CourtroomEscrow.sol`, and `EpistemicGovernor.sol` with the Solc optimizer:
+Compile `ValidationMarket.sol`, `CourtroomEscrow.sol`, `EpistemicGovernor.sol`, and `EpistemicCrsManager.sol` with the Solc optimizer:
 ```bash
 npm run compile:contracts
 ```
@@ -228,17 +228,17 @@ This automatically compiles the Solidity sources and exports contract ABIs and a
 - `clearCloud/src/config/contracts.json`
 
 #### Step 3: Run the Complete Multi-Repo Test Suite
-Verify that all 264 automated tests pass across all repositories:
+Verify that all 261 automated tests pass across all repositories:
 ```bash
 npm run test:all
 ```
 Output breakdown:
-- `DAO-Smart-Contract-Framework`: 7 test suites, **39 / 39 tests passing** (`forge test`)
+- `DAO-Smart-Contract-Framework`: 6 test suites, **35 / 35 tests passing** (`forge test`)
 - `clearCloud`: 9 test suites, **68 / 68 tests passing** (including 25 governance, credit score, and exponential penalty tests)
-- `veracities.social`: 16 test suites, **96 / 96 tests passing** (including EnDAOsment two-stage governance)
+- `veracities.social`: 16 test suites, **97 / 97 tests passing** (including EpistemicCrsManager and EnDAOsment two-stage governance)
 - `vera` (Frontend): 6 test suites, **42 / 42 tests passing**
 - `vera` (Backend): pytest suite, **19 / 19 tests passing**
-- **Total: 264 / 264 passing (100% green)**
+- **Total: 261 / 261 passing (100% green)**
 
 #### Step 4: Run Applications Locally
 
@@ -460,7 +460,7 @@ When upgrading any part of the codebase, engineers and AI agents must preserve t
      ```bash
      cd /config/Desktop && npm run test:all
      ```
-   - All 264 tests must pass (100% green) before declaring any task complete.
+   - All 261 tests must pass (100% green) before declaring any task complete.
 4. **Single Source of Truth**:
    - This document (`vera/docs/ARCHITECTURE_CAVEATS_AND_ROADMAP.md`) is the canonical source of truth for all cross-repo architecture, remaining caveats, deployment procedures, and upgrade warnings.
    - Documentation in `clearCloud` and `veracities.social` should cross-reference this document to prevent documentation drift and eliminate information duplication.

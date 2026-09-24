@@ -1,5 +1,13 @@
 # Repository Edit Log
 
+## [2026-09-24] docs: Sync, clean, deduplicate, and verify full 261-test ecosystem documentation
+- Scope: Fully cleaned, updated, synchronized, and deduplicated documentation across all three repositories (`vera`, `clearCloud`, `veracities.social`) following the decoupling of custom logic from upstream `DAO-Smart-Contract-Framework`:
+  1. Relocated Epistemic CRS contract (`EpistemicCrsManager.sol`) and unit tests into `veracities.social/contracts/` and `tests/contracts.test.js`.
+  2. Integrated DAO Framework Integration documentation (the 4 pillars: Checkpointed CRS, Two-Stage Deliberation, Timelock Execution, Upgrade Decoupling) into `veracities.social/README.md`, `clearCloud/README.md`, and `vera/README.md`.
+  3. Verified `clearCloud/docs/ARCHITECTURE_CAVEATS_AND_ROADMAP.md` and `veracities.social/docs/ARCHITECTURE_CAVEATS_AND_ROADMAP.md` point cleanly to canonical master guide `vera/docs/ARCHITECTURE_CAVEATS_AND_ROADMAP.md`, eliminating duplication.
+  4. Synchronized all test metrics across all documentation files to reflect the exact 261-test estate suite (68 clearCloud + 97 veracities.social + 42 vera frontend + 19 vera backend + 35 upstream framework tests = 261 total).
+  5. Confirmed clean working trees, verified production builds (`vite build` & `solc`), and validated 100% green test passes across all suites.
+
 ## [2026-09-23] docs: Comprehensive multi-repo documentation review, alignment, and canonical roadmap
 - Scope: Fully aligned and synchronized all documentation across `vera`, `clearCloud`, and `veracities.social`:
   1. Expanded `vera/docs/ARCHITECTURE_CAVEATS_AND_ROADMAP.md` (v3.0) as the authoritative canonical source of truth for the multi-repo ecosystem, remaining operational caveats, step-by-step module connection and deployment, upgrade warnings, and AI agent maintenance rules.
