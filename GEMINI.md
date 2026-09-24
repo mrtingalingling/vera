@@ -81,6 +81,6 @@ When working across the three repositories (`mrtingalingling/vera`, `mrtingaling
      ```bash
      cd /config/Desktop && npm run test:all
      ```
-   - Confirm that all 224 tests (68 clearCloud + 95 veracities + 42 vera frontend + 19 vera backend) pass before concluding work.
+   - Confirm that all 261 tests (35 upstream DAO framework + 68 clearCloud + 97 veracities + 42 vera frontend + 19 vera backend; 226 core app tests) pass before concluding work.
 5. **Authoritative Specification**:
    - Detailed caveats, deployment steps, and upgrade warnings are maintained in [**`docs/ARCHITECTURE_CAVEATS_AND_ROADMAP.md`**](./docs/ARCHITECTURE_CAVEATS_AND_ROADMAP.md). Always consult this file as the single source of truth.

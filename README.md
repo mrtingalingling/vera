@@ -69,6 +69,22 @@ All product-related documentation is consolidated in the [**`docs/`**](./docs/) 
 
 ---
 
+## 🏛️ DAO Framework Integration: EnDAOsment Governance Adaptation
+
+Vera adapts the external [`DAO-Smart-Contract-Framework`](https://github.com/mrtingalingling/DAO-Smart-Contract-Framework) ("EnDAOsment") for Layer 3 Epistemic Governance, transitioning from plutocratic token voting to multi-dimensional reputation-weighted collective intelligence:
+
+1. **Checkpointed Epistemic CRS**: `veracities.social/contracts/EpistemicCrsManager.sol` implements `ICrsManager` using OpenZeppelin-compatible historical checkpoints. It maps Vera's 4 Epistemic Tiers to snapshotted voting weights and quadratic credit budgets (Novice: 100, Contributor: 500, Arbiter: 1,500, Sage Elder: 3,000 credits). Checkpointing at block numbers prevents flash-loan and flash-reputation manipulation.
+2. **Two-Stage Deliberation Pipeline**:
+   - **Stage 1 (Epistemic Approval Vetting)**: Sages and Arbiters evaluate qualitative truth and platform safety via `ApprovalGovernor.sol` with quadratic tier weights ($W \in \{1, 5, 15, 30\}$).
+   - **Stage 2 (Quadratic Voting with Credit Budgets)**: Citizens allocate credits ($C$) where voting weight scales quadratically as $V = \lfloor\sqrt{C}\rfloor$ ($C = V^2$) via `QuadraticGovernor.sol`, dampening plutocracy and factional brigading.
+3. **Safe Timelock Execution**: Approved proposals transition to `TimelockControllerUpgradeable` for a 24–48h public inspection delay prior to on-chain execution.
+4. **Upgrade Resilience & Decoupling (What Happens if the Framework Updates)**:
+   - **Storage Decoupling**: All contracts run behind independent UUPS / ERC-1967 proxies with reserved storage gaps. Upgrading the upstream framework's logic never collides with or erases member reputation checkpoints or proposal histories.
+   - **Runtime Reconfiguration**: Vera's `EpistemicGovernor.sol` connects via modular adapter interfaces (`configureParentDAO(ParentFramework.ENDAOSMENT, targetAddress)`). Non-breaking framework updates require zero downtime; breaking changes can be re-pointed dynamically or adapted via UUPS upgrade with zero platform downtime.
+   - **Independent Heuristics**: Epistemic scoring formulas ($EQ$) remain fully autonomous inside `EpistemicCrsManager.sol`. If the parent framework undergoes an emergency pause, Vera can fall back to standalone execution or alternative adapters (OpenZeppelin, Gnosis Safe Zodiac, Aragon OSx).
+
+---
+
 ## 📁 Repository Directory Structure
 
 ```text
@@ -163,7 +179,7 @@ npm run test:backend
 npm run test:frontend
 ```
 
-To run the unified 224-test suite across all three repositories (`vera`, `clearCloud`, `veracities.social`), use the root runner:
+To run the unified 261-test suite across the ecosystem (226 core app tests across `vera`, `clearCloud`, `veracities.social` + 35 upstream framework tests), use the root runner:
 ```bash
 # From workspace root (/config/Desktop):
 npm run test:all

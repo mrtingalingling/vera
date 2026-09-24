@@ -29,7 +29,7 @@
 | **Layer 0** | **libp2p Decentralized P2P Swarm** | **Active** | `frontend/src/p2pNode.js` | Browser-to-browser claim hash gossip; header swarm status indicator. |
 | **Layer 0** | **Tactile Feedback Toast System** | **Active** | `App.svelte` (`toastMessage`, `showToast`) | Floating glassmorphism alerts for premise changes, doc links, and saves. |
 | **Layer 0** | **Drawer Accordion Auto-Collapse** | **Active** | `App.svelte` | Mutually exclusive drawers; auto-collapse when modals open to save screen space. |
-| **Layer 0** | **Root DX Runner & Test Suite** | **Active** | `package.json`, Vitest, Pytest | `npm test` runs 42 Vitest + 19 Pytest tests in `vera`. Root `npm run test:all` runs 224/224 tests across all 3 repos. |
+| **Layer 0** | **Root DX Runner & Test Suite** | **Active** | `package.json`, Vitest, Pytest, Foundry | `npm test` runs 42 Vitest + 19 Pytest tests in `vera`. Root `npm run test:all` runs 226/226 tests across core apps (`vera`, `clearCloud`, `veracities.social`); combined with 35 Foundry tests in upstream `DAO-Smart-Contract-Framework`, 261/261 tests pass ecosystem-wide. |
 | **Layer 1.2** | **On-Device PII Scrubber & Claim Extractor** | **Active** | `frontend/src/scrubber/piiScrubberService.js` | Zero cloud leakage. Redacts PII, strips preambles, extracts falsifiable core claims. Exported via `@vera/core`. |
 | **Layer 1.1** | **ClearCloud Relational Social Feed** | **Active** | `clearCloud/src/feed/` | 3-tier circles (Close Friends, Acquaintances, Network-Wide), Groundedness Index ranking, rage-bait scrubber. |
 | **Layer 1.1** | **Hidden Asymmetric Reputation Engine** | **Active** | `clearCloud/src/feed/feedManager.js` | Rapid decay for ragebait (-18 to -25); slow accrual for grounded citations (+1.5 to +2.0). |
@@ -48,9 +48,9 @@
 | **Layer 2** | **Losing Pool Slashing Waterfall** | **Active** | `veracities.social/src/market/validationMarket.js` | 15% Whistleblower Evidence Bounty, 5% Juror Deliberation Fee, 5% Protocol Fee. |
 | **Layer 1.3 / Protocol** | **Courtroom Settlement Protocol** | **Active** | `veracities.social/src/settlement/` | 14-day cold case refund (94% refund / 6% fee), Challenge Bond retrials (50% bounty). |
 | **Protocol / Oracles** | **Threshold Multi-Sig Oracle Relayer** | **Active** | `veracities.social/src/oracle/oracleRelayer.js` | Verifies $M$-of-$N$ EIP-712 citizen juror signatures and single-use nonces against sortition rosters. |
-| **Layer 3** | **Epistemic DAO Governance ("EnDAOsment")** | **Active** | `veracities.social/src/governance/daoRegistry.js` | Multi-dimensional Epistemic Quotient ($EQ$) formula with quadratic tier voting (1, 5, 15, 30). |
+| **Layer 3** | **Epistemic DAO Governance ("EnDAOsment")** | **Active** | `veracities.social/src/governance/daoRegistry.js` | Multi-dimensional Epistemic Quotient ($EQ$) formula with two-stage consensus (Stage 1 Approval + Stage 2 Quadratic Voting with credit budgets) integrated with `DAO-Smart-Contract-Framework` via `veracities.social/contracts/EpistemicCrsManager.sol`. |
 | **Layer 3** | **Semaphore ZK Anonymous Voting** | **Active** | `veracities.social/src/governance/zkSemaphoreBridge.js` | Client-side Semaphore ZK identity bridge with single-use nullifiers in `GovernanceView.svelte`. |
-| **Layer 2 / 3** | **UUPS Upgradeable Smart Contracts & Proxies** | **Active** | `veracities.social/contracts/` | `ValidationMarket.sol`, `CourtroomEscrow.sol`, `EpistemicGovernor.sol` behind `ERC1967Proxy.sol` with modular DAO framework adapters (OpenZeppelin, Gnosis Safe Zodiac, Aragon OSx). |
+| **Layer 2 / 3** | **UUPS Upgradeable Smart Contracts & Proxies** | **Active** | `veracities.social/contracts/` | `ValidationMarket.sol`, `CourtroomEscrow.sol`, `EpistemicGovernor.sol`, and `EpistemicCrsManager.sol` behind `ERC1967Proxy.sol` with modular DAO framework adapters (OpenZeppelin, Gnosis Safe Zodiac, Aragon OSx, EnDAOsment Framework). |
 
 ---
 
