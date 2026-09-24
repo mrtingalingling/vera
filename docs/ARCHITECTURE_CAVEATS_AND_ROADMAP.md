@@ -4,7 +4,7 @@
 > **Date**: September 2026  
 > **Version**: 3.0 (Full PRD Implementation & Production Readiness Edition)  
 > **Authoritative Role**: Canonical Architecture Blueprint, Production Caveats Ledger, Deployment Runbook & AI Agent Operational Guide  
-> **Estate Test Suite**: **264 / 264 Automated Tests Passing (100% Green)** across all repositories  
+> **Estate Test Suite**: **261 / 261 Automated Tests Passing (100% Green)** across all repositories (226 core app tests + 35 upstream framework tests)  
 
 ---
 
@@ -374,11 +374,12 @@ When upgrading any part of the codebase, engineers and AI agents must preserve t
   - **Edge Ingestion Engine (`vera/frontend/src/`)**: Discrete services for Local AI (`localAiService.js`), zero-knowledge PII scrubbing (`piiScrubberService.js`), Google Drive integration (`googleDriveService.js`), and IndexedDB caching (`db.js`).
 
 ### 9. EnDAOsment Governance Framework Integration: Architecture & Upgrade Dynamics
-- **Overview**: Vera adapts the [`DAO-Smart-Contract-Framework`](https://github.com/mrtingalingling/DAO-Smart-Contract-Framework) ("EnDAOsment") for Layer 3 Epistemic Governance, transitioning away from plutocratic token-weighted voting to multi-dimensional reputation-weighted collective intelligence.
+- **Overview**: Vera adapts the [`DAO-Smart-Contract-Framework`](https://github.com/mrtingalingling/DAO-Smart-Contract-Framework) ("EnDAOsment") for Layer 3 Epistemic Governance, transitioning away from plutocratic token-weighted voting to multi-dimensional reputation-weighted collective intelligence. All custom Vera adapter logic and reputation managers are maintained directly within `veracities.social`, leaving the upstream framework repository untouched.
 
 #### A. How the Framework is Leveraged (The 4 Pillars)
-1. **Checkpointed Epistemic CRS (`EpistemicCrsManager.sol`)**:
-   - Implements `ICrsManager` using OpenZeppelin's `Checkpoints.Trace208` to snapshot member Epistemic Tiers and quadratic credit allowances across block numbers.
+1. **Checkpointed Epistemic CRS (`veracities.social/contracts/EpistemicCrsManager.sol`)**:
+   - Maintained directly inside `veracities.social/contracts/` to ensure the upstream framework repository remains pristine.
+   - Implements `ICrsManager` using OpenZeppelin-compatible historical block-level snapshots to record member Epistemic Tiers and quadratic credit allowances across block numbers.
    - Maps Vera's 4 Epistemic Tiers to credit budgets:
      - *Tier 1 (Novice)*: 100 Credits
      - *Tier 2 (Contributor)*: 500 Credits
@@ -399,7 +400,7 @@ When upgrading any part of the codebase, engineers and AI agents must preserve t
 
 #### B. Framework Update Dynamics & Resilience Strategy (What Happens if the Framework Updates)
 1. **Decoupled UUPS / ERC-1967 Storage (Zero Data Loss)**:
-   - Both `DAO-Smart-Contract-Framework` contracts (`GovernorGeneral`, `ApprovalGovernor`, `QuadraticGovernor`, `MemberToken`) and Vera's contracts (`EpistemicGovernor`, `EpistemicCrsManager`) run behind independent ERC-1967 proxies with reserved storage gaps (`uint256[45..48] private __gap;`).
+   - Both `DAO-Smart-Contract-Framework` contracts (`GovernorGeneral`, `ApprovalGovernor`, `QuadraticGovernor`, `MemberToken`) and Vera's contracts (`EpistemicGovernor`, `EpistemicCrsManager` in `veracities.social`) run behind independent ERC-1967 proxies with reserved storage gaps (`uint256[45..48] private __gap;`).
    - When the framework upgrades its implementation logic via `upgradeToAndCall`, only the implementation contract address in the proxy changes.
    - **Zero Loss of History**: All existing proposals, historical votes, member badges, CRS reputation checkpoints, and voter credit balances remain untouched in persistent proxy storage.
 2. **Backward-Compatible vs. Breaking Interface Evolution**:
@@ -408,8 +409,8 @@ When upgrading any part of the codebase, engineers and AI agents must preserve t
      - `EpistemicGovernor.sol` includes runtime reconfiguration: `configureParentDAO(ParentFramework.ENDAOSMENT, newAddress)` can repoint target framework contracts dynamically.
      - If the interface signature itself evolves, `EpistemicGovernor` is upgraded via its own UUPS proxy to match the new ABI with zero platform downtime.
 3. **Independent CRS Scoring Heuristics**:
-   - Epistemic Quotient scoring ($EQ = 0.40 \cdot \text{Factuality} + 0.30 \cdot \text{Bridging} + 0.20 \cdot \text{SteelManning} - 0.30 \cdot \text{Toxicity}$) and credit allotments live inside Vera's `EpistemicCrsManager.sol`.
-   - If the framework updates its core rules, Vera's reputation calculation remains fully autonomous. Vera can update CRS weighting or tier credit scales inside `EpistemicCrsManager` independently of framework changes.
+   - Epistemic Quotient scoring ($EQ = 0.40 \cdot \text{Factuality} + 0.30 \cdot \text{Bridging} + 0.20 \cdot \text{SteelManning} - 0.30 \cdot \text{Toxicity}$) and credit allotments live inside Vera's `veracities.social/contracts/EpistemicCrsManager.sol`.
+   - If the upstream framework updates its core rules, Vera's reputation calculation remains fully autonomous. Vera can update CRS weighting or tier credit scales inside `EpistemicCrsManager` independently of framework changes.
 4. **Emergency Fallback & Modular Redundancy**:
    - If the framework undergoes an emergency freeze, pause, or upstream migration, `EpistemicGovernor.sol` features modular redundancy and can immediately fall back to:
      - **Standalone Mode**: Executing validated proposals locally via quadratic consensus and Semaphore ZK proofs.
@@ -474,12 +475,14 @@ When upgrading any part of the codebase, engineers and AI agents must preserve t
 ==========================================================================================
  Repository                   Suite Type             Tests Passed   Pass Rate   Status
 ------------------------------------------------------------------------------------------
- DAO-Smart-Contract-Framework Foundry (Forge)          39 / 39        100%       PASS
+ DAO-Smart-Contract-Framework Foundry (Forge)          35 / 35        100%       PASS (Upstream)
  clearCloud                   Vitest (Unit/E2E)        68 / 68        100%       PASS
- veracities.social            Vitest + Solc            96 / 96        100%       PASS
+ veracities.social            Vitest + Solc            97 / 97        100%       PASS
  vera (frontend)              Vitest (Runes/UI)        42 / 42        100%       PASS
  vera (backend)               Pytest (FastAPI/ADK)     19 / 19        100%       PASS
 ------------------------------------------------------------------------------------------
- TOTAL ECOSYSTEM SUITE                                264 / 264       100%       GREEN
+ CORE ECOSYSTEM APPS                                  226 / 226       100%       GREEN
+ TOTAL ECOSYSTEM SUITE (inc. Upstream Framework)      261 / 261       100%       GREEN
 ==========================================================================================
 ```
+
