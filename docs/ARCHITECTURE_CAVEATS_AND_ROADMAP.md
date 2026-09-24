@@ -4,7 +4,7 @@
 > **Date**: September 2026  
 > **Version**: 3.0 (Full PRD Implementation & Production Readiness Edition)  
 > **Authoritative Role**: Canonical Architecture Blueprint, Production Caveats Ledger, Deployment Runbook & AI Agent Operational Guide  
-> **Estate Test Suite**: **196 / 196 Automated Tests Passing (100% Green)** across all 3 repositories  
+> **Estate Test Suite**: **224 / 224 Automated Tests Passing (100% Green)** across all 3 repositories  
 
 ---
 
@@ -63,6 +63,10 @@ graph TD
    - Deliberative civic social network; **strictly zero gambling or financial speculation interfaces**.
    - 3-tier proximity circles (Close Friends with rage-bait filtering, Friends, Network-Wide).
    - Algorithmic Groundedness Index ($G$) and asymmetric hidden reputation engine.
+   - Epistemic Credit Score interaction weighting (quadratic like damping, juror vote scaling).
+   - Economic gating: Low-rep stake-to-post, stake-to-repost, and influencer audience-scaled broadcast bonds.
+   - Unbounded exponential disinformation penalties ($2^{\Delta/5} \times 2^{\text{strikes}}$) with no floor/ceiling.
+   - Multi-origin case initiation from social feed or Vera extension with risk-adjusted validation wagers.
    - Falsifiability Gatekeeper screening empirical claims from subjective opinions.
    - Compound Claim DAG decomposition.
    - Disinterested civic sortition jury panel summons with Proof of Humanity and staked bond gates.
@@ -219,16 +223,16 @@ This automatically compiles the Solidity sources and exports contract ABIs and a
 - `clearCloud/src/config/contracts.json`
 
 #### Step 3: Run the Complete Multi-Repo Test Suite
-Verify that all 199 automated tests pass across all repositories:
+Verify that all 224 automated tests pass across all repositories:
 ```bash
 npm run test:all
 ```
 Output breakdown:
-- `clearCloud`: 8 test suites, **43 / 43 tests passing**
+- `clearCloud`: 9 test suites, **68 / 68 tests passing** (including 25 governance, credit score, and exponential penalty tests)
 - `veracities.social`: 16 test suites, **95 / 95 tests passing**
 - `vera` (Frontend): 6 test suites, **42 / 42 tests passing**
 - `vera` (Backend): pytest suite, **19 / 19 tests passing**
-- **Total: 199 / 199 passing (100% green)**
+- **Total: 224 / 224 passing (100% green)**
 
 #### Step 4: Run Applications Locally
 
@@ -360,6 +364,7 @@ When upgrading any part of the codebase, engineers and AI agents must preserve t
     2. *Anti-Griefing Case Manager* (`caseManager.js`): DAG claim trees and escalating deposit curve ($50 \times 2^{n-1}$).
     3. *Civic Sortition Engine* (`sortitionEngine.js`): Sybil-resistant humanity and staked civic bond verification.
     4. *Blind Trial Engine* (`blindTrialEngine.js`): first-order predicate paraphrasing and decoy dockets.
+    5. *Reputation Stake Guard* (`reputationStakeGuard.js`): Epistemic credit score interaction weighting, stake-to-repost, influencer broadcast bonds, and exponential disinformation penalties.
   - **Edge Ingestion Engine (`vera/frontend/src/`)**: Discrete services for Local AI (`localAiService.js`), zero-knowledge PII scrubbing (`piiScrubberService.js`), Google Drive integration (`googleDriveService.js`), and IndexedDB caching (`db.js`).
 
 ---
@@ -378,6 +383,15 @@ When upgrading any part of the codebase, engineers and AI agents must preserve t
      The $3\times$ falsehood penalty is an intentional game-theoretic dampener against sensational rage-bait. Do not alter this weight without a formal DAO governance proposal.
    - **Epistemic Quotient ($EQ$)**:
      $$EQ = 0.40 \cdot \text{Factuality} + 0.30 \cdot \text{Bridging} + 0.20 \cdot \text{SteelManning} - 0.30 \cdot \text{Toxicity}$$
+   - **Epistemic Credit Score Like Weighting**:
+     $$\text{Weight}_{\text{like}} = \begin{cases} \min(2.0, \frac{\text{rep}}{50.0}) & \text{if } \text{rep} \ge 50.0 \\ \max(0.01, (\frac{\text{rep}}{50.0})^2) & \text{if } \text{rep} < 50.0 \end{cases}$$
+   - **Juror Vote Credit Score Weighting**:
+     $$\text{Weight}_{\text{vote}} = \begin{cases} \min(2.0, \frac{\text{rep}}{50.0}) & \text{if } \text{rep} \ge 50.0 \\ \max(0.05, \frac{\text{rep}}{50.0}) & \text{if } \text{rep} < 50.0 \end{cases}$$
+   - **Influencer Reach Multiplier**:
+     $$M_{\text{reach}} = 1.0 + \log_{10}\left(\frac{\text{followers}}{10,000}\right) \quad (\text{when followers} \ge 10,000 \text{ and } \text{rep} < 60.0)$$
+   - **Exponential Disinformation Penalty (Unbounded Cost Curve)**:
+     $$\text{Total Stake} = \text{baseStake} \times 2^{\frac{\Delta \text{rep}}{5.0}} \times 2^{\text{disinfoStrikes}} \times M_{\text{reach}}$$
+     Doubles every 5 points of reputation deficit below threshold, and doubles with every disinformation strike, with no upper ceiling.
    - **Cold Case Refund**:
      $$94\% \text{ to original depositors}, \quad 6\% \text{ retained as protocol maintenance fee}$$
    - **Losing Stake Slashing Waterfall**:
@@ -397,7 +411,7 @@ When upgrading any part of the codebase, engineers and AI agents must preserve t
      ```bash
      cd /config/Desktop && npm run test:all
      ```
-   - All 196 tests must pass (100% green) before declaring any task complete.
+   - All 224 tests must pass (100% green) before declaring any task complete.
 4. **Single Source of Truth**:
    - This document (`vera/docs/ARCHITECTURE_CAVEATS_AND_ROADMAP.md`) is the canonical source of truth for all cross-repo architecture, remaining caveats, deployment procedures, and upgrade warnings.
    - Documentation in `clearCloud` and `veracities.social` should cross-reference this document to prevent documentation drift and eliminate information duplication.
@@ -412,11 +426,11 @@ When upgrading any part of the codebase, engineers and AI agents must preserve t
 ==========================================================================================
  Repository                   Suite Type             Tests Passed   Pass Rate   Status
 ------------------------------------------------------------------------------------------
- clearCloud                   Vitest (Unit/E2E)        43 / 43        100%       PASS
- veracities.social            Vitest + Solc            92 / 92        100%       PASS
+ clearCloud                   Vitest (Unit/E2E)        68 / 68        100%       PASS
+ veracities.social            Vitest + Solc            95 / 95        100%       PASS
  vera (frontend)              Vitest (Runes/UI)        42 / 42        100%       PASS
  vera (backend)               Pytest (FastAPI/ADK)     19 / 19        100%       PASS
 ------------------------------------------------------------------------------------------
- TOTAL ECOSYSTEM SUITE                                196 / 196       100%       GREEN
+ TOTAL ECOSYSTEM SUITE                                224 / 224       100%       GREEN
 ==========================================================================================
 ```

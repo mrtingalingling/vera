@@ -163,7 +163,7 @@ npm run test:backend
 npm run test:frontend
 ```
 
-To run the unified 196-test suite across all three repositories (`vera`, `clearCloud`, `veracities.social`), use the root runner:
+To run the unified 224-test suite across all three repositories (`vera`, `clearCloud`, `veracities.social`), use the root runner:
 ```bash
 # From workspace root (/config/Desktop):
 npm run test:all

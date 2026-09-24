@@ -3,7 +3,7 @@
 **Project**: Vera — Decentralized AI-Agentic Fact Verification & Epistemic Social Network  
 **Author / Team**: Core Platform Architecture  
 **Status**: APPROVED SPECIFICATION — 100% IMPLEMENTED & VERIFIED  
-**Target Release**: Full Ecosystem Delivery (Layers 0, 1, 2, and 3 Operational; 196 / 196 Automated Tests Passing)  
+**Target Release**: Full Ecosystem Delivery (Layers 0, 1, 2, and 3 Operational; 224 / 224 Automated Tests Passing)  
 
 ---
 
@@ -157,6 +157,12 @@ To protect the social network from bad-faith gaming, performative virtue-signali
    * A user's hidden reputation directly dictates **how likely other users are to see their posts** across Tier 2 (Friends) and Tier 3 (Network-Wide).
    * **High-Reputation Creators**: Enjoy amplified organic reach and higher visibility across acquaintance feeds and network recommendations.
    * **Low-Reputation / Chronic Rage-Baiters**: Their non-personal posts are automatically deprioritized and throttled across non-close circles, suffocating disinformation at the distribution level without requiring heavy-handed censorship.
+4. **Epistemic Credit Score Interaction Governance**:
+   * Reputation functions as a comprehensive credit score impacting all user touchpoints.
+   * **Quadratic Like Damping**: Likes/reactions from low-reputation or suspected astroturfing accounts are quadratically down-weighted ($\max(0.01, (\text{rep}/50)^2)$), rendering bot-swarm artificial promotion futile.
+   * **Stake-to-Repost Guard**: Users with sub-threshold reputation ($\text{rep} < 40.0$) must deposit an escrow stake (`REQUIRED_REPOST_STAKE_USDC`: 5.0 USDC) before amplifying claims.
+   * **Influencer Audience-Scaled Staking**: Accounts with $\ge 10,000$ followers and sub-60 reputation must deposit an audience-scaled broadcast bond ($20 \text{ USDC} \times (1 + \log_{10}(\text{followers}/10000))$) to internalize the systemic blast radius of unverified assertions.
+   * **Exponential Disinformation Penalty (Unbounded Cost Curve)**: Repeated disinformation incurs exponential stake multipliers ($2^{\Delta/5} \times 2^{\text{strikes}}$) with no upper ceiling, making sustained disinformation campaigns financially impossible to maintain.
 
 ---
 
@@ -234,6 +240,9 @@ Cases remain open, living dossiers without an arbitrary hard deadline, concludin
      * **If the Retrial Overturns the Original Verdict**: The challenger's bond is returned with a substantial bounty reward from the retrial pool, the public verdict is revised, and the historical correction is etched into the decentralized ledger.
    * **Dynamic Quorum Scaling**:
      * The required voter quorum for retrial scales dynamically with the size of the active ecosystem ($Q_{appeal} = \max(N_{min}, 5\% \times \text{Active Platform Community})$), preventing small factions from defending a biased initial outcome.
+5. **Multi-Origin Case Initiation & Validation Market Wagers**:
+   * Anyone can initiate a case docket from either the social feed (`SOCIAL_MEDIA`) or directly from web content highlighted through the Vera browser extension (`EXTENSION_APP`).
+   * When validation wagers are enabled (`CASE_WAGER_REQUIRED: false` by default for frictionless onboarding), initiating a case requires an initial validation escrow wager ($25.0$ USDC minimum) which automatically triggers market creation in `veracities.social` (`ValidationMarket.sol`). Low-reputation initiators pay a risk-adjusted surcharge based on their credit score.
 
 #### C. The Jury & Judge Governance Model
 * **The Jury (Community)**: Users anonymously upvote or downvote arguments strictly based on the **rigor of reasoning, source credibility, and absence of logical fallacies**.

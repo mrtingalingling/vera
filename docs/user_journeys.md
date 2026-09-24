@@ -179,3 +179,29 @@
    - Keeps the user's DID and private key completely undisclosed.
 5. **Submitting Anonymous Ballot**: The contract `EpistemicGovernor.sol` verifies the ZK proof, checks that the nullifier has never been used, and tallies the vote with the user's tier weight.
 6. **Cryptographic Receipt**: The user receives a cryptographic receipt containing their single-use nullifier hash as non-repudiation proof.
+
+---
+
+## Journey 13: Epistemic Credit Score & Exponential Disinformation Defense (clearCloud)
+
+**Persona**: Social platform user encountering interaction weighting, staking requirements, and systemic deterrence against disinformation.
+
+1. **Quadratic Like Damping**: A coordinated bot ring attempts to boost an unsubstantiated conspiracy theory. Because each bot account has an epistemic credit score of $\text{rep} = 5.0$, their likes are down-weighted quadratically by $99\%$ ($\text{weight} = 0.01\times$), neutralizing artificial amplification.
+2. **Stake-to-Repost**: A low-reputation user ($\text{rep} = 32.0$) attempts to repost a contested claim. The interface notifies them that their reputation is below the threshold ($40.0$), requiring an escrow stake bond of $5.0$ USDC (`REQUIRED_REPOST_STAKE_USDC`). Once deposited, the repost is labeled `REPOSTED_STAKED_PROVISIONAL`.
+3. **Influencer Reach Staking**: A prominent account with $50,000$ followers whose reputation has slipped to $52.0$ attempts to broadcast a new claim. Because their reach exceeds $10,000$ followers and their score is below $60.0$, the system calculates an audience-scaled stake bond ($1.0 + \log_{10}(5) = 1.70\times$ base) requiring an escrow deposit before publishing.
+4. **Exponential Disinformation Penalty**: A malicious creator with 3 previous disinformation strikes and a reputation crashed to $20.0$ attempts to post another claim. The unbounded exponential penalty curve triggers:
+   $$\text{Stake} = 10.0 \times 2^{\frac{40 - 20}{5}} \times 2^3 = 10 \times 16 \times 8 = 1,280.0 \text{ USDC}$$
+   With no upper ceiling, continuing to spread disinformation becomes financially impossible to sustain.
+
+---
+
+## Journey 14: Multi-Origin Case Initiation & Validation Wagers (clearCloud & Vera Extension)
+
+**Persona**: Investigative journalist initiating a formal courtroom case on a breaking corporate claim.
+
+1. **Origin Selection**: The user identifies a claim either on the clearCloud social feed (`SOCIAL_MEDIA`) or by highlighting text via the Vera browser extension (`EXTENSION_APP`).
+2. **Case Submission**: The user clicks **"Initiate Case Docket"**.
+3. **Falsifiability Check**: The AI Gatekeeper verifies that the claim is empirical and falsifiable.
+4. **Validation Wager Escrow**: When `CASE_WAGER_REQUIRED` is active, the creator deposits the initial validation wager ($25.0$ USDC minimum). Low-reputation initiators pay a risk-adjusted surcharge based on credit score.
+5. **Cross-Chain Dispatch**: The case manager opens the docket in clearCloud and automatically constructs an EIP-712 dispatch payload to spin up an initial 4-outcome prediction pool in `veracities.social` (`ValidationMarket.sol`).
+6. **Deliberation Commences**: Civic jurors are summoned via sortition, and prediction traders can begin wagering conviction in the validation market.
