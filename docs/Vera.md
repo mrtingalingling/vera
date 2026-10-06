@@ -65,7 +65,7 @@ Vera verifies claims through a fixed pipeline of stages with structured outputs;
 
 ### Architecture
 
-<img src="./images/vera-architecture.svg" alt="Vera architecture · device, service, and outside consumers">
+&#91;embedded content: Vera architecture · device, service, and outside consumers\]
 
 Personal data stops at the device boundary. Scrubbing is the first stage and runs inside the Vera client before any network call: in the extension, or in Vera's SDK embedded in a host app or server such as ClearCloud's. Private text (messages, logged-in pages, drafts) is previewed and approved before it is sent; public pages and already-published posts are scrubbed without a prompt. The same holds when claim extraction falls back to the server and before any agent-to-agent token exchange. Partners and Veracities.bet read from Vera but never write back into verdicts.
 
@@ -322,7 +322,7 @@ A platform embedding Vera agrees to the following, enforced through the terms of
 
 ## Architecture decision records
 
-Eleven decisions shape Vera; all are Proposed until the owner accepts them, which makes them Confirmed. ADR numbers are global: ADR-001 and ADR-010 are in the Ecosystem tab, and ADR-011 and ADR-015 in the ClearCloud tab. Each record states the context, the decision, and what it costs.
+Eleven decisions shape Vera; all are Proposed until the owner accepts them, which makes them Confirmed. ADR numbers are global: ADR-001, ADR-010, and ADR-016 (every backend is Rust by default, extending ADR-014) are in the Ecosystem tab, and ADR-011 and ADR-015 in the ClearCloud tab. Each record states the context, the decision, and what it costs.
 
 | ADR | Decision | Status |
 | --- | --- | --- |
@@ -430,7 +430,7 @@ Eleven decisions shape Vera; all are Proposed until the owner accepts them, whic
 
 Vera moves through five phases, and a phase starts only when the previous gate's criteria are met; ClearCloud and Veracities.bet start from specific Vera gates (Ecosystem tab). The plan is sequenced by gates, not dates. Set dates once Phase 0 shows real velocity.
 
-<img src="./images/vera-roadmap.svg" alt="Roadmap · Vera's five phases and their gates">
+&#91;embedded content: Roadmap · Vera's five phases and their gates\]
 
 Phase 0 is the current focus.
 
