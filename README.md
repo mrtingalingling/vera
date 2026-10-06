@@ -7,20 +7,30 @@ Vera is a standalone AI agent that tells a reader whether a claim is supported b
   <p><i>The current prototype: page scanning, claim highlighting, time-bound tab access, and Drive evidence grounding.</i></p>
 </div>
 
-## Status
+## Key features
 
-Every feature carries exactly one status: **Proposed → Confirmed → Prototyped → Audited**. Only Audited features are meant for outside users. Today everything in this repo is **Prototyped** or earlier; nothing is Audited.
+Every feature carries exactly one status: **Proposed → Confirmed → Prototyped → Audited**. Only Audited features are meant for outside users. Today nothing in this repo is Audited.
 
-| Area | Status |
-| --- | --- |
-| Web cockpit and Chrome extension (Svelte 5, Manifest V3) | Prototyped |
-| On-device PII scrubbing and Gemini Nano | Prototyped |
-| Bring-your-own-model (direct to provider) | Prototyped |
-| Claim highlighting and verdict cards | Prototyped |
-| Google Drive, Docs, and Sheets evidence sources | Prototyped |
-| Verification pipeline, public API v1, SDK, embeds | Proposed |
-| Verdict ledger and ATProto publishing | Proposed |
-| libp2p mirror | Proposed (current stub switched off) |
+**In the prototype today (Prototyped)**
+
+- **Web cockpit and Chrome extension:** one Svelte 5 build serves the web cockpit and the Manifest V3 extension.
+- **Page scanning and claim highlighting:** claims on a page are highlighted by verdict, with hover cards showing sources and reasoning.
+- **On-device privacy:** a local scrubber removes personal data before anything is sent, using Gemini Nano where available.
+- **Bring your own model:** connect your own model provider; your key goes straight to the provider.
+- **Time-bound tab access:** grant reading access to a tab for a limited time.
+- **Your own evidence:** add Google Drive, Docs, and Sheets as sources.
+- **Fact-versus-opinion charts:** gauges showing how much of a page is checkable fact versus opinion.
+
+**Planned (Proposed in the design set)**
+
+- **Verification pipeline:** a seven-stage pipeline with six verdicts, including an honest "insufficient evidence," each backed by linked sources and a confidence.
+- **Public API, SDK, and web components:** any platform can embed Vera.
+- **Hallucination checks:** anyone can ask Vera to re-verify a verdict's sources and context.
+- **Graph views:** source-flow, money-flow, mind-map, quadrant, and fishbone diagrams for each verdict.
+- **Personal relevance:** an optional, on-device profile that flags which claims matter to you, without changing any verdict.
+- **Signed verdict ledger:** append-only verdicts published to ATProto, with corrections as new versions.
+
+Some prototype features are being removed on purpose: the canned guest agent, global fact sharing, video generation, and the "connected peers" display. The design set lists where every feature goes.
 
 The server is moving from Python to Rust (ADR-014). The Python prototype gets only the fixes Gate 0 needs and is retired when the Phase 1 pipeline replaces it.
 
