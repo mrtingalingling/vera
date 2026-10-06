@@ -2,7 +2,7 @@
 
 Oct 5, 2026 · @Ting
 
-Vera is a standalone AI agent that tells a reader whether a claim is supported by evidence, with a confidence, and says so when it can't tell. This tab is complete on its own: any platform can embed Vera through its public SDK and API. ClearCloud and Veracities.bet are two such customers, and Ecosystem covers what spans all three products, including the status vocabulary (Proposed, Confirmed, Prototyped, Audited).
+Vera is a standalone AI agent that tells a reader whether a claim is supported by evidence, with a confidence, and says so when it can't tell. This document is complete on its own: any platform can embed Vera through its public SDK and API. ClearCloud and Veracities.bet are two such customers, and Ecosystem covers what spans all three products, including the status vocabulary (Proposed, Confirmed, Prototyped, Audited).
 
 ## Brief
 
