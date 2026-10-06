@@ -65,7 +65,7 @@ Vera verifies claims through a fixed pipeline of stages with structured outputs;
 
 ### Architecture
 
-&#91;embedded content: Vera architecture · device, service, and outside consumers\]
+<img src="./images/vera-architecture.svg" alt="Vera architecture · device, service, and outside consumers">
 
 Personal data stops at the device boundary. Scrubbing is the first stage and runs inside the Vera client before any network call: in the extension, or in Vera's SDK embedded in a host app or server such as ClearCloud's. Private text (messages, logged-in pages, drafts) is previewed and approved before it is sent; public pages and already-published posts are scrubbed without a prompt. The same holds when claim extraction falls back to the server and before any agent-to-agent token exchange. Partners and Veracities.bet read from Vera but never write back into verdicts.
 
@@ -430,7 +430,7 @@ Eleven decisions shape Vera; all are Proposed until the owner accepts them, whic
 
 Vera moves through five phases, and a phase starts only when the previous gate's criteria are met; ClearCloud and Veracities.bet start from specific Vera gates (Ecosystem tab). The plan is sequenced by gates, not dates. Set dates once Phase 0 shows real velocity.
 
-&#91;embedded content: Roadmap · Vera's five phases and their gates\]
+<img src="./images/vera-roadmap.svg" alt="Roadmap · Vera's five phases and their gates">
 
 Phase 0 is the current focus.
 
