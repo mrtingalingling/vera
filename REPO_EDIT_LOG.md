@@ -1,5 +1,15 @@
 # Repository Edit Log
 
+## [2026-10-06] docs: Replace legacy docs with the restructured Vera design set (V-009)
+- Scope: Replaced the single "Truth Settlement" PRD, its Layer 0–3 numbering, and the caveats ledger with separate design documents per product, following the restructuring review:
+  1. Added `docs/vera.md`: Vera as a standalone AI verification agent, covering the brief, prototype-feature status table, shared protocol, seven-stage pipeline, public API, ADRs, gated implementation plan, tickets, and security plan.
+  2. Added `docs/images/vera-architecture.svg` and `docs/images/vera-roadmap.svg`.
+  3. Rewrote `README.md`: kept developer setup, extension loading, testing, and structure sections; adopted the status vocabulary (Proposed, Confirmed, Prototyped, Audited); removed test counts and the hard-coded Agent Engine resource ID.
+  4. Updated `GEMINI.md`: new product boundaries (ADR-001, ADR-010, ADR-011), Rust-by-default backends (ADR-014, ADR-016), per-repo test commands in place of the workspace-only `test:all` and its test counts, the reviewable-diffs rule, and `docs/vera.md` as the source of truth.
+  5. Deleted `docs/PRD.md`, `docs/architecture.md`, `docs/features.md`, `docs/user_journeys.md`, and `docs/ARCHITECTURE_CAVEATS_AND_ROADMAP.md`. Their content is carried into the design set or deliberately superseded; the originals remain in git history.
+- Follow-ups in other repos: the `clearCloud` and `veracities.social` docs that pointed to the deleted caveats ledger are replaced by their own design documents; governance and Courtroom contracts move from `veracities.social` to `clearCloud` under ticket C-012.
+- Known open item: the Agent Engine resource ID removed from `README.md` remains in git history (tracked by S-002).
+
 ## [2026-09-24] docs: Sync, clean, deduplicate, and verify full 261-test ecosystem documentation
 - Scope: Fully cleaned, updated, synchronized, and deduplicated documentation across all three repositories (`vera`, `clearCloud`, `veracities.social`) following the decoupling of custom logic from upstream `DAO-Smart-Contract-Framework`:
   1. Relocated Epistemic CRS contract (`EpistemicCrsManager.sol`) and unit tests into `veracities.social/contracts/` and `tests/contracts.test.js`.

@@ -1,131 +1,56 @@
-# 🛡️ Vera · Decentralized AI Fact Verification & Epistemic Grounding
+# Vera
 
-> A decentralized, agentic AI verification assistant designed to evaluate factual claims, ground browser consumption in real-time, and calculate empirical fact vs. opinion ratios across web applications and browser extensions.
+Vera is a standalone AI agent that tells a reader whether a claim is supported by evidence, shows that evidence with a confidence, and says "insufficient evidence" when it can't tell. Any platform can embed it through a public API, SDK, and web components; the Chrome extension is its first client.
 
 <div align="center">
-  <img src="./demo.gif" alt="Vera Chrome Extension Demo" width="375" style="border-radius: 12px; box-shadow: 0 8px 30px rgba(0, 245, 212, 0.2); border: 2px solid #00f5d4;" />
-  <p><i>Vera running inside the unified Chrome Extension Popup and standalone Web Cockpit, featuring active webpage scanning, discrete DOM claim highlighting, time-bound tab permissions with live hourglass countdown, Google Drive evidence grounding, and decentralized P2P swarm synchronization.</i></p>
+  <img src="./demo.gif" alt="Vera Chrome extension demo" width="375" />
+  <p><i>The current prototype: page scanning, claim highlighting, time-bound tab access, and Drive evidence grounding.</i></p>
 </div>
 
----
+## Key features
 
-## 📚 Product Documentation
+Every feature carries exactly one status: **Proposed → Confirmed → Prototyped → Audited**. Only Audited features are meant for outside users. Today nothing in this repo is Audited.
 
-All product-related documentation is consolidated in the [**`docs/`**](./docs/) directory:
+**In the prototype today (Prototyped)**
 
-* 📋 [**Master PRD (`docs/PRD.md`)**](./docs/PRD.md): Complete product requirements, architectural thesis (*Truth Settlement*), and 4-layer specification (Layer 0 Active Baseline through Layers 1–3).
-* 🧭 [**Architecture, Caveats & Deployment Guide (`docs/ARCHITECTURE_CAVEATS_AND_ROADMAP.md`)**](./docs/ARCHITECTURE_CAVEATS_AND_ROADMAP.md): **Authoritative canonical specification** covering the 3-repo architecture, production caveats ledger, step-by-step module connection & deployment, upgrade warnings, and AI agent maintenance instructions.
-* 🏗️ [**Architecture Blueprint (`docs/architecture.md`)**](./docs/architecture.md): Modular ecosystem architecture across `vera` (Layer 0 + Feature 1.2), `clearCloud` (Unified Social App: Feature 1.1 & 1.3), and `veracities.social` (Protocol & Settlement Backend).
-* ⚙️ [**Features Specification (`docs/features.md`)**](./docs/features.md): Consolidated technical details of active features across the 3-repo estate and implementation matrix.
-* 🗺️ [**User Journeys (`docs/user_journeys.md`)**](./docs/user_journeys.md): Step-by-step user workflows for on-device checking, time-bound page scanning, PII scrubbing, Google Drive evidence grounding, and courtroom deliberation.
+- **Web cockpit and Chrome extension:** one Svelte 5 build serves the web cockpit and the Manifest V3 extension.
+- **Page scanning and claim highlighting:** claims on a page are highlighted by verdict, with hover cards showing sources and reasoning.
+- **On-device privacy:** a local scrubber removes personal data before anything is sent, using Gemini Nano where available.
+- **Bring your own model:** connect your own model provider; your key goes straight to the provider.
+- **Time-bound tab access:** grant reading access to a tab for a limited time.
+- **Your own evidence:** add Google Drive, Docs, and Sheets as sources.
+- **Fact-versus-opinion charts:** gauges showing how much of a page is checkable fact versus opinion.
 
----
+**Planned (Proposed in the design set)**
 
-## 🌟 Key Features (Layer 0 Baseline & Feature 1.2)
+- **Verification pipeline:** a seven-stage pipeline with six verdicts, including an honest "insufficient evidence," each backed by linked sources and a confidence.
+- **Public API, SDK, and web components:** any platform can embed Vera.
+- **Hallucination checks:** anyone can ask Vera to re-verify a verdict's sources and context.
+- **Graph views:** source-flow, money-flow, mind-map, quadrant, and fishbone diagrams for each verdict.
+- **Personal relevance:** an optional, on-device profile that flags which claims matter to you, without changing any verdict.
+- **Signed verdict ledger:** append-only verdicts published to ATProto, with corrections as new versions.
+- **Vera for AI agents:** an MCP server and an A2A endpoint, so other AI agents can use Vera as an independent reviewer of their own output.
+- **Free tier and assisted mode:** 15 free queries a month without an account; after that, upgrade, or switch to assisted mode, where Vera finds the evidence and your own model or ChatGPT-style plan judges it on your device.
 
-* **Fine-Grained Reactive Cockpit**: Zero-VDOM fine-grained text rendering built on Svelte 5 runes (`$state`, `$derived`, `$effect`).
-* **Unified Build Pipeline**: Single Vite build compiles synchronously into both `frontend/static/dist/` (web) and `extension/dist/` (Chrome extension).
-* **On-Device PII Scrubber (Feature 1.2)**: Client-side privacy-first redaction of emails, phones, and social handles from private messaging forwards, stripping hearsay fluff and extracting falsifiable claims (`piiScrubberService.js`).
-* **Dual-Execution AI Engine**:
-  * **Local In-Browser AI**: Zero-leakage client-side heuristic classification via Web Worker/WebGPU (`localAiService.js`) and direct integration with Chrome Built-In AI (Gemini Nano).
-  * **Cloud BYOM Reasoning**: 1-click frictionless Guest Agent preset (uncapped, zero credentials), Google OAuth, custom remote backend URLs, and custom API keys (Gemini, OpenAI, Anthropic, DeepSeek, Grok).
-* **Time-Bound Tab Permissions**:
-  * Granular duration options (*Just once*, *15 Minutes*, *1 Hour*, *Always for domain*).
-  * Live animated rotating SVG hourglass countdown banner (`Active: MM:SS` or `Active: ∞`) with instant revocation or duration adjustment.
-* **Real-time Active Tab Scanning & 4-Category DOM Highlighting**:
-  * **Scan Page**: Conversational fact-checking and multi-turn claim analysis in the Cockpit.
-  * **Highlight Claims**: Directly injects 4-category color-coded `<mark>` tags into the webpage DOM:
-    * 🟢 `verified` (Grounded factual baseline)
-    * 🟠 `disputed` (Conflicting authorities)
-    * 🔴 `misinformed` (Refuted claims / falsehoods)
-    * 🟣 `need-additional-context` (Speculative statements / missing qualifiers)
-  * Interactive Web of Trust (WOT) hover cards detailing verdicts, sources, and epistemic reasoning.
-* **Evidence & Grounding Sources Control Center**:
-  * Connect custom reference notes and URLs.
-  * Direct 1-click integration with **Google Docs** and **Google Sheets**.
-  * Dynamic premise toggle synchronization (`syncActivePremises`) updating agent context in real-time.
-  * Verified fact sharing to the global community pool.
-* **Fact Catalog & Database Metrics**:
-  * Direct submission of fact-checks with 4-category verdicts and accuracy / falsehood / speculation percentages to Firestore.
-  * Live querying and review of community fact-check history and truth metrics.
-* **Persistent & Embedded Mini-Charts**: Real-time visual ratio gauges tracking verifiable facts vs. opinion/speculation across the session and within individual chat messages.
-* **Decentralized libp2p Swarm Transport**: P2P claim attestation gossiping with deterministic claim digests (`p2pNode.js`).
+Some prototype features are being removed on purpose: the canned guest agent, global fact sharing, video generation, and the "connected peers" display. The design set lists where every feature goes.
 
----
+The server is moving from Python to Rust (ADR-014). The Python prototype gets only the fixes Gate 0 needs and is retired when the Phase 1 pipeline replaces it.
 
-## 🧠 Google Cloud Architecture & Tools
+## Documentation
 
-| Google Cloud Component | Role in Vera | Powered By |
-|---|---|---|
-| 🤖 **Reasoning Core** | Conversational reasoning & claim evaluation | **Gemini 2.5 Flash** |
-| 🎬 **Omni Media Gen** | Direct video explanation generation | **gemini-omni-flash-preview** |
-| 🗄️ **Structured Data** | Persisting and listing the global truth catalog | **Cloud Firestore** |
-| 🖼️ **Media Registry** | Hosting generated video bytes | **Cloud Storage (GCS)** |
-| 📖 **Grounded RAG** | Indexing guidelines and verified truth documents | **Vertex AI RAG Engine** |
-| 🧪 **Secure Sandbox** | Compiling source credibility heuristic calculations | **Agent Engine Code Executor** |
-| 🧠 **Persistent Context** | Retaining active scenarios and preferences across sessions | **Vertex AI Memory Bank** |
-| 🪟 **Agent-First UI** | Rendering structured interactive detail cards | **A2UI Schema Manager (v0.8)** |
-| 🌐 **A2A Proxy Gateway** | Orchestrating client-to-agent reasoning passes | **FastAPI + Cloud Run** |
+The design set is the source of truth for what Vera is and how it will be built:
 
----
+- **Vera design set:** brief, pipeline, API, ADRs, implementation plan, tickets, and security plan — [`docs/vera.md`](./docs/vera.md)
+- **Diagrams:** [`docs/images/vera-architecture.svg`](./docs/images/vera-architecture.svg), [`docs/images/vera-roadmap.svg`](./docs/images/vera-roadmap.svg)
+- **Ecosystem overview and ClearCloud:** in ClearCloud's repo
+- **Veracities.bet:** in the `veracities.social` repo
 
-## 🏛️ DAO Framework Integration: EnDAOsment Governance Adaptation
+Older docs in `docs/` (the Truth Settlement PRD, Layer 0–3 architecture, and caveats ledger) are superseded by the design set and will be removed under ticket V-009.
 
-Vera adapts the external [`DAO-Smart-Contract-Framework`](https://github.com/mrtingalingling/DAO-Smart-Contract-Framework) ("EnDAOsment") for Layer 3 Epistemic Governance, transitioning from plutocratic token voting to multi-dimensional reputation-weighted collective intelligence:
+## Getting started (Python prototype)
 
-1. **Checkpointed Epistemic CRS**: `veracities.social/contracts/EpistemicCrsManager.sol` implements `ICrsManager` using OpenZeppelin-compatible historical checkpoints. It maps Vera's 4 Epistemic Tiers to snapshotted voting weights and quadratic credit budgets (Novice: 100, Contributor: 500, Arbiter: 1,500, Sage Elder: 3,000 credits). Checkpointing at block numbers prevents flash-loan and flash-reputation manipulation.
-2. **Two-Stage Deliberation Pipeline**:
-   - **Stage 1 (Epistemic Approval Vetting)**: Sages and Arbiters evaluate qualitative truth and platform safety via `ApprovalGovernor.sol` with quadratic tier weights ($W \in \{1, 5, 15, 30\}$).
-   - **Stage 2 (Quadratic Voting with Credit Budgets)**: Citizens allocate credits ($C$) where voting weight scales quadratically as $V = \lfloor\sqrt{C}\rfloor$ ($C = V^2$) via `QuadraticGovernor.sol`, dampening plutocracy and factional brigading.
-3. **Safe Timelock Execution**: Approved proposals transition to `TimelockControllerUpgradeable` for a 24–48h public inspection delay prior to on-chain execution.
-4. **Upgrade Resilience & Decoupling (What Happens if the Framework Updates)**:
-   - **Storage Decoupling**: All contracts run behind independent UUPS / ERC-1967 proxies with reserved storage gaps. Upgrading the upstream framework's logic never collides with or erases member reputation checkpoints or proposal histories.
-   - **Runtime Reconfiguration**: Vera's `EpistemicGovernor.sol` connects via modular adapter interfaces (`configureParentDAO(ParentFramework.ENDAOSMENT, targetAddress)`). Non-breaking framework updates require zero downtime; breaking changes can be re-pointed dynamically or adapted via UUPS upgrade with zero platform downtime.
-   - **Independent Heuristics**: Epistemic scoring formulas ($EQ$) remain fully autonomous inside `EpistemicCrsManager.sol`. If the parent framework undergoes an emergency pause, Vera can fall back to standalone execution or alternative adapters (OpenZeppelin, Gnosis Safe Zodiac, Aragon OSx).
+### 1. Install dependencies
 
----
-
-## 📁 Repository Directory Structure
-
-```text
-vera/
-├── docs/                             # Consolidated Product Documentation (PRD, Features, Journeys)
-├── app/                              # Main Agent Package (Vertex AI Reasoning Engine)
-│   ├── agent.py                      # Main Agent logic, Prompt & Tool registry
-│   ├── a2ui_utils.py                 # A2UI card renderer callback
-│   └── app_utils/                    # Modular Helper Tools (Firestore, RAG, Memory, Video)
-├── frontend/                         # Frontend & FastAPI Gateway
-│   ├── src/                          # Reactive Cockpit Components
-│   │   ├── App.svelte                # Root Cockpit view & state orchestrator
-│   │   ├── components/               # Modular UI Components
-│   │   │   ├── Header.svelte         # Brand, theme, BYOM trigger, query limit pill
-│   │   │   ├── MiniChart.svelte      # Facts vs. Opinion mini-chart visualizer
-│   │   │   ├── ByomModal.svelte      # 1-click uncap, local AI, keys & remote backend URL
-│   │   │   ├── PermissionModal.svelte # Time-bound tab access duration selector
-│   │   │   ├── SourceEvidencePanel.svelte # Evidence grounding & Google Drive integration
-│   │   │   └── CatalogPanel.svelte   # Fact catalog & truth database metrics drawer
-│   │   ├── localAiService.js         # On-device zero-leakage local AI engine
-│   │   ├── p2pNode.js                # libp2p P2P swarm node manager
-│   │   └── scannerService.js         # Bi-directional tab scanner & DOM highlighter
-│   ├── static/                       # Web distribution & standalone frame.html
-│   ├── vite.config.js                # Unified build syncing to static/dist and extension/dist
-│   └── main.py                       # FastAPI backend proxy with BYOM routing & rate limits
-├── extension/                        # Manifest V3 Chrome Extension
-│   ├── manifest.json                 # Extension manifest
-│   ├── content.js                    # In-page DOM scanner, 4-verdict highlighter & WOT tooltips
-│   ├── popup.html                    # Extension popup mounting Cockpit
-│   └── dist/                         # Compiled bundle synchronized from frontend/
-├── tests/                            # Unit & Integration Tests suite
-├── package.json                      # Unified root DX runner scripts
-├── pyproject.toml                    # Astral uv package config
-└── demo.gif                          # Extension demo recording
-```
-
----
-
-## 🚀 Getting Started Locally
-
-### 1. Install Dependencies
 ```bash
 # Python dependencies
 agents-cli install
@@ -134,54 +59,69 @@ agents-cli install
 cd frontend && npm install && cd ..
 ```
 
-### 2. Set Up Environment Variables
-Create a `.env` in the root:
+### 2. Set environment variables
+
+Create a `.env` in the repo root. Use your own resource names; none belong in git (ticket V-006).
+
 ```bash
-export AGENT_ENGINE_RESOURCE_NAME="projects/419816504777/locations/us-east1/reasoningEngines/6326484353106837504"
+export AGENT_ENGINE_RESOURCE_NAME="projects/<project-id>/locations/<region>/reasoningEngines/<engine-id>"
 export AGENT_DIRECTORY="app"
 ```
 
-### 3. Build & Run
-Thanks to the unified root runner, you can build and run directly from the workspace root:
+### 3. Build and run
+
 ```bash
-# Build unified bundles (web + extension)
+# Build the web and extension bundles
 npm run build
 
-# Start FastAPI server on port 8080
+# Start the FastAPI server on port 8080
 npm run serve
 ```
-Open **`http://localhost:8080/`** or **`http://localhost:8080/frame.html`** in your browser!
 
----
+Then open `http://localhost:8080/` or `http://localhost:8080/frame.html`.
 
-## 🧩 Loading into Chrome Extension (Manifest V3)
+## Loading the Chrome extension
 
-1. Open Chrome and navigate to **`chrome://extensions/`**.
-2. Toggle on **Developer mode** (top-right).
-3. Click **"Load unpacked"** and select the **`extension/`** folder in this repository.
-4. Click the **Vera** extension icon in your Chrome toolbar to open the cockpit.
-5. Click **"Tab Access"** to grant 15-minute or continuous reading access, then click **"Highlight"** or **"Scan"** to verify claims on any live webpage.
+1. Open `chrome://extensions/`.
+2. Turn on **Developer mode**.
+3. Click **Load unpacked** and select the `extension/` folder.
+4. Click the Vera icon in the toolbar to open the cockpit.
+5. Click **Tab Access** to grant temporary reading access, then **Highlight** or **Scan** on any page.
 
----
+The extension will move to a side panel with optional host permissions in Phase 3 (V-301, V-302).
 
-## 🧪 Testing
- 
-Run both frontend and backend suites simultaneously with one command:
+## Testing
+
 ```bash
+# Frontend and backend together
 npm test
-```
-Or run individual suites:
-```bash
-# Backend Python tests (19 unit tests)
-npm run test:backend
 
-# Frontend Vitest tests (42 unit tests across 6 suites)
+# Or separately
 npm run test:frontend
+npm run test:backend
 ```
 
-To run the unified 261-test suite across the ecosystem (226 core app tests across `vera`, `clearCloud`, `veracities.social` + 35 upstream framework tests), use the root runner:
-```bash
-# From workspace root (/config/Desktop):
-npm run test:all
+Standalone CI for this repo is ticket V-010; until then, tests run locally.
+
+## Repository structure
+
+```text
+vera/
+├── docs/                 # Design set and diagrams
+├── app/                  # Python agent prototype (retired after Phase 1)
+│   ├── agent.py          # Agent logic and tool registry
+│   └── app_utils/        # Firestore, RAG, and memory helpers
+├── frontend/             # Svelte 5 cockpit and FastAPI gateway
+│   ├── src/              # Cockpit components and client services
+│   ├── vite.config.js    # One build for web and extension
+│   └── main.py           # FastAPI proxy with BYOM routing and rate limits
+├── extension/            # Manifest V3 Chrome extension
+├── tests/                # Unit and integration tests
+├── package.json          # Root scripts
+└── pyproject.toml        # uv package config
 ```
 
+## Related
+
+- **Governance:** the EnDAOsment-based DAO contracts belong to ClearCloud and are moving to its repo (C-012).
+- **Contributing:** AI-assigned tickets follow the reviewable-diffs skill in this repo, and every ticket has a reviewer other than its author.
