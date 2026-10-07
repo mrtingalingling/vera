@@ -29,14 +29,14 @@ Vera is a standalone AI agent that tells a reader whether a claim is supported b
 | Bring-your-own-model presets and keys | Prototyped | Direct-to-provider adapter and one model panel (V-208, ADR-013); the canned guest agent is removed (V-001) |
 | Google Drive, Docs, and Sheets evidence sources | Prototyped | Kept as user-supplied sources, scrubbed before send (V-012) |
 | Fact-versus-opinion mini-charts | Prototyped | Checkable-claims gauge (V-311) |
-| Fact catalog in Firestore and global fact sharing | Prototyped | Replaced by the verdict ledger (ADR-006); sharing removed (V-109) |
-| Vertex AI Memory Bank | Prototyped | Removed; the ledger is the one store (ADR-006) |
-| Vertex AI RAG Engine | Prototyped | Methodology and style guidance only (ADR-004) |
-| A2UI detail cards and Agent Engine code executor | Prototyped | Retired with the ADK agent (ADR-014); cards replaced by `@vera/embed` (V-206) |
-| Video generation and Cloud Storage hosting | Prototyped | Deleted (V-012) |
+| Fact catalog in Firestore and global fact sharing | No longer runs (lab project expired) | Replaced by the verdict ledger (ADR-006); sharing removed (V-109) |
+| Vertex AI Memory Bank | No longer runs (lab project expired) | Removed; the ledger is the one store (ADR-006) |
+| Vertex AI RAG Engine | No longer runs (lab project expired) | Methodology and style guidance only (ADR-004) |
+| A2UI detail cards and Agent Engine code executor | No longer runs (lab project expired) | Retired with the ADK agent (ADR-014); cards replaced by `@vera/embed` (V-206) |
+| Video generation and Cloud Storage hosting | No longer runs (lab project expired) | Deleted (V-012) |
 | libp2p swarm | Prototyped | Stub switched off (V-008); later mirror (ADR-007) |
 | EnDAOsment governance contracts | Prototyped | Belong to ClearCloud; moving to its repo (C-012) |
-| Agent-to-agent (A2A) support on the ADK | Prototyped | Rebuilt as an MCP server and an A2A endpoint over the public API (V-212) |
+| Agent-to-agent (A2A) support on the ADK | No longer runs (lab project expired) | Rebuilt as an MCP server and an A2A endpoint over the public API (V-212) |
 
 ## Shared protocol
 
@@ -464,7 +464,7 @@ Phase 0 is the current focus.
 
 ### Gate criteria
 
-1. **Gate 0, honest baseline:** no stub returns a verdict; every documented feature carries a status that matches the code; CI runs every repo's tests standalone; the four known security bugs are fixed and retested.
+1. **Gate 0, honest baseline:** no stub returns a verdict; every documented feature carries a status that matches the code; CI runs every repo's tests standalone; the known security bugs, including key handling (V-013), are fixed and retested.
 2. **Gate 1, verification quality:** on the held-out eval set, accuracy and calibration meet targets the owner sets in V-011 before Phase 1 starts; every verdict links evidence; `insufficient-evidence` rate is measured and reported.
 3. **Gate 2, API v1 frozen:** OpenAPI spec reviewed; SDK and components pass contract tests; one outside integration (ClearCloud) runs on test keys; API security review passed.
 4. **Gate 3, extension v2 public:** least-privilege manifest, side panel, offset highlighting; scrubber, vault protection, personal relevance, and the shared model panel Audited (V-304, V-307 to V-310); extension security review and privacy review passed; Chrome Web Store listing approved.
@@ -474,13 +474,15 @@ Phase 0 is the current focus.
 
 ## Tickets with model assignments
 
-Fifty-six tickets cover Vera's Phases 0–4; each is assigned to the cheapest model tier that can do it reliably, and the author is never its own reviewer.
+Fifty-seven tickets cover Vera's Phases 0–4; each is assigned to the cheapest model tier that can do it reliably, and the author is never its own reviewer.
 
 **Assignment rules.**
 
 - **Claude Opus 5.5:** schemas, security-sensitive code, and cross-cutting design, where a wrong choice is expensive to undo.
-- **Claude Sonnet 5.5:** well-specified implementation against an accepted schema, spec, or ADR.
-- **Claude Haiku 4.5:** mechanical changes such as deletions, config moves, and enum mappings.
+- **Gemini 3.8 Flash:** well-specified implementation against an accepted schema, spec, or ADR, and reviews of local-model tickets. Documentation and long multi-file agentic work go to Claude Opus 5.5 instead.
+- **Qwen3.8-27B (local):** small, single-file mechanical changes such as deletions, config moves, and enum mappings, run on the owner's Mac. Anything spanning several files or needing judgment goes to Gemini 3.8 Flash or Claude Opus 5.5.
+- **Agent instructions:** every AI ticket runs under the execution rules in the repo's `GEMINI.md` (copied to `AGENTS.md` for other agent tools), written with Gemini 3.8 Flash as the baseline: one ticket per session, an approved plan before any code, approved files only, and stop and ask when anything is unclear.
+- **Fallback:** if Claude Opus 5.5 isn't available, Gemini 3.8 Flash may finish an Opus implementation ticket under the stricter fallback rules in GEMINI.md: high thinking, human approval before any schema, API, signature, or security-boundary change, smaller PRs, and a human reviewer. Tickets whose reviewer is Claude Opus 5.5 fall back to a human reviewer. Documentation tickets never fall back; they stay with Claude Opus 5.5 or a human.
 - **Human:** decisions, legal work, eval labeling, and every security sign-off.
 - **Owner:** @Ting for now, as the placeholder for gate inputs and reviews with no other reviewer. Later assignable, likely by sortition among qualifying community users. Until then, where the owner both writes and reviews a ticket, the separate-reviewer rule is suspended for that ticket and the ticket says so.
 
@@ -490,26 +492,27 @@ Every AI-assigned ticket runs with the reviewable-diffs skill already in the rep
 
 | ID | Ticket | Acceptance criteria | Model | Reviewer | Depends on | Status |
 | --- | --- | --- | --- | --- | --- | --- |
-| V-001 | Remove the canned guest-agent verdict; guest path calls a real model or returns 401 | No code path returns a verdict without a model call; test covers each provider alias | Claude Sonnet 5.5 | Human | — | To do |
-| V-002 | Local fallback returns `insufficient-evidence`; delete keyword verdict lists in `localAiService.js` and `metrics.py` | Tests: no Nano, Nano error, unparseable Nano output all yield `insufficient-evidence` | Claude Sonnet 5.5 | Human | — | To do |
+| V-001 | Remove the canned guest-agent verdict; guest path calls a real model or returns 401 | No code path returns a verdict without a model call; test covers each provider alias | Gemini 3.8 Flash | Human | — | To do |
+| V-002 | Local fallback returns `insufficient-evidence`; delete keyword verdict lists in `localAiService.js` and `metrics.py` | No code path defaults to verified (today localAiService.js uses parsed.verdict \|\| 'verified' and let verdict = 'verified'); tests: no Nano, Nano error, unparseable Nano output all yield `insufficient-evidence` | Gemini 3.8 Flash | Human | — | To do |
 | V-003 | Fix tooltip XSS in `content.js`: closed shadow root, `textContent` only | Fixture page with a script payload in `explanation` and `sources` renders inert | Claude Opus 5.5 | Human (security) | — | To do |
-| V-004 | Exact verdict-enum mapping in `content.js` | "untrue" and "not true" never map to verified; table-driven test | Claude Haiku 4.5 | Claude Sonnet 5.5 | — | To do |
-| V-005 | Delete dead code: `popup.js`, legacy `static/index.html`, `get_weather`, `get_current_time` | Build and all tests pass after removal | Claude Haiku 4.5 | Claude Sonnet 5.5 | — | To do |
-| V-006 | Move reasoning-engine and memory-bank IDs out of git into env config | No resource IDs in the repo; secret scan clean | Claude Haiku 4.5 | Human | — | To do |
-| V-007 | Rate limiting in a shared store: signed-in users by authenticated identity (API key or account session); anonymous users by device token, device ID hash, and hashed IP | Client-supplied `user_id` ignored; limits survive a restart | Claude Sonnet 5.5 | Claude Opus 5.5 | V-001 | To do |
-| V-008 | Turn off the P2P stub and remove "connected" peer UI | No UI claims peers exist; stub sits behind a disabled flag | Claude Haiku 4.5 | Claude Sonnet 5.5 | — | To do |
-| V-009 | Rewrite README, PRD, and architecture docs to the status vocabulary | Every feature has one status; no test counts; developer setup, run, test, and structure sections kept and updated; resource IDs replaced with placeholders; human approves | Claude Sonnet 5.5 | Human | V-001 to V-008 | In Review |
-| V-010 | Standalone CI in the vera repo | GitHub Actions runs backend and frontend tests from a clean clone on every PR | Claude Sonnet 5.5 | Human | — | To do |
+| V-004 | Exact verdict-enum mapping in `content.js` | "untrue" and "not true" never map to verified; table-driven test | Qwen3.8-27B (local) | Gemini 3.8 Flash | — | To do |
+| V-005 | Delete dead code: the stray test\_model\_v12.py, the gateway's DEBUG prints, `popup.js`, legacy `static/index.html`, `get_weather`, `get_current_time` | Build and all tests pass after removal | Qwen3.8-27B (local) | Gemini 3.8 Flash | — | To do |
+| V-006 | Remove every expired training-lab project and resource ID (app/agent.py, firestore\_db.py, rag\_tool.py, services.py, terraform env.tfvars, deployment\_metadata.json, memory\_bank\_id.txt, scripts/create\_memory\_bank.py); configuration comes from environment variables | No project or resource IDs anywhere in the repo; secret scan clean; features that depended on the dead lab project are shown as no longer running | Qwen3.8-27B (local) | Human | — | To do |
+| V-007 | Rate limiting in a shared store: signed-in users by authenticated identity (API key or account session); anonymous users by device token, device ID hash, and hashed IP | Client-supplied `user_id` ignored; limits survive a restart; the gateway's fake "remaining": 999 replaced with the real count; limit values stay configurable for V-213 | Gemini 3.8 Flash | Claude Opus 5.5 | V-001 | To do |
+| V-008 | Turn off the P2P stub and remove "connected" peer UI | No UI claims peers exist; stub sits behind a disabled flag | Qwen3.8-27B (local) | Gemini 3.8 Flash | — | To do |
+| V-009 | Rewrite README, PRD, and architecture docs to the status vocabulary | Every feature has one status; no test counts; developer setup, run, test, and structure sections kept and updated; resource IDs replaced with placeholders; human approves | Gemini 3.8 Flash | Human | V-001 to V-008 | To do |
+| V-010 | Standalone CI in the vera repo | GitHub Actions runs backend and frontend tests from a clean clone on every PR | Gemini 3.8 Flash | Human | — | To do |
 | V-011 | Set Gate 1 accuracy and calibration targets | Targets recorded in the repo before Phase 1 starts | Human | Owner (sole; rule suspended) | — | To do |
-| V-012 | Delete the `generate_fact_check_video` tool and its hard-coded GCP project and bucket; keep the Google Drive source import at Prototyped and route it through the scrubber | Video tool and its IDs gone from code; Drive imports are treated as untrusted user-supplied sources and scrubbed on the device before send | Claude Haiku 4.5 | Claude Sonnet 5.5 | — | To do |
+| V-012 | Delete the `generate_fact_check_video` tool and its hard-coded GCP project and bucket; keep the Google Drive source import at Prototyped and route it through the scrubber | Video tool and its IDs gone from code; Drive imports are treated as untrusted user-supplied sources and scrubbed on the device before send | Qwen3.8-27B (local) | Gemini 3.8 Flash | — | To do |
+| V-013 | Stop exposing users' model keys in the gateway: send the Gemini key in a header instead of the URL, never return raw provider errors to clients, and redact keys from logs | No key appears in any URL, response body, or log in tests; provider errors return a generic message with an error ID | Claude Opus 5.5 | Human (security) | — | To do |
 | V-101 | `@vera/protocol` schemas for claim, evidence, verdict, retraction | JSON Schema, Rust, TypeScript, and Python types generated from one source; validators tested | Claude Opus 5.5 | Human | Gate 0 | To do |
-| V-102 | Claim extraction stage with source offsets | Offsets round-trip to the original text through the scrubber's offset map; a test proves the server fallback never receives unscrubbed or unapproved text | Claude Sonnet 5.5 | Claude Opus 5.5 | V-101, V-110, V-112 | To do |
-| V-103 | Check-worthiness stage | Schema-constrained output; accuracy on labeled fixtures reported | Claude Sonnet 5.5 | Claude Opus 5.5 | V-101, V-110 | To do |
+| V-102 | Claim extraction stage with source offsets | Offsets round-trip to the original text through the scrubber's offset map; a test proves the server fallback never receives unscrubbed or unapproved text | Gemini 3.8 Flash | Claude Opus 5.5 | V-101, V-110, V-112 | To do |
+| V-103 | Check-worthiness stage | Schema-constrained output; accuracy on labeled fixtures reported | Gemini 3.8 Flash | Claude Opus 5.5 | V-101, V-110 | To do |
 | V-104 | Retrieval stage: live search plus credibility tiers | Every evidence item has URL, publisher, author, date, content hash, origin cluster, tier; tier list versioned | Claude Opus 5.5 | Human | V-101, V-110 | To do |
-| V-105 | Stance judge per origin cluster | A quoted span not found in the retrieved text forces `irrelevant` | Claude Sonnet 5.5 | Claude Opus 5.5 | V-104 | To do |
+| V-105 | Stance judge per origin cluster | A quoted span not found in the retrieved text forces `irrelevant` | Gemini 3.8 Flash | Claude Opus 5.5 | V-104 | To do |
 | V-106 | Deterministic aggregation rules and confidence calibration | Rules in versioned config; one property test per taxonomy row | Claude Opus 5.5 | Human | V-105 | To do |
 | V-107 | Eval dataset and labeling guide | Held-out split frozen before tuning; public benchmark subset plus own labeled claims; inter-annotator agreement checked | Human | Owner | — | To do |
-| V-108 | Eval harness as a CI gate | PR fails if accuracy or calibration regresses past the set threshold | Claude Sonnet 5.5 | Claude Opus 5.5 | V-107 | To do |
+| V-108 | Eval harness as a CI gate | PR fails if accuracy or calibration regresses past the set threshold | Gemini 3.8 Flash | Claude Opus 5.5 | V-107 | To do |
 | V-109 | Remove `share_global_fact` injection; community input goes to a review queue | No user-written text reaches another user's model context; test proves it | Claude Opus 5.5 | Human (security) | — | To do |
 | V-110 | Rust service skeleton for /v1 and pipeline orchestration (ADR-014) | Builds and tests in CI from a clean clone; calls a model provider over HTTP with schema-validated output; no Python in the request path | Claude Opus 5.5 | Human | Gate 0 | To do |
 | V-111 | Origin clustering and source registry (outlets, authors, ownership and funding links, conflict records) | Syndicated copies collapse to one cluster on fixtures; every registry entry links to public evidence; author records show only after human approval | Claude Opus 5.5 | Human (security) | V-104 | To do |
@@ -520,33 +523,33 @@ Every AI-assigned ticket runs with the reviewable-diffs skill already in the rep
 | ID | Ticket | Acceptance criteria | Model | Reviewer | Depends on | Status |
 | --- | --- | --- | --- | --- | --- | --- |
 | V-201 | OpenAPI 3.1 spec for `/v1` | Matches this doc's API surface; spec lint clean; human review | Claude Opus 5.5 | Human | Gate 1 | To do |
-| V-202 | Implement checks, claims, verdicts, and snapshot endpoints | Contract tests pass; idempotency and problem-details responses tested | Claude Sonnet 5.5 | Claude Opus 5.5 | V-201 | To do |
+| V-202 | Implement checks, claims, verdicts, and snapshot endpoints | Contract tests pass; idempotency and problem-details responses tested | Gemini 3.8 Flash | Claude Opus 5.5 | V-201 | To do |
 | V-203 | Key types, origin allowlist, quotas | Publishable key refused from an unlisted origin; quotas enforced per key type | Claude Opus 5.5 | Human (security) | V-201 | To do |
-| V-204 | Webhooks with signing, retries, auto-disable | SDK ships a signature verifier; deliveries older than 5 minutes rejected | Claude Sonnet 5.5 | Claude Opus 5.5 | V-202 | To do |
-| V-205 | `@vera/core` SDK and Python client | Generated from the spec; test proves local helpers make no network calls | Claude Sonnet 5.5 | Claude Opus 5.5 | V-201 | To do |
-| V-206 | `@vera/embed` web components | Closed shadow root; no `innerHTML`; accessible labels | Claude Sonnet 5.5 | Claude Opus 5.5 | V-205 | To do |
-| V-207 | Published contract-test suite | ClearCloud's repo runs it green against test keys | Claude Sonnet 5.5 | Human | V-202 | To do |
-| V-208 | Direct-to-provider BYOM adapter in the client | Network test shows the key never goes to a Vera domain | Claude Sonnet 5.5 | Claude Opus 5.5 | — | To do |
+| V-204 | Webhooks with signing, retries, auto-disable | SDK ships a signature verifier; deliveries older than 5 minutes rejected | Gemini 3.8 Flash | Claude Opus 5.5 | V-202 | To do |
+| V-205 | `@vera/core` SDK and Python client | Generated from the spec; test proves local helpers make no network calls | Gemini 3.8 Flash | Claude Opus 5.5 | V-201 | To do |
+| V-206 | `@vera/embed` web components | Closed shadow root; no `innerHTML`; accessible labels | Gemini 3.8 Flash | Claude Opus 5.5 | V-205 | To do |
+| V-207 | Published contract-test suite | ClearCloud's repo runs it green against test keys | Gemini 3.8 Flash | Human | V-202 | To do |
+| V-208 | Direct-to-provider BYOM adapter in the client | Network test shows the key never goes to a Vera domain | Gemini 3.8 Flash | Claude Opus 5.5 | — | To do |
 | V-209 | Graph endpoint: build the five views from the ledger and source registry, with cycle detection for source flow | Each view's Mermaid source parses on the pinned Mermaid version; a fixture with circular citations is flagged; every node links to evidence | Claude Opus 5.5 | Human | V-111, V-202 | To do |
 | V-210 | Published API price list | Operating cost measured with the C-006 method and prices set at cost plus 15%; one price list applied equally to every customer, including Veracities.bet; any volume tiers published and open to all; prices published before Gate 2 | Human | Owner (sole; rule suspended) | V-201 | To do |
-| V-211 | Classify-only endpoint (claims:classify): checkable-or-not and entertainment-or-informational labels | Runs stages 1 to 3 only, with no retrieval or stance calls in tests; returns claim IDs and both labels; label accuracy measured on a fixture set; separate quota | Claude Sonnet 5.5 | Claude Opus 5.5 | V-103, V-202 | To do |
-| V-212 | Vera for AI agents: MCP server (@vera/mcp) and A2A endpoint over the public API | Both return the same verdicts as the API; the MCP server scrubs locally before any call; A2A tasks report status and finish by webhook; injection suite passes on agent-supplied text; a caller's own claims never count as evidence | Claude Sonnet 5.5 | Human (security) | V-202, V-204, V-205 | To do |
-| V-213 | Free tier and cap flow: anonymous device token, device ID hash and hashed-IP backstops, query definition, and the three choices at the cap | 15 queries a month without an account; token reset caught by the device ID hash or hashed IP; both hashes salted, rotated, and expiring; device ID built only from identifiers browser and store policies permit, after a privacy review; claims-per-query limit set; cap screen offers upgrade, assisted mode with a key, and assisted mode with a plan sign-in | Claude Sonnet 5.5 | Human (security) | V-203 | To do |
+| V-211 | Classify-only endpoint (claims:classify): checkable-or-not and entertainment-or-informational labels | Runs stages 1 to 3 only, with no retrieval or stance calls in tests; returns claim IDs and both labels; label accuracy measured on a fixture set; separate quota | Gemini 3.8 Flash | Claude Opus 5.5 | V-103, V-202 | To do |
+| V-212 | Vera for AI agents: MCP server (@vera/mcp) and A2A endpoint over the public API | Both return the same verdicts as the API; the MCP server scrubs locally before any call; A2A tasks report status and finish by webhook; injection suite passes on agent-supplied text; a caller's own claims never count as evidence | Gemini 3.8 Flash | Human (security) | V-202, V-204, V-205 | To do |
+| V-213 | Free tier and cap flow: anonymous device token, device ID hash and hashed-IP backstops, query definition, and the three choices at the cap | 15 queries a month without an account; token reset caught by the device ID hash or hashed IP; both hashes salted, rotated, and expiring; device ID built only from identifiers browser and store policies permit, after a privacy review; claims-per-query limit set; cap screen offers upgrade, assisted mode with a key, and assisted mode with a plan sign-in | Gemini 3.8 Flash | Human (security) | V-203 | To do |
 | V-214 | Assisted mode: claims:evidence endpoint, on-device stance judgment with the user's model, SDK aggregation | Credentials never reach Vera in a network test; results labeled "assisted by your model" and kept out of the ledger; aggregation code identical to the server's; assisted search cap enforced | Claude Opus 5.5 | Human (security) | V-208, V-213 | To do |
-| V-215 | Verdict reuse by claim ID and a server-side evidence cache | Repeat claims return the unexpired verdict without new searches; refresh forces a new check; cache stores links, hashes, and quoted spans only; stale entries expire; search spend per check measured before and after | Claude Sonnet 5.5 | Claude Opus 5.5 | V-202 | To do |
+| V-215 | Verdict reuse by claim ID and a server-side evidence cache | Repeat claims return the unexpired verdict without new searches; refresh forces a new check; cache stores links, hashes, and quoted spans only; stale entries expire; search spend per check measured before and after | Gemini 3.8 Flash | Claude Opus 5.5 | V-202 | To do |
 | V-301 | Manifest: optional host permissions with timed revoke | Automated test shows access is gone after the timer | Claude Opus 5.5 | Human (security) | Gate 2 | To do |
-| V-302 | Side panel migration | Panel stays open while the user scrolls and clicks the page | Claude Sonnet 5.5 | Human | V-301 | To do |
-| V-303 | Offset-based highlighting | Highlights land on extracted offsets on fixture pages, including dynamic DOM | Claude Sonnet 5.5 | Claude Opus 5.5 | V-102 | To do |
+| V-302 | Side panel migration | Panel stays open while the user scrolls and clicks the page | Gemini 3.8 Flash | Human | V-301 | To do |
+| V-303 | Offset-based highlighting | Highlights land on extracted offsets on fixture pages, including dynamic DOM | Gemini 3.8 Flash | Claude Opus 5.5 | V-102 | To do |
 | V-304 | PII scrubber: evaluate on-device NER against regex | Recall measured on a synthetic chat set; decision recorded as a new ADR | Claude Opus 5.5 | Human | — | To do |
-| V-305 | `<vera-graph>` component and a graph tab in the side panel | Renders in a closed shadow root with Mermaid's strict security level; script payloads in labels render inert; quadrant axes are track record and sourcing | Claude Sonnet 5.5 | Human (security) | V-206, V-209 | To do |
-| V-306 | Sign in with ChatGPT as a BYOM option (ADR-013) | OpenAI trial access confirmed, including whether plan usage applies to Vera; OIDC with PKCE; plan usage enabled only from the token response's granted scopes; tokens never reach a Vera domain; appears in the same BYOM panel and flow as key-based providers; works as an assisted-mode credential | Claude Sonnet 5.5 | Human (security) | V-208 | To do |
-| V-307 | Local model manager: Gemini Nano first, then a user-chosen local model (Qwen3-4B-Instruct, Phi-4-mini, Gemma 3 4B) in the BYOM panel | Detects Nano and falls back cleanly when it's absent; each offered model's license and download size reviewed; same panel and flow as other BYOM options | Claude Sonnet 5.5 | Claude Opus 5.5 | V-208 | To do |
+| V-305 | `<vera-graph>` component and a graph tab in the side panel | Renders in a closed shadow root with Mermaid's strict security level; script payloads in labels render inert; quadrant axes are track record and sourcing | Gemini 3.8 Flash | Human (security) | V-206, V-209 | To do |
+| V-306 | Sign in with ChatGPT as a BYOM option (ADR-013) | OpenAI trial access confirmed, including whether plan usage applies to Vera; OIDC with PKCE; plan usage enabled only from the token response's granted scopes; tokens never reach a Vera domain; appears in the same BYOM panel and flow as key-based providers; works as an assisted-mode credential | Gemini 3.8 Flash | Human (security) | V-208 | To do |
+| V-307 | Local model manager: Gemini Nano first, then a user-chosen local model (Qwen3-4B-Instruct, Phi-4-mini, Gemma 3 4B) in the BYOM panel | Detects Nano and falls back cleanly when it's absent; each offered model's license and download size reviewed; same panel and flow as other BYOM options | Gemini 3.8 Flash | Claude Opus 5.5 | V-208 | To do |
 | V-308 | Stage 1 techniques: redaction and masking, obfuscation and shifts, rewriting and style masking, plus an encrypted sensitive-term vault with fuzzy matching | Claim numbers and claim text pass through unchanged in tests; typo variants of vault terms are caught; vault plaintext exists only in memory on the device; nothing, including agent-to-agent tokens, is sent before stage 1 completes | Claude Opus 5.5 | Human (security) | V-112, V-304, V-307 | To do |
-| V-309 | Personal relevance: local profile, entertainment filter, and relevance rating (issue #8) | Profile stored only in the encrypted on-device vault; network test shows it never leaves the device; verdicts and confidence identical with and without a profile; entertainment skipped; view, edit, export, and delete work | Claude Sonnet 5.5 | Human (security) | V-307, V-308 | To do |
+| V-309 | Personal relevance: local profile, entertainment filter, and relevance rating (issue #8) | Profile stored only in the encrypted on-device vault; network test shows it never leaves the device; verdicts and confidence identical with and without a profile; entertainment skipped; view, edit, export, and delete work | Gemini 3.8 Flash | Human (security) | V-307, V-308 | To do |
 | V-310 | Vault protection: passkey-wrapped key, step-up on unusual access, recovery codes | Vault can't be decrypted without the passkey or keystore factor; each step-up trigger re-locks the vault in tests; idle re-lock works; recovery codes restore access; no security questions | Claude Opus 5.5 | Human (security) | V-308 | To do |
-| V-311 | Checkable-claims gauge in the side panel and cockpit, replacing the fact-versus-opinion mini-charts | Shares computed from stage 3 labels and verdicts only; insufficient-evidence shown as its own segment; no score for the page or author | Claude Sonnet 5.5 | Claude Opus 5.5 | V-103, V-302 | To do |
+| V-311 | Checkable-claims gauge in the side panel and cockpit, replacing the fact-versus-opinion mini-charts | Shares computed from stage 3 labels and verdicts only; insufficient-evidence shown as its own segment; no score for the page or author | Gemini 3.8 Flash | Claude Opus 5.5 | V-103, V-302 | To do |
 | V-401 | Append-only verdict ledger with versioning and expiry | No update-in-place path exists; supersede chain tested | Claude Opus 5.5 | Human | Gate 3 | To do |
-| V-402 | Corrections workflow and human review queue | Flag, review, new version, webhook: tested end to end | Claude Sonnet 5.5 | Human | V-401 | To do |
+| V-402 | Corrections workflow and human review queue | Flag, review, new version, webhook: tested end to end | Gemini 3.8 Flash | Human | V-401 | To do |
 | V-403 | Signed records and ATProto publishing | Records verify against Vera's DID; lexicons validate | Claude Opus 5.5 | Human (security) | V-401 | To do |
 | V-404 | Set the corrections window for Gate 4 | Window recorded in the repo before Phase 4 starts | Human | Owner (sole; rule suspended) | — | To do |
 | V-405 | Hallucination-check endpoint and workflow | Citation, claim-context, and retrieval-gap checks each tested; a failed check opens a correction; a ruling alone can't change a verdict; open to any API customer or signed-in user, including extension users; requests rate limited per API key and per user | Claude Opus 5.5 | Human (security) | V-402 | To do |
@@ -602,9 +605,9 @@ The assets are verdict integrity, users' personal data, platform and user keys, 
 | ID | Ticket | Acceptance criteria | Model | Reviewer | Status |
 | --- | --- | --- | --- | --- | --- |
 | S-001 | Prompt-injection red-team suite in the eval harness | Injection cases from pages, sources, and claims run on every PR; any verdict flip fails the build | Claude Opus 5.5 | Human (security) | To do |
-| S-002 | Secret, dependency, and static scanning in CI for every repo | Scans block merge on high findings; history scanned once for leaked secrets | Claude Haiku 4.5 | Human | To do |
-| S-003 | Log redaction and retention policy | No raw user text in logs without opt-in; retention period documented and enforced | Claude Sonnet 5.5 | Human (security) | To do |
-| S-004 | Incident runbook, including bulk verdict retraction | Tabletop exercise completed; retraction of a batch of verdicts reaches webhooks and ATProto | Claude Sonnet 5.5 | Human | To do |
+| S-002 | Secret, dependency, and static scanning in CI for every repo | Scans block merge on high findings; history scanned once for leaked secrets | Qwen3.8-27B (local) | Human | To do |
+| S-003 | Log redaction and retention policy | No raw user text in logs without opt-in; retention period documented and enforced | Gemini 3.8 Flash | Human (security) | To do |
+| S-004 | Incident runbook, including bulk verdict retraction | Tabletop exercise completed; retraction of a batch of verdicts reaches webhooks and ATProto | Gemini 3.8 Flash | Human | To do |
 | S-005 | Disclosure policy and `security.txt` | Published contact and response times; triage owner named | Human | Owner | To do |
 
 **Out of scope.** ClearCloud and Veracities.bet run their own security programs, described in their own design documents, and share no credentials or infrastructure secrets with Vera.
