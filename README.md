@@ -29,6 +29,8 @@ Every feature carries exactly one status: **Proposed → Confirmed → Prototype
 - **Graph views:** source-flow, money-flow, mind-map, quadrant, and fishbone diagrams for each verdict.
 - **Personal relevance:** an optional, on-device profile that flags which claims matter to you, without changing any verdict.
 - **Signed verdict ledger:** append-only verdicts published to ATProto, with corrections as new versions.
+- **Vera for AI agents:** an MCP server and an A2A endpoint, so other AI agents can use Vera as an independent reviewer of their own output.
+- **Free tier and assisted mode:** 15 free queries a month without an account; after that, upgrade, or switch to assisted mode, where Vera finds the evidence and your own model or ChatGPT-style plan judges it on your device.
 
 Some prototype features are being removed on purpose: the canned guest agent, global fact sharing, video generation, and the "connected peers" display. The design set lists where every feature goes.
 
