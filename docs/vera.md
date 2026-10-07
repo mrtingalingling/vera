@@ -36,6 +36,7 @@ Vera is a standalone AI agent that tells a reader whether a claim is supported b
 | Video generation and Cloud Storage hosting | Prototyped | Deleted (V-012) |
 | libp2p swarm | Prototyped | Stub switched off (V-008); later mirror (ADR-007) |
 | EnDAOsment governance contracts | Prototyped | Belong to ClearCloud; moving to its repo (C-012) |
+| Agent-to-agent (A2A) support on the ADK | Prototyped | Rebuilt as an MCP server and an A2A endpoint over the public API (V-212) |
 
 ## Shared protocol
 
@@ -44,7 +45,7 @@ Vera is a standalone AI agent that tells a reader whether a claim is supported b
 **Contents.**
 
 - **Identity:** ATProto DIDs; one DID may be used across products, but no product reads another's private data without explicit user opt-in.
-- **Records:** Vera's verdict, evidence, attestation, and retraction records as ATProto lexicons under app.veracities.\*. Other products publish their own records under their own namespaces, such as ClearCloud's social.clearcloud.\* (ClearCloud tab). Vera's namespace is `app.veracities.*`, on Vera's domain, veracities.app (Confirmed).
+- **Records:** Vera's verdict, evidence, attestation, and retraction records as ATProto lexicons under app.veracities.\*. Other products publish their own records under their own namespaces, such as ClearCloud's social.clearcloud.\* (ClearCloud design document). Vera's namespace is `app.veracities.*`, on Vera's domain, veracities.app (Confirmed).
 - **Addressing:** every record is content-addressed by CID and signed by its author's DID, so the same record can travel over ATProto or a libp2p mirror.
 - **Packages:** `@vera/protocol` (schemas and validators) and `@vera/core` (SDK), semantically versioned. Record schemas change only backward-compatibly: new fields are optional, and required fields are never removed or renamed without a version bump.
 
@@ -185,6 +186,25 @@ Updated from the earlier user journeys.
 4. **Doubt a verdict:** the reader requests a hallucination check and later sees whether it passed or opened a correction.
 5. **Personal relevance:** the reader adds personal context and sees which informational claims matter to them, with verdicts unchanged.
 
+### Vera for AI agents
+
+Other AI agents can call Vera as an independent, third-party reviewer of their own output, because an agent can't credibly audit itself. Both adapters are thin layers over the public API, so agents get the same verdicts, confidence, and labels as any other client. This is Proposed (V-212).
+
+- **MCP server (`@vera/mcp`):** a package that runs next to the calling agent and exposes Vera's tools: check claims, get a verdict, classify, and request a hallucination check. It runs Vera's scrubber locally before anything is sent, like the extension does.
+- **A2A endpoint:** Vera as a remote agent for longer checks, with task status updates and webhooks. It replaces the prototype's ADK-based A2A support. Callers scrub with Vera's SDK before sending, as the host platform contract requires.
+- **Rules for agent callers:** secret API keys only, rate limited per key. Everything an agent sends, including its own sources and conclusions, is untrusted: it gets the same prompt-injection defenses and source rules as user-supplied material, and a caller's own claims never count as evidence for themselves.
+
+### Free tier, assisted mode, and cost controls
+
+Vera keeps its own costs down by reusing work, and gives users three ways forward when a free allowance runs out. This is Proposed.
+
+- **Free tier:** up to 15 queries a month without an account, counted against an anonymous token stored on the device, with a hashed IP address as a backstop against token resets (Confirmed). A query is one check of up to a set number of claims (V-213).
+- **At the cap:** Vera offers three choices: upgrade to a paid plan; switch to assisted mode with an API key; or switch to assisted mode by signing in with an existing ChatGPT-style plan (Confirmed).
+- **Assisted mode:** Vera's servers still find and rank the evidence (stages 1 to 4, through `claims:evidence`), and the user's own model judges it on the device; Vera's SDK then combines the stances with the same deterministic aggregation code. Credentials never reach Vera's servers. Results are labeled "assisted by your model," never count as Vera verdicts, and never enter the ledger, because that model hasn't passed Vera's evals. Evidence searches in assisted mode have their own cap, since Vera still pays for them (V-214).
+- **Verdict reuse:** when a claim's ID already has an unexpired verdict, Vera returns it without searching again, unless the caller asks for a refresh (Confirmed).
+- **Evidence cache:** fetched evidence is cached on Vera's servers by URL and content hash, storing the quoted span and link rather than whole pages, and reused across users until it goes stale (V-215).
+- **Pricing:** paid plans are priced at operating cost plus 15%, using the cost method in C-006, which leaves a little under 15% margin after discounts and costs nobody has counted yet (Confirmed). Operating cost is measured before prices are published (V-210).
+
 ### Graph views
 
 Vera draws five Mermaid views per verdict so readers can see how a claim's evidence fits together. Vera computes each view's structure from the ledger and source registry; Mermaid only draws it. All five are Proposed.
@@ -239,6 +259,7 @@ Test keys hit the same API but return verdicts from a fixed fixture set, so plat
 | `POST /v1/verdicts/{verdict_id}/audit` | Request a hallucination check: re-verify citations, claim context, and retrieval gaps; returns an audit\_id; a failed check goes to the review queue | Async |
 | `GET /v1/audits/{audit_id}` | A hallucination check's status and result: passed, or failed with the correction it opened | Sync |
 | `POST /v1/claims:classify` | Stop after stage 3: each claim's claim\_id and checkable-or-not label, plus the text's entertainment-or-informational label; no retrieval or stance calls; its own lower-cost quota | Sync |
+| `POST /v1/claims:evidence` | Stages 1 to 4 for assisted mode: ranked evidence per claim, with no stance judgment or verdict; counts against the assisted-mode search cap | Sync |
 
 ### Core objects
 
@@ -322,7 +343,7 @@ A platform embedding Vera agrees to the following, enforced through the terms of
 
 ## Architecture decision records
 
-Eleven decisions shape Vera; all are Proposed until the owner accepts them, which makes them Confirmed. ADR numbers are global: ADR-001, ADR-010, and ADR-016 (every backend is Rust by default, extending ADR-014) are in the Ecosystem tab, and ADR-011 and ADR-015 in the ClearCloud tab. Each record states the context, the decision, and what it costs.
+Eleven decisions shape Vera; all are Proposed until the owner accepts them, which makes them Confirmed. ADR numbers are global: ADR-001, ADR-010, and ADR-016 (every backend is Rust by default, extending ADR-014) are in the Ecosystem document, and ADR-011 and ADR-015 in the ClearCloud design document. Each record states the context, the decision, and what it costs.
 
 | ADR | Decision | Status |
 | --- | --- | --- |
@@ -384,6 +405,13 @@ Eleven decisions shape Vera; all are Proposed until the owner accepts them, whic
 
 **Decision.** Publish signed records to ATProto first. Add a libp2p mirror (GossipSub plus CID retrieval) of the same records after the ledger is Audited. Peers verify signatures and resolve DIDs before accepting anything.
 
+**Extension as a light peer (Proposed).** When the mirror arrives, the extension can join it as a light peer, with a split between public and private material:
+
+- **Public records:** the extension stores and serves Vera's signed public records (link, content hash, quoted span), unencrypted. Content addressing and signatures make any tampering detectable. Whole pages are never stored or served.
+- **Private files:** a user's own uploaded evidence is encrypted and syncs only between that user's devices.
+- **Sharing a private file:** a user can choose to share one of their files as evidence. Sharing is per file and explicit, the file is scrubbed of personal data first, and it is published as user-supplied evidence: anyone can read it, and Vera treats it like any other user-supplied source, never as fact on its own. Once peers hold a copy, sharing can be stopped going forward but not fully withdrawn, and the user is told this before sharing.
+- **Relay and anchor nodes:** the always-on nodes that keep peers reachable and files available come from a separate libp2p-based protocol, deferred for now.
+
 **Consequences.** Browser nodes still need bootstrap and relay infrastructure, and pinning nodes for persistence. Retractions must be explicit signed records.
 
 ### ADR-008: On-device models never issue verdicts
@@ -416,7 +444,7 @@ Eleven decisions shape Vera; all are Proposed until the owner accepts them, whic
 
 **Decision.** The extension and cockpit call model providers directly with the user's key. Vera's servers never receive, store, or log it. Users can also connect through Sign in with ChatGPT (OpenID Connect with PKCE); with its plan-usage scopes, eligible ChatGPT Plus and Pro users run requests on their own plan, and the tokens stay on the device like keys. Every BYOM option (API keys, Sign in with ChatGPT, on-device models) appears in one model-connection panel with the same connect, revoke, and labeling flow. Sign in with ChatGPT is a limited trial for selected commercial partners, and plan usage is documented for open-source apps, so whether Vera qualifies is open (V-306).
 
-**Consequences.** BYOM requests bypass Vera's pipeline. They are labeled as the user's own model output, not Vera verdicts, and never enter the ledger, including output from a ChatGPT plan.
+**Consequences.** Outside assisted mode, BYOM requests bypass Vera's pipeline; in assisted mode, Vera supplies the evidence and the user's model judges it on the device. They are labeled as the user's own model output, not Vera verdicts, and never enter the ledger, including output from a ChatGPT plan.
 
 ### ADR-014: Server-side code is Rust
 
@@ -428,7 +456,7 @@ Eleven decisions shape Vera; all are Proposed until the owner accepts them, whic
 
 ## Implementation plan
 
-Vera moves through five phases, and a phase starts only when the previous gate's criteria are met; ClearCloud and Veracities.bet start from specific Vera gates (Ecosystem tab). The plan is sequenced by gates, not dates. Set dates once Phase 0 shows real velocity.
+Vera moves through five phases, and a phase starts only when the previous gate's criteria are met; ClearCloud and Veracities.bet start from specific Vera gates (Ecosystem document). The plan is sequenced by gates, not dates. Set dates once Phase 0 shows real velocity.
 
 <img src="./images/vera-roadmap.svg" alt="Roadmap · Vera's five phases and their gates">
 
@@ -442,11 +470,11 @@ Phase 0 is the current focus.
 4. **Gate 3, extension v2 public:** least-privilege manifest, side panel, offset highlighting; scrubber, vault protection, personal relevance, and the shared model panel Audited (V-304, V-307 to V-310); extension security review and privacy review passed; Chrome Web Store listing approved.
 5. **Gate 4, ledger and corrections:** append-only ledger with signed records; user-flagged errors reach a human reviewer and corrected versions publish within the window the owner sets in V-404; records publish to ATProto with claim text kept off them, and redaction records work.
 
-**Later, not scheduled:** the libp2p mirror (ADR-007) starts after Gate 4 and gets its own design review.
+**Later, not scheduled:** the libp2p mirror (ADR-007) starts after Gate 4 and gets its own design review, including the extension as a light peer and the separate relay-and-anchor protocol.
 
 ## Tickets with model assignments
 
-Fifty-two tickets cover Vera's Phases 0–4; each is assigned to the cheapest model tier that can do it reliably, and the author is never its own reviewer.
+Fifty-six tickets cover Vera's Phases 0–4; each is assigned to the cheapest model tier that can do it reliably, and the author is never its own reviewer.
 
 **Assignment rules.**
 
@@ -500,14 +528,18 @@ Every AI-assigned ticket runs with the reviewable-diffs skill already in the rep
 | V-207 | Published contract-test suite | ClearCloud's repo runs it green against test keys | Claude Sonnet 5.5 | Human | V-202 | To do |
 | V-208 | Direct-to-provider BYOM adapter in the client | Network test shows the key never goes to a Vera domain | Claude Sonnet 5.5 | Claude Opus 5.5 | — | To do |
 | V-209 | Graph endpoint: build the five views from the ledger and source registry, with cycle detection for source flow | Each view's Mermaid source parses on the pinned Mermaid version; a fixture with circular citations is flagged; every node links to evidence | Claude Opus 5.5 | Human | V-111, V-202 | To do |
-| V-210 | Published API price list | One price list applied equally to every customer, including Veracities.bet; any volume tiers published and open to all; prices published before Gate 2 | Human | Owner (sole; rule suspended) | V-201 | To do |
+| V-210 | Published API price list | Operating cost measured with the C-006 method and prices set at cost plus 15%; one price list applied equally to every customer, including Veracities.bet; any volume tiers published and open to all; prices published before Gate 2 | Human | Owner (sole; rule suspended) | V-201 | To do |
 | V-211 | Classify-only endpoint (claims:classify): checkable-or-not and entertainment-or-informational labels | Runs stages 1 to 3 only, with no retrieval or stance calls in tests; returns claim IDs and both labels; label accuracy measured on a fixture set; separate quota | Claude Sonnet 5.5 | Claude Opus 5.5 | V-103, V-202 | To do |
+| V-212 | Vera for AI agents: MCP server (@vera/mcp) and A2A endpoint over the public API | Both return the same verdicts as the API; the MCP server scrubs locally before any call; A2A tasks report status and finish by webhook; injection suite passes on agent-supplied text; a caller's own claims never count as evidence | Claude Sonnet 5.5 | Human (security) | V-202, V-204, V-205 | To do |
+| V-213 | Free tier and cap flow: anonymous device token, hashed-IP backstop, query definition, and the three choices at the cap | 15 queries a month without an account; token reset caught by the hashed IP; hashed IPs rotate and expire; claims-per-query limit set; cap screen offers upgrade, assisted mode with a key, and assisted mode with a plan sign-in | Claude Sonnet 5.5 | Human (security) | V-203 | To do |
+| V-214 | Assisted mode: claims:evidence endpoint, on-device stance judgment with the user's model, SDK aggregation | Credentials never reach Vera in a network test; results labeled "assisted by your model" and kept out of the ledger; aggregation code identical to the server's; assisted search cap enforced | Claude Opus 5.5 | Human (security) | V-208, V-213 | To do |
+| V-215 | Verdict reuse by claim ID and a server-side evidence cache | Repeat claims return the unexpired verdict without new searches; refresh forces a new check; cache stores links, hashes, and quoted spans only; stale entries expire; search spend per check measured before and after | Claude Sonnet 5.5 | Claude Opus 5.5 | V-202 | To do |
 | V-301 | Manifest: optional host permissions with timed revoke | Automated test shows access is gone after the timer | Claude Opus 5.5 | Human (security) | Gate 2 | To do |
 | V-302 | Side panel migration | Panel stays open while the user scrolls and clicks the page | Claude Sonnet 5.5 | Human | V-301 | To do |
 | V-303 | Offset-based highlighting | Highlights land on extracted offsets on fixture pages, including dynamic DOM | Claude Sonnet 5.5 | Claude Opus 5.5 | V-102 | To do |
 | V-304 | PII scrubber: evaluate on-device NER against regex | Recall measured on a synthetic chat set; decision recorded as a new ADR | Claude Opus 5.5 | Human | — | To do |
 | V-305 | `<vera-graph>` component and a graph tab in the side panel | Renders in a closed shadow root with Mermaid's strict security level; script payloads in labels render inert; quadrant axes are track record and sourcing | Claude Sonnet 5.5 | Human (security) | V-206, V-209 | To do |
-| V-306 | Sign in with ChatGPT as a BYOM option (ADR-013) | OpenAI trial access confirmed, including whether plan usage applies to Vera; OIDC with PKCE; plan usage enabled only from the token response's granted scopes; tokens never reach a Vera domain; appears in the same BYOM panel and flow as key-based providers | Claude Sonnet 5.5 | Human (security) | V-208 | To do |
+| V-306 | Sign in with ChatGPT as a BYOM option (ADR-013) | OpenAI trial access confirmed, including whether plan usage applies to Vera; OIDC with PKCE; plan usage enabled only from the token response's granted scopes; tokens never reach a Vera domain; appears in the same BYOM panel and flow as key-based providers; works as an assisted-mode credential | Claude Sonnet 5.5 | Human (security) | V-208 | To do |
 | V-307 | Local model manager: Gemini Nano first, then a user-chosen local model (Qwen3-4B-Instruct, Phi-4-mini, Gemma 3 4B) in the BYOM panel | Detects Nano and falls back cleanly when it's absent; each offered model's license and download size reviewed; same panel and flow as other BYOM options | Claude Sonnet 5.5 | Claude Opus 5.5 | V-208 | To do |
 | V-308 | Stage 1 techniques: redaction and masking, obfuscation and shifts, rewriting and style masking, plus an encrypted sensitive-term vault with fuzzy matching | Claim numbers and claim text pass through unchanged in tests; typo variants of vault terms are caught; vault plaintext exists only in memory on the device; nothing, including agent-to-agent tokens, is sent before stage 1 completes | Claude Opus 5.5 | Human (security) | V-112, V-304, V-307 | To do |
 | V-309 | Personal relevance: local profile, entertainment filter, and relevance rating (issue #8) | Profile stored only in the encrypted on-device vault; network test shows it never leaves the device; verdicts and confidence identical with and without a profile; entertainment skipped; view, edit, export, and delete work | Claude Sonnet 5.5 | Human (security) | V-307, V-308 | To do |
@@ -551,6 +583,7 @@ The assets are verdict integrity, users' personal data, platform and user keys, 
 | Permanent public records about private people | Ledger, ATProto | Claim text kept off public records as a hash; private-individual claims unpublished; signed redaction records | V-406 | Gate 4 |
 | Model or search providers keeping or training on request data | Pipeline stages 3 to 5 | Providers chosen only under no-retention, no-training terms; checked in privacy review | V-110, S-003 | Gates 1 and 3 |
 | Fake Vera badges pasted as images | Third-party sites | Every real badge links to its signed verdict on veracities.app; host contract requires the link | V-206 | Gate 2 |
+| AI agents injecting instructions or passing off their own conclusions as evidence | MCP server, A2A endpoint | Agent input treated as untrusted; injection suite; caller claims never count as evidence; secret keys and per-key limits | V-212 | Gate 2 |
 
 ### Review schedule
 
@@ -574,4 +607,4 @@ The assets are verdict integrity, users' personal data, platform and user keys, 
 | S-004 | Incident runbook, including bulk verdict retraction | Tabletop exercise completed; retraction of a batch of verdicts reaches webhooks and ATProto | Claude Sonnet 5.5 | Human | To do |
 | S-005 | Disclosure policy and `security.txt` | Published contact and response times; triage owner named | Human | Owner | To do |
 
-**Out of scope.** ClearCloud and Veracities.bet run their own security programs, described in their tabs, and share no credentials or infrastructure secrets with Vera.
+**Out of scope.** ClearCloud and Veracities.bet run their own security programs, described in their own design documents, and share no credentials or infrastructure secrets with Vera.
