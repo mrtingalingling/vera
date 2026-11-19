@@ -62,11 +62,11 @@ Vera verifies claims through a fixed pipeline of stages with structured outputs;
 3. Personal data is scrubbed by the Vera client before any network call, and private text leaves only after the user has seen exactly what will be sent and agreed.
 4. Any platform can embed Vera through a stable, versioned API.
 
-**Non-goals.** User reputation, feeds, wagering, governance, and real-time verification of every sentence on every page.
+**Non-goals.** User reputation, scoring whether an account is a bot, feeds, wagering, governance, and real-time verification of every sentence on every page.
 
 ### Architecture
 
-<img src="./images/vera-architecture.svg" alt="Vera architecture · device, service, and outside consumers">
+&#91;embedded content: Vera architecture · device, service, and outside consumers\]
 
 Personal data stops at the device boundary. Scrubbing is the first stage and runs inside the Vera client before any network call: in the extension, or in Vera's SDK embedded in a host app or server such as ClearCloud's. Private text (messages, logged-in pages, drafts) is previewed and approved before it is sent; public pages and already-published posts are scrubbed without a prompt. The same holds when claim extraction falls back to the server and before any agent-to-agent token exchange. Partners and Veracities.bet read from Vera but never write back into verdicts.
 
@@ -186,6 +186,16 @@ Updated from the earlier user journeys.
 4. **Doubt a verdict:** the reader requests a hallucination check and later sees whether it passed or opened a correction.
 5. **Personal relevance:** the reader adds personal context and sees which informational claims matter to them, with verdicts unchanged.
 
+### Provenance labels
+
+Vera can say where a piece of content came from when the content itself carries that information, but it doesn't guess whether text was written by AI. This is Proposed (V-216).
+
+- **Three states, no percentage:** "AI provenance detected" (naming the signal found), "Human-capture credentials present," or "No provenance signals," which is the honest answer for most text.
+- **Signals read:** C2PA content credentials, and AI watermarks such as SynthID where a detector is available.
+- **Separate from verdicts:** the label sits beside a verdict and never feeds into it, because AI-written claims can be true and human-written ones false.
+- **Statistical AI-text scores:** off by default. If enabled, they are shown only with confidence calibrated in Vera's evals, labeled as weak evidence, and never applied to individual people.
+- **No account scoring:** Vera doesn't judge whether a person or account is a bot; that needs account behavior over time, which only the hosting platform has.
+
 ### Vera for AI agents
 
 Other AI agents can call Vera as an independent, third-party reviewer of their own output, because an agent can't credibly audit itself. Both adapters are thin layers over the public API, so agents get the same verdicts, confidence, and labels as any other client. This is Proposed (V-212).
@@ -260,6 +270,7 @@ Test keys hit the same API but return verdicts from a fixed fixture set, so plat
 | `GET /v1/audits/{audit_id}` | A hallucination check's status and result: passed, or failed with the correction it opened | Sync |
 | `POST /v1/claims:classify` | Stop after stage 3: each claim's claim\_id and checkable-or-not label, plus the text's entertainment-or-informational label; no retrieval or stance calls; its own lower-cost quota | Sync |
 | `POST /v1/claims:evidence` | Stages 1 to 4 for assisted mode: ranked evidence per claim, with no stance judgment or verdict; counts against the assisted-mode search cap | Sync |
+| `POST /v1/provenance` | Provenance label for an image, audio, video, or text item: one of three states, with the signal found; also included in check results | Sync |
 
 ### Core objects
 
@@ -458,7 +469,7 @@ Eleven decisions shape Vera; all are Proposed until the owner accepts them, whic
 
 Vera moves through five phases, and a phase starts only when the previous gate's criteria are met; ClearCloud and Veracities.bet start from specific Vera gates (Ecosystem document). The plan is sequenced by gates, not dates. Set dates once Phase 0 shows real velocity.
 
-<img src="./images/vera-roadmap.svg" alt="Roadmap · Vera's five phases and their gates">
+&#91;embedded content: Roadmap · Vera's five phases and their gates\]
 
 Phase 0 is the current focus.
 
@@ -474,7 +485,7 @@ Phase 0 is the current focus.
 
 ## Tickets with model assignments
 
-Fifty-seven tickets cover Vera's Phases 0–4; each is assigned to the cheapest model tier that can do it reliably, and the author is never its own reviewer.
+Fifty-eight tickets cover Vera's Phases 0–4; each is assigned to the cheapest model tier that can do it reliably, and the author is never its own reviewer.
 
 **Assignment rules.**
 
@@ -533,6 +544,7 @@ Every AI-assigned ticket runs with the reviewable-diffs skill already in the rep
 | V-209 | Graph endpoint: build the five views from the ledger and source registry, with cycle detection for source flow | Each view's Mermaid source parses on the pinned Mermaid version; a fixture with circular citations is flagged; every node links to evidence | Claude Opus 5.5 | Human | V-111, V-202 | To do |
 | V-210 | Published API price list | Operating cost measured with the C-006 method and prices set at cost plus 15%; one price list applied equally to every customer, including Veracities.bet; any volume tiers published and open to all; prices published before Gate 2 | Human | Owner (sole; rule suspended) | V-201 | To do |
 | V-211 | Classify-only endpoint (claims:classify): checkable-or-not and entertainment-or-informational labels | Runs stages 1 to 3 only, with no retrieval or stance calls in tests; returns claim IDs and both labels; label accuracy measured on a fixture set; separate quota | Gemini 3.8 Flash | Claude Opus 5.5 | V-103, V-202 | To do |
+| V-216 | Provenance labels: C2PA credentials and AI watermarks, three states, no percentage | Reads C2PA and available watermark signals on fixtures; returns exactly one of the three states; label never changes a verdict in tests; statistical score off by default and shown only with calibrated confidence | Gemini 3.8 Flash | Claude Opus 5.5 | V-202 | To do |
 | V-212 | Vera for AI agents: MCP server (@vera/mcp) and A2A endpoint over the public API | Both return the same verdicts as the API; the MCP server scrubs locally before any call; A2A tasks report status and finish by webhook; injection suite passes on agent-supplied text; a caller's own claims never count as evidence | Gemini 3.8 Flash | Human (security) | V-202, V-204, V-205 | To do |
 | V-213 | Free tier and cap flow: anonymous device token, device ID hash and hashed-IP backstops, query definition, and the three choices at the cap | 15 queries a month without an account; token reset caught by the device ID hash or hashed IP; both hashes salted, rotated, and expiring; device ID built only from identifiers browser and store policies permit, after a privacy review; claims-per-query limit set; cap screen offers upgrade, assisted mode with a key, and assisted mode with a plan sign-in | Gemini 3.8 Flash | Human (security) | V-203 | To do |
 | V-214 | Assisted mode: claims:evidence endpoint, on-device stance judgment with the user's model, SDK aggregation | Credentials never reach Vera in a network test; results labeled "assisted by your model" and kept out of the ledger; aggregation code identical to the server's; assisted search cap enforced | Claude Opus 5.5 | Human (security) | V-208, V-213 | To do |
@@ -587,6 +599,7 @@ The assets are verdict integrity, users' personal data, platform and user keys, 
 | Model or search providers keeping or training on request data | Pipeline stages 3 to 5 | Providers chosen only under no-retention, no-training terms; checked in privacy review | V-110, S-003 | Gates 1 and 3 |
 | Fake Vera badges pasted as images | Third-party sites | Every real badge links to its signed verdict on veracities.app; host contract requires the link | V-206 | Gate 2 |
 | AI agents injecting instructions or passing off their own conclusions as evidence | MCP server, A2A endpoint | Agent input treated as untrusted; injection suite; caller claims never count as evidence; secret keys and per-key limits | V-212 | Gate 2 |
+| A provenance label read as a truth signal, or as an accusation that a person used AI | Provenance labels | Three states with no percentage; label kept separate from verdicts; statistical scores off by default and never applied to individuals | V-216 | Gate 2 |
 
 ### Review schedule
 
